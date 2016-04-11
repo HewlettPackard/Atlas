@@ -1,4 +1,4 @@
 helloworld: helloworld.cc
-    gcc -o helloworld hellowworld.cc -I.
+	gcc -o helloworld helloworld.cc -I.
 
 test: helloworld
