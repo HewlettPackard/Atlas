@@ -1,5 +1,4 @@
 helloworld: helloworld.cc
-
-#	gcc -o helloworld helloworld.cc -I.
+	gcc -g -O0 –coverage -o helloworld helloworld.cc -I. -liostream
 
 test: helloworld
