@@ -1,12 +1,17 @@
 language: cpp
-compiler: gcc
-script: make && make test
+compiler:
+  - gcc
+before_install:
+  - pip install --user cpp-coveralls
+script:
+  - make && make test
+after_success:
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "d2SoIUjFtkZbcyc7XSjzrlu9i/6f5LWOnhDYfeXHr9/FLgPQITd18p4IRFIj2YGKzda1TSo3u/Z48yI3UZqpeGFOhpA0y8YtUmnPDK1dii+aHl4U3UFVr6iUy0YYbV0jjqJvtBZC1QcgtkufS9hj9PpdcZ80/suahFtGExVS9+YekKUEmueXuXsn49PXer1SeSHsZBxwqZ5E7OULja6Wyxa/wBcXv+R06JBzE9+hKj0+6EwSrLXYhwR6q5JtY7j/6YHQEaPbVpFxMaeClsf7rLqwMTK/A1plfRoJW8UOiqRUpH3mgfW++ozkIGnHTa1DcHoUJtgIqudrtMGdCqN5DxYj2jpwDyanjMsXc953A92Zgu6wPmYo0V1iw5tmZTtQHh+NXrmboTKvgxlV5RttmuBa0aicx1mrBiTy6pcFETOLA7QYolWr9DOqOjI65uphD8tcO0HN3sxjxrliGsTKo4X11B+OXrTOHJ0iWEBfkyx824GhSD+o3jgF3eEHrMNqrtZuGW9cVHTl73n2LWEXTqCqzQjCQrbmY/wdiaWyZ67B9lDd29I8WY3ZMQZpJp54x2pIpkMzkam4PSKGwiBbsOolRpyYjnJ7G7T31SUljUJyO6WX11IpX2hMg/Bpa+FTqF86OCgfHaXR5xXVHc8KnTdZrIi7T2HEKItVgSocQfM="
-
 addons:
   coverity_scan:
     project:
