@@ -1,5 +1,5 @@
-#ifndef _MAKALU_CORE_MD_H
-#define _MAKALU_CORE_MD_H
+#ifndef _MAKALU_HDR_H
+#define _MAKALU_HDR_H
 
 #include "makalu_config.h"
 
