@@ -10,6 +10,17 @@ typedef unsigned long long word;
 typedef long long signed_word;
 typedef AO_t counter_t;
 
+typedef int GC_bool;
+#define TRUE 1
+#define FALSE 0
+
+typedef char * ptr_t;   /* A generic pointer to which we can add        */
+                        /* byte displacements and which can be used     */
+                        /* for address comparisons. */
+
+//code visibility
+#define MAK_INNER 
+#define MAK_EXTERN extern MAK_INNER
 
 //block
 #define HBLKSIZE 4096
@@ -38,6 +49,16 @@ typedef AO_t counter_t;
 
 //struct hblkhdr hb_marks
 #define MARK_BITS_SZ (MARK_BITS_PER_HBLK/CPP_WORDSZ + 1)
+
+
+//headers
+#define LOG_BOTTOM_SZ 10
+#define BOTTOM_SZ (1 << LOG_BOTTOM_SZ)
+#define LOG_TOP_SZ 11
+#define TOP_SZ (1 << LOG_TOP_SZ)
+
+#define HDR_CACHE_SIZE 8  /* power of 2 */
+#define MAX_JUMP (HBLKSIZE - 1)
 
 
 #endif
