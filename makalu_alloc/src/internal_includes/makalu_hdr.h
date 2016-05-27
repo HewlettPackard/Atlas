@@ -1,8 +1,6 @@
 #ifndef _MAKALU_HDR_H
 #define _MAKALU_HDR_H
 
-#include "makalu_config.h"
-
 
 typedef struct hblkhdr {
 
@@ -66,6 +64,11 @@ typedef struct bi {
     struct bi * hash_link;      /* Hash chain link.             */
     word dummy_for_cache_align[4];
 } bottom_index;
+
+MAK_EXTERN bottom_index * MAK_all_nils;
+MAK_EXTERN bottom_index** MAK_top_index;
+
+
 
 #define HDR_FROM_BI(bi, p) \
                 ((bi)->index[((word)(p) >> LOG_HBLKSIZE) & (BOTTOM_SZ - 1)])
@@ -141,13 +144,12 @@ MAK_INNER hdr * MAK_header_cache_miss(ptr_t p, hdr_cache_entry *hce);
         { \
           hdr_cache_entry * hce = HCE(p, hdr_cache, HDR_CACHE_SIZE); \
           if (EXPECT(HCE_VALID_FOR(hce, p), TRUE)) { \
-            HC_HIT(); \
             hhdr = hce -> hce_hdr; \
           } else { \
             hhdr = HEADER_CACHE_MISS(p, hce, source); \
-            if (0 == hhdr) goto exit_label; \
-          } \
-        }
+    if (0 == hhdr) goto exit_label; \
+  } \
+}
 
 /* allocation time header cache */
 //TODO: unify the allocation time and gc time hdr cache
@@ -157,6 +159,11 @@ MAK_INNER void MAK_update_hc(ptr_t p, hdr* hhdr, hdr_cache_entry* hc, word hc_sz
 MAK_INNER hdr* MAK_get_hdr_and_update_hc(ptr_t p, hdr_cache_entry* hc, word hc_sz);
 MAK_INNER hdr* MAK_get_hdr_no_update(ptr_t p, hdr_cache_entry* hc, word hc_sz);
 
+
+# define HBLK_IS_FREE(hdr) (((hdr) -> hb_flags & FREE_BLK) != 0)
+
+
+MAK_INNER hdr * MAK_find_header(ptr_t h);
 
 #define ENSURE_64_BIT_COPY(dest, src) \
 { \

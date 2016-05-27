@@ -10,7 +10,7 @@ typedef unsigned long long word;
 typedef long long signed_word;
 typedef AO_t counter_t;
 
-typedef int GC_bool;
+typedef int MAK_bool;
 #define TRUE 1
 #define FALSE 0
 
@@ -23,9 +23,15 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define MAK_EXTERN extern MAK_INNER
 
 //block
-#define HBLKSIZE 4096
-#define define CPP_LOG_HBLKSIZE 12
+#define CPP_LOG_HBLKSIZE 12
+#define CPP_HBLKSIZE (1 << CPP_LOG_HBLKSIZE)
+#define LOG_HBLKSIZE   ((size_t)CPP_LOG_HBLKSIZE)
+#define HBLKSIZE ((size_t)CPP_HBLKSIZE)
 
+
+//mark
+
+MAK_EXTERN MAK_all_interior_pointers;
 
 //granule
 #define CPP_WORDSZ 64
@@ -60,5 +66,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define HDR_CACHE_SIZE 8  /* power of 2 */
 #define MAX_JUMP (HBLKSIZE - 1)
 
+//heap sizes
+#   define MAX_HEAP_SECTS 1024
 
 #endif
