@@ -379,6 +379,10 @@ GC_INNER void GC_restart_persistent_scratch_alloc(){
        }
     }
 
+    //no need to restart the idx allocation since it has to be rebuild anyway
+    if (GC_persistent_state != PERSISTENT_STATE_NONE)
+        return;
+
     free_ptr = GC_hdr_idx_free_ptr;
     i = (int) GC_n_hdr_idx_spaces - 1;
     //last memory acquisition was incomplete
@@ -386,10 +390,6 @@ GC_INNER void GC_restart_persistent_scratch_alloc(){
        GC_STORE_NVM_ASYNC(GC_n_hdr_idx_spaces, GC_n_hdr_idx_spaces - 1);
        i--;
     }
-
-    //no need to restart the idx allocation since it has to be rebuild anyway
-    if (GC_persistent_state != PERSISTENT_STATE_NONE)
-        return;
 
 
     //see the comment for headers
