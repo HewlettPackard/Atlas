@@ -69,4 +69,32 @@ MAK_EXTERN MAK_all_interior_pointers;
 //heap sizes
 #   define MAX_HEAP_SECTS 1024
 
+
+//persistent
+
+/* number of heap blocks allocated for logging in persistent memory */
+#define N_PERSISTENT_LOG_HBLK 1
+
+/*number of heap blocks allocated to store persistent roots */
+#define N_PERSISTENT_ROOTS_HBLK 1
+
+#define MAX_PERSISTENT_ROOTS_SPACE (HBLKSIZE * N_PERSISTENT_ROOTS_HBLK)
+
+#define MAX_LOG_SZ  (HBLKSIZE * N_PERSISTENT_LOG_HBLK)
+
+//#define NVM_DEBUG 1
+
+//#define NO_CLFLUSH 1
+
+//#define NO_NVM_LOGS 1
+
+
+#define AFLUSH_TABLE_SZ 32     //multiples of 2
+#define FL_AFLUSH_TABLE_SZ 8     //multiples of 2
+#define CACHE_LINE_SZ 64
+#define LOG_CACHE_LINE_SZ 6
+
+
+
+
 #endif

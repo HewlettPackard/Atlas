@@ -13,7 +13,7 @@ MAK_EXTERN struct MAK_base_md* MAK_base_md_ptr;
 
 struct MAK_base_md {
 
-
+    /* header metadata*/
     #define MAK_hdr_spaces MAK_base_md._hdr_spaces
     HeapSect _hdr_spaces[MAX_HEAP_SECTS];
  
@@ -41,6 +41,10 @@ struct MAK_base_md {
     bottom_index * _all_bottom_indices_end;
                                 /* Pointer to last (highest addr) */
                                 /* bottom_index.                  */
+
+    /* persistent logs */
+    
+    
 };
 
 
