@@ -1,0 +1,202 @@
+#! /usr/bin/env bash
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+total_fails=0
+
+################################################################
+#                       debug_print                            #
+################################################################
+function debug_print
+{
+    local err_str="[TEST_CONSISTENCY] $1"
+    local echoon="$2"
+    if [ -z "$echoon" ]; then
+        echoon=$debug
+    elif [ "${echoon,,}" == "true" ]; then
+        echoon="true"
+    fi
+    if [ "$echoon" == "true" ]; then
+        echo "$err_str"
+    fi
+    echo $err_str >> $debug_log
+}
+
+################################################################
+#                       debug_build                            #
+################################################################
+function debug_build
+{
+    local exec_str="$*"
+    echo "$exec_str" >> $debug_log
+    if [ "$debug" == "true" ]; then
+        debug_print "$exec_str" "true"
+        $(echo "$exec_str") 2>&1 | tee -a $debug_log
+        exec_retval="${PIPESTATUS[0]}"
+    else
+        debug_print "$exec_str"
+        $(echo "$exec_str") >> $debug_log 2>&1
+        exec_retval="$?"
+    fi
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Command $exec_str failed" "true"
+    fi
+}
+
+################################################################
+#                           run_tests                          #
+################################################################
+function run_tests
+{
+    tests=( "malloc_free_test" )
+    debug_print "Cleaning atlas memory"
+    debug_build "$clean_mem"
+    debug_print "Changing directory to $atlas_build"
+    cd $atlas_build
+    debug_print "Building tests to exit"
+    debug_build "cmake .. -DCONSISTENCY_FAIL=true"
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Failed to invoke cmake for consistency test building exiting" "true"
+        exit 1
+    fi
+    debug_build "make"
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Consistency tests failed to build the failable version, exiting" "true"
+        exit 1
+    fi
+    debug_print "Changing directory to $consistency_dir"
+    cd $consistency_dir
+    for testname in "${tests[@]}"; do
+        debug_print "Running $testname first time"
+        debug_build "./$testname"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "$testname did not exit for the first run as was expected, exiting" "true"
+            exit 1
+        fi
+        debug_print "$testname exited as expected"
+    done
+    debug_print "Changing directory to $atlas_build"
+    cd $atlas_build
+    debug_print "Building tests in runnable version"
+    debug_build "cmake .. -DCONSISTENCY_FAIL=false"
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Failed to invoke cmake for consistency test building exiting" "true"
+        exit 1
+    fi
+    debug_build "make"
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Consistency tests failed to build non fail target, exiting" "true"
+        exit 1
+    fi
+    debug_print "Changing directory to $consistency_dir"
+    cd $consistency_dir
+    for testname in "${tests[@]}"; do
+        debug_print "Attempting to recover program $testname"
+        debug_build "$recover $testname"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "Recover for $testname failed, exiting" "true"
+            exit 1
+        fi
+        debug_print "Recovery of $testname successful"
+        debug_print "Running $testname second time"
+        debug_build "./$testname"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "$testname failed" "true"
+            total_fails=$(($total_fails+1))
+        fi
+        debug_print "$testname exited as expected"
+    done
+    debug_print "Cleaning consistency dir"
+    debug_build "make clean"
+}
+################################################################
+#                      find_atlas_build                        #
+################################################################
+function find_atlas_build
+{
+    consistency_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    debug_log="$consistency_dir/test_consistency_log.txt"
+    debug_print "consistency dir is $consistency_dir"
+    atlas_build="$consistency_dir/../.."
+    debug_print "atlas build dir is $atlas_build"
+    if [ ! -f "$atlas_build/lib/libatlas.a" ]; then
+            debug_print "Cannot detect a build of atlas ensure libatlas.a is built" "true"
+        exit 1
+    else
+        if [ ! -f "$atlas_build/CMakeCache.txt" ]; then
+            debug_print "Cannot detect a cmake build of atlas outside the atlas src dir, ensure you have built atlas with cmake not in the src tree" "true"
+            exit 1
+        fi
+        debug_print "Found a build of atlas"
+    fi
+    export ATLAS_BUILD="$atlas_build"
+    clean_mem="$atlas_build/tools/clean_mem -f"
+    recover="$atlas_build/tools/recover"
+}
+
+################################################################
+#                            main                              #
+################################################################
+#Run with debug flag set to true to see output of build commands and which tests are passing.
+#Creates  alloc_out.txt containg debug statements from test script and output of make commands.
+#Run with true to see this output whilst test script runs.
+
+help_str="USAGE: ./test_consistency [debug flag: true or false]"
+
+debug="$1"
+if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
+    debug="false"
+elif [ "${debug,,}" == "true" ]; then #bash4.0 convert to lower
+    debug="true"
+else
+    echo "$help_str"
+    exit 1
+fi
+find_atlas_build
+debug_print "Set debug value to $debug"
+if [ -f "$debug_log" ]; then
+    debug_build "rm $debug_log"
+    debug_print "Removed old $debug_log"
+fi
+#if [ -z "$ACC" ]; then
+#    debug_print "No value found for \$ACC, ensure it is set to a clang compiler with instrumenter flags" "true"
+#    exit 1
+#fi
+#if [ -z "$ACXX" ]; then
+#    debug_print "No value found for \$ACXX, ensure it is set to a clang compiler with instrumenter flags" "true"
+#    exit 1
+#fi
+#debug_print "\$ACC is $ACC"
+#debug_print "\$ACXX is $ACXX"
+run_tests
+if [[ $total_fails -gt 0 ]]; then
+    debug_print "$total_fails fails for consistency tests" "true"
+    exit 1 #exit code for when things didn't work
+else
+    debug_print "No failures occurred, consistency testing passed" "true"
+    debug_print "No need for debug_log, removing $debug_log"
+    if [ -f "$debug_log" ]; then
+        debug_print "Removing $debug_log"
+        debug_build "rm $debug_log"
+    fi
+    exit 0
+fi
+
+make fail
+run_test
+make all
+run_test
+

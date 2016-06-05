@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+logfile="build_log.txt"
+if [ -f "$logfile" ]; then
+    rm $logfile
+fi
+srcfile="src/Instrumentation/NvmInstrumenter.cpp"
+if [ "${1,,}" == "help" ];then
+    echo "Run with $0 to build NvmInstrumenter.so - the compiler plugin for building Atlas programs. Build commands are set to timeout after 5 minutes."
+    exit 0
+fi
+if [ ! -f "$srcfile" ]; then
+    echo "Could not find plugin source file NvmInstrumenter.cpp - are you running from within Atlas/compiler-plugin?"
+    exit 1
+fi
+clangpppath=$(which clang++; reval="$?")
+if [ "$?" -ne 0 ]; then
+    echo "Could not find a copy of clang++, is it installed or added to PATH?"
+    exit 1
+else
+    echo "Found clang++ in $clangpppath"
+fi
+llvmconfigpath=$(which llvm-config; reval="$?")
+if [ "$?" -ne 0 ]; then
+    echo "Could not find llvm-config, is it installed or added to PATH?"
+    exit 1
+else
+    echo "Found llvm-config in $llvmconfigpath"
+fi
+echo "Compiling object files" | tee $logfile
+timeout 300s clang++ -c $srcfile `llvm-config --cxxflags` >> $logfile 2>&1
+retval="$?"
+if [ "$retval" == "124" ]; then
+    echo "Compilation took longer than 5 minutes - have you got conflicting versions of llvmretval Try building with the linked script."
+    exit 1
+elif [ "$retval" -ne 0 ]; then
+    echo "Build shared lib failed on compilation, check $logfile"
+    exit 1
+else
+    echo "Compilation successful"
+fi
+echo "Linking" | tee $logfile
+timeout 300s clang++ -shared NvmInstrumenter.o -o NvmInstrumenter.so >> $logfile 2>&1
+retval="$?"
+if [ "$retval" == "124" ]; then
+    echo "Linking took longer than 5 minutes - have you got conflicting versions of llvmretval Try building with the linked script."
+    exit 1
+elif [ "$retval" -ne 0 ]; then
+    echo "Build shared lib failed on linking, check $logfile"
+    exit 1
+else
+    echo "Linking successful"
+fi
+rm NvmInstrumenter.o
+if [ -f "NvmInstrumenter.so" ]; then
+    echo "Successfully built compiler plugin NvmInstrumenter.so"
+    rm $logfile
+fi
+if [ ! -d "plugin_build" ]; then
+    mkdir plugin_build
+fi
+mv NvmInstrumenter.so plugin_build/
+echo "NvmInstrumenter.so is under plugin_build/"

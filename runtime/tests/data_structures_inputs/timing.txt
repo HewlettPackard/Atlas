@@ -1,0 +1,13 @@
+# Use the data in this file to detect whether the performance of a
+# program has changed significantly. This is done by comparing the
+# runtime of the nvram-version of a program with its transient
+# version. The runtime ratio should be within a range.
+# Let R = <nvram-version-runtime> / <transient-version-runtime>
+# Here's the format (1 line per program):
+# <transient pgm_name> <nvram pgm_name> <R.lower-bound> <R.upper-bound>
+#######################################################
+queue_orig queue_nvm 2 30
+cow_array_list cow_array_list_nvm 2 30
+sll sll_nvm 3 15
+alarm_clock alarm_clock_nvm 6 30
+stores stores_nvm 200 2000

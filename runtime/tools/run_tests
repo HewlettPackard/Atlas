@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+test_fails=""
+build_fails=""
+
+function debug_print
+{
+    local err_str="[RUN_TESTS] $1"
+    local echoon="$2"
+    if [ -z "$echoon" ]; then
+        echoon=$debug
+    elif [ "${echoon,,}" == "true" ]; then
+        echoon="true"
+    fi
+    if [ "$echoon" == "true" ]; then
+        echo "$err_str"
+    fi
+    echo $err_str >> $debug_log
+}
+
+function debug_exec
+{
+    local exec_str="$*"
+    echo "$exec_str" >> $debug_log
+    if [ "$debug" == "true" ]; then
+        debug_print "$exec_str" "true"
+        $(echo "$exec_str") 2>&1 | tee -a $debug_log
+        exec_retval="${PIPESTATUS[0]}"
+    else
+        debug_print "$exec_str"
+        $(echo "$exec_str") >> $debug_log 2>&1
+        exec_retval="$?"
+    fi
+    if [ "$exec_retval" -ne 0 ]; then
+        debug_print "Command $exec_str failed" "true"
+    fi
+}
+
+function test_targets
+{
+    targets=( "all" "use-table-flush" "use-movnt" "flc" "stats" "disable-flush" "flc-disable-flush" "opt-uniq-loc" "always-log")
+    cmake_variables=( "" "-DUSE_TABLE_FLUSH=true" "-DUSE_MOVNT=true" "-DFLC=true" "-DNVM_STATS=true" "-DDISABLE_FLUSH=true" "-DFLC=true -DDISABLE_FLUSH=true" "-DOPT_UNIQ_LOC=true" "-DALWAYS_LOG=true")
+    debug_print "Changing dir to atlas root"
+    debug_print "cd $atlas_dir"
+    cd $atlas_dir
+    for index in ${!targets[*]}; do
+        target="${targets[$index]}"
+        debug_print "Testing target $target" "true"
+        cmake_args="${cmake_variables[$index]}"
+        build_dir=$(echo atlas_build_$target)
+        if [ ! -d "$build_dir" ]; then
+            debug_print "Building dir $build_dir"
+            debug_exec "mkdir $build_dir"
+            if [ "$exec_retval" -ne 0 ]; then
+                debug_print "Failed to make directory" "true"
+                exit 1
+            fi
+        fi
+        debug_print "Going to dir $build_dir"
+        debug_print "cd $build_dir"
+        cd $build_dir
+        debug_print "Invoking cmake with args $cmake_args"
+        debug_exec "cmake .. $cmake_args"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "Failed to invoke cmake" "true"
+            exit 1
+        fi
+        debug_print "Building"
+        debug_exec "make -j4"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "make failed to build $target" "true"
+            build_fails="$build_fails $target,"
+        fi
+        debug_print "Built $target successfully"
+        debug_print "Running run_quick_test for target $target"
+        debug_exec "tests/run_quick_test"
+        if [ "$exec_retval" -ne 0 ]; then
+            debug_print "$target's testing failed, retaining test directory, view $build_dir/tests/log for more info" "true"
+            test_fails="$test_fails $target,"
+        else
+            debug_print "$target's testing passed, removing build directory" "true"
+            #why remove it? - could save time with each pass - no need to build unneccessary bits repeatedly
+            cd ..
+            debug_exec "rm -rf $build_dir"
+        fi
+        debug_print "changing back to atlas root dir"
+        debug_print "cd $atlas_dir"
+        cd $atlas_dir
+    done
+}
+
+help_str="USAGE: ./run_tests [debug flag true or false - default is false]."
+debug="$1"
+if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
+    debug="false"
+elif [ "${debug,,}" == "true" ]; then
+    debug="true"
+elif [ "${debug,,}" == "help" ]; then
+    echo "$help_str"
+    exit 1
+else
+    debug="false"
+fi
+tools_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+atlas_dir="$tools_dir/.."
+debug_log="$atlas_dir/test_run_tests_log.txt"
+debug_print "Set debug value to $debug"
+if [ -f "$debug_log" ]; then
+    debug_exec "rm $debug_log"
+    debug_print "Removed old $debug_log"
+fi
+test_targets
+if [ -z "$build_fails" ]; then
+    debug_print "No builds failed to build" "true"
+else
+    debug_print "targets:$build_fails were build fails" "true"
+fi
+if [ -z "$test_fails" ]; then
+    debug_print "No builds failed their tests" "true"
+else
+    debug_print "targets:$test_fails were test fails" "true"
+fi

@@ -1,0 +1,340 @@
+#!/usr/bin/env bash
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+debug_log=test_region_log.txt
+total_fails=0
+out="region_out.txt"
+stress_repeats="5"
+instr_testname="focdelete"
+
+################################################################
+#                       debug_print                            #
+################################################################
+function debug_print
+{
+    local err_str="[TEST_REGION] $1"
+    local echoon="$2"
+    if [ -z "$echoon" ]; then
+        echoon=$debug
+    elif [ "${echoon,,}" == "true" ]; then
+        echoon="true"
+    fi
+    if [ "$echoon" == "true" ]; then
+        echo "$err_str"
+    fi
+    echo "$err_str" >> $debug_log
+}
+################################################################
+#                       debug_build                            #
+################################################################
+function debug_build
+{
+    local exec_str="$*"
+    echo "$exec_str" >> $debug_log
+    if [ "$debug" == "true" ]; then
+        echo "$exec_str"
+        $(echo "$exec_str") 2>&1 | tee $debug_log
+        exec_retval="${PIPESTATUS[0]}"
+    else
+        $(echo "$exec_str") >> $debug_log 2>&1
+        exec_retval="$?"
+    fi
+}
+################################################################
+#                           set_up                             #
+################################################################
+function set_up
+{
+    debug_print "Cleaning Atlas memory" "true"
+    debug_build "$clean_mem"
+}
+################################################################
+#                          tear_down                           #
+################################################################
+function tear_down
+{
+    debug_print "Cleaning Atlas memory" "true"
+    debug_build "$clean_mem"
+    if [[ -f "$out" ]]; then
+        debug_build "rm $out"
+    fi
+    if [[ -f core ]]; then
+        debug_build "rm core"
+    fi
+    if [[ -f "$instr_testname.bc" ]]; then
+        debug_build "rm $instr_testname.bc"
+    fi
+    if [[ -f "$instr_testname.out" ]]; then
+        debug_build "rm $instr_testname.out"
+    fi
+}
+################################################################
+#                          in_list                             #
+################################################################
+function in_list
+{
+    local test_name="$1"
+    declare -a list=("${!2}")
+    for listitem in "${list[@]}"; do
+        if [[ "$test_name" == "$listitem" ]]; then
+            echo "true"
+            return 1
+        fi
+    done
+    echo "false"
+    return 0
+}
+################################################################
+#                        run_fail                              #
+################################################################
+function run_fail
+{
+    debug_print "test $testname is a run_fail test"
+    local testname="$1"
+    timeout 60s ./$testname &> "$out"
+    local retval="$?"
+    if [ "$retval" == "124" ]; then
+        debug_print "timeout exit code $retval - $testname failed to run within 60s - probably hanging" "true"
+        debug_print "$testname failed, exiting now" "true"
+        exit 1
+    elif [ "$retval" -ne 0 ]; then
+        debug_print "$testname passed - program aborted"
+    else
+        debug_print "$testname failed - program continued when it should have failed" "true"
+        failed="true"
+    fi
+}
+################################################################
+#                     run_find_create                          #
+################################################################
+function run_find_create
+{
+    local testname="$1"
+    local test_type="$2"
+    debug_print "test $testname is a $test_type test"
+    for k in $(seq 1 "$stress_repeats"); do
+        timeout 60s ./$testname &> "$out"
+        local retval="$?"
+        if [ "$retval" == "124" ]; then
+            debug_print "timeout exit code $retval - $testname failed to run within 60s - probably hanging" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        elif [ "$retval" -ne 0 ]; then
+            debug_print "non zero exit code $retval - $testname failed to run at all" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        fi
+        if [ "$test_type" == "find" ]; then
+            local secondregionid=$(awk '/Found region with name/ {print $7;exit}' "$out")
+        elif [ "$test_type" == "create" ]; then
+            local secondregionid=$(awk '/Created region with name/{i++}i==2{print $7;exit}' "$out")
+        fi
+        if [ -z "$secondregionid" ]; then
+            debug_print "second region id is empty" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        fi
+        debug_print "first region id is $firstregionid second is $secondregionid"
+        if [ "$firstregionid" != "$secondregionid" ]; then
+            debug_print "Region ids do not match, initial id $firstregionid second region id $secondregionid" "true"
+            failed="true"
+            break
+        fi
+    done
+    debug_print "$testname passed - region ids matched when re running"
+}
+################################################################
+#                           run_tests                          #
+################################################################
+function run_tests
+{
+    local runnable_tests=( "focclose" "focdelete" "createclose" "createclosedelete" "createclosefocclose" )
+    local tests_create=( "focdelete" "createclosedelete" )
+    local tests_find=( "focclose" )
+    local tests_fail=( "createclose" "createclosefocclose" )
+    local nonrunnable_tests=( "finddelete" )
+    for testname in "${runnable_tests[@]}"; do
+        failed="false"
+        debug_print "Cleaning Atlas memory"
+        debug_build "$clean_mem"
+        debug_print "Running $testname for the first time"
+        timeout 60s ./$testname &> "$out"
+        local retval="$?"
+        if [ "$retval" == "124" ]; then
+            debug_print "timeout exit code $retval - $testname failed to run within 60s - probably hanging" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        elif [ "$retval" -ne 0 ]; then
+            debug_print "non zero exit code $? - $testname failed to run at all" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        fi
+        firstregionid=$(awk '/Created region with name/{i++}i==2{print $7;exit}' "$out")
+        if [ -z "$firstregionid" ]; then
+            debug_print "first region id is empty" "true"
+            debug_print "$testname failed, exiting now" "true"
+            exit 1
+        fi
+        debug_print "Running second stage of testing on $testname"
+        debug_print "First region id is $firstregionid"
+        if [[ $(in_list "$testname" "tests_find[@]") == "true" ]]; then
+            run_find_create "$testname" "find"
+        elif [[ $(in_list "$testname" "tests_create[@]") == "true" ]]; then
+            run_find_create "$testname" "create"
+        elif [[ $(in_list "$testname" "tests_fail[@]") == "true" ]]; then
+            run_fail "$testname"
+        else
+            failed="true"
+        fi
+        if [ "$failed" == "false" ]; then
+            debug_print "$testname passed with expected behaviour" "true"
+        else
+            debug_print "$testname failed with unexpected behaviour" "true"
+            total_fails=$(($total_fails+1))
+        fi
+    done
+    for testname in "${nonrunnable_tests[@]}"; do
+        failed="false"
+        run_fail "$testname"
+        if [ "$failed" == "false" ]; then
+            debug_print "$testname passed with expected behaviour" "true"
+        else
+            debug_print "$testname failed with unexpected behaviour" "true"
+            total_fails=$(($total_fails+1))
+        fi
+    done
+}
+################################################################
+#                     test_instrumentation                     #
+################################################################
+function test_instrumentation
+{
+    plugin="$atlas_build/../../compiler-plugin/plugin_build/NvmInstrumenter.so"
+    if [ -f "$plugin" ]; then
+        debug_print "Found compiler plugin build"
+    elif [ ! -z "$PLUGIN" ]; then
+        debug_print "Found compiler plugin to test instrumentation in $PLUGIN"
+        plugin="$PLUGIN"
+    else
+        debug_print "Cannot find compiler plugin - is this build of atlas out of the Atlas/ tree? Try setting PLUGIN to the path of NvmInstrumenter.so." "true"
+        debug_print "Carrying on with region testing" "true"
+        return
+    fi
+
+    debug_print "Generating llvm ir bitcode file for $instr_testname"
+    clang -c -emit-llvm -O3 -pthread $instr_testname\.c -I$atlas_build/include -Iregion_test.h &> /dev/null
+    if [ "$?" -ne 0 ]; then
+        debug_print "Failed to generate bitcode, moving to region testing" "true"
+        return
+    fi
+    debug_print "Using opt to get instrumentation readout of bitcode for $instr_testname"
+    opt -load $plugin -NvmInstrumenter -stats < $instr_testname\.bc > /dev/null 2> $instr_testname\.out
+    if [ "$?" -ne 0 ]; then
+        debug_print "Failed to run opt, is it installed? Moving to region testing" "true"
+        return
+    fi
+    debug_print "Using sed to sanitise $instr_testname\.out"
+    sed_cmd=`sed -i 's/^[ ]*//g' $instr_testname.out`
+    #pre process output file
+    $sed_cmd
+    stats=( "acquires" "releases" "stores" )
+    stats_expected=( "2" "3" "13" )
+    stats_out=()
+    for stat in "${stats[@]}"; do
+        sed_cmd=`sed -n "s/\([0-9]\+\) \(nvm_instr - Number of $stat instrumented\)/\1 /p" $instr_testname\.out`
+        statout=$sed_cmd
+        if [ -z "$statout" ];then
+            debug_print "Failed to find value for number of $stat instrumented in $instr_testname, returning - maybe opt isn't built debug" "true"
+            return
+        fi
+        debug_print "Got $statout for $stat in test $instr_testname"
+        stats_out+=($statout)
+    done
+    diff=$(diff <(echo "${stats_out[@]}") <(echo "${stats_expected[@]}"))
+    if [ -z "$diff" ]; then
+        debug_print "Instrumentation results were as expected" "true"
+        instr_flag="true"
+    else
+        debug_print "Instrumentation stats did not match expected values, counting as a failure" "true"
+        instr_flag="false"
+    fi
+}
+
+################################################################
+#                      find_atlas_build                        #
+################################################################
+function find_atlas_build
+{
+    region_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    debug_print "region dir is $region_dir"
+    atlas_build="$region_dir/../.."
+    debug_print "atlas build dir is $atlas_build"
+    if [ ! -f "$atlas_build/lib/libatlas.a" ]; then
+            debug_print "Cannot detect a build of atlas ensure libatlas.a is built" "true"
+        exit 1
+    else
+        if [ ! -f "$atlas_build/CMakeCache.txt" ]; then
+            debug_print "Cannot detect a cmake build of atlas outside the atlas src dir, ensure you have built atlas with cmake not in the src tree" "true"
+            exit 1
+        fi
+        debug_print "Found a build of atlas"
+    fi
+    export ATLAS_BUILD="$atlas_build"
+    clean_mem="$atlas_build/tools/clean_mem -f"
+    debug_print "Changing directory to $region_dir"
+    cd $region_dir
+}
+
+################################################################
+#                            main                              #
+################################################################
+#Run with debug flag set to true to see output of build commands and which tests are passing.
+#which would have been displayed with debug flag set to true. test_region_log contains output of tests.
+
+help_str="USAGE: ./test_region [debug flag: true or false]"
+
+debug="$1"
+if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
+    debug="false"
+elif [ "${debug,,}" == "true" ]; then #bash4.0 convert to lower
+    debug="true"
+else
+    echo "$help_str"
+    exit 1
+fi
+debug_print "Set debug value to $debug"
+if [ -f "$debug_log" ]; then
+    debug_build "rm $debug_log"
+    debug_print "Removed old $debug_log"
+fi
+find_atlas_build
+set_up
+test_instrumentation
+run_tests
+tear_down
+if [[ $total_fails -gt 0 ]]; then
+    debug_print "$total_fails fails for region tests" "true"
+    exit 1 #exit code for when things didn't work
+else
+    debug_print "No failures occurred, region testing passed" "true"
+    debug_print "No need for debug_log, removing $debug_log"
+    if [ -f "$debug_log" ]; then
+        debug_print "Removing $debug_log"
+        debug_build "rm $debug_log"
+    fi
+    exit 0
+fi

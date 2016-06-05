@@ -1,0 +1,434 @@
+#!/usr/bin/env ruby
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+#Runs data structure programs, comparing NVM and non NVM versions, detecting performance regressions.
+#Runs crash recovery testing, checking correctness of Atlas crash/recovery capability.
+
+# Keep in sync with the makefile targets
+test_array = [
+              'queue_orig', 'queue_nvm', \
+              'cow_array_list', 'cow_array_list_nvm', \
+              'sll', 'sll_ll', 'sll_nvm',
+              'alarm_clock', 'alarm_clock_nvm', \
+              'stores', 'stores_nvm' #'tester', \
+             ]
+nvm_test_array = [
+                  'queue_nvm', 'cow_array_list_nvm', \
+                  'sll_nvm', 'alarm_clock_nvm', \
+                  'stores_nvm' #, 'tester' \
+                 ]
+
+$ruby_version_f = nil
+
+#### Sets global variable with version number ####
+def get_version(fp, logfile)
+  print_msg("Ruby version " + RUBY_VERSION, fp, logfile)
+  $ruby_version_f = RUBY_VERSION[0] + "." + RUBY_VERSION[2]
+  $ruby_version_f = $ruby_version_f.to_f
+end
+
+#### Print a message onto stdout and a provided file ####
+def print_msg(msg, fp, logfile)
+  puts msg
+  fp.puts msg
+  headline = "echo \"#### " + msg + "\" >> " + logfile
+  system(headline)
+end
+
+#### Make a target ####
+def make_default(logfile, fp)
+  flags="-DDATA_STRUCTS_ONLY=true -DFORCE_FAIL=false"
+  if $failatlas == true
+      flags+=" -DFAIL_ATLAS=false"
+  end
+  headline = "echo \"#### cmake " + $atlas_src_dir  + flags.to_s + " \" >> " + logfile
+  system(headline)
+
+  cmake_cmd = "cmake " + $atlas_src_dir + " -DFORCE_FAIL=false " \
+             " 1>> " + logfile + " 2>&1 "
+  status_cmake = system(cmake_cmd)
+
+  if (!status_cmake)
+    print_msg("---- cmake failed to configure ----", fp, logfile)
+    return false
+  end
+
+  headline = "echo \"#### make >> " + logfile + " 2>&1\" >> " +logfile
+  status_make = system(headline)
+
+  make_cmd = " make >> " + logfile + " 2>&1"
+  status_make = system(make_cmd)
+  if (!status_make)
+    print_msg("---- Making failed ----", fp, logfile)
+    return false
+  else
+    return true
+  end
+end
+
+#### Make recovery target ####
+def make_recovery(logfile, fp)
+  flags="-DDATA_STRUCTS_ONLY=true -DFORCE_FAIL=true"
+  if $failatlas == true
+      flags+=" -DFAIL_ATLAS=true"
+  end
+  headline = "echo \"#### cmake " + $atlas_src_dir + flags.to_s + " \" >> " + logfile
+  system(headline)
+
+  cmake_cmd = "cmake " + $atlas_src_dir + " -DFORCE_FAIL=true" \
+             " 1>> " + logfile + " 2>&1 "
+  status_cmake = system(cmake_cmd)
+
+  if (!status_cmake)
+    print_msg("---- cmake failed to configure ----", fp, logfile)
+    return false
+  end
+
+  headline = "echo \"#### make >> " + logfile + " 2>&1\" >> " +logfile
+  status_make = system(headline)
+
+  make_cmd = " make >> " + logfile + " 2>&1"
+  status_make = system(make_cmd)
+  if (!status_make)
+    print_msg("---- Making failed ----", fp, logfile)
+    return false
+  else
+    return true
+  end
+end
+
+#### Populate an array with the lines in the provided file ####
+def populate_array_from_file(filename)
+  lines_arr = []
+  File.open(filename).each {|line| lines_arr << line }
+  return lines_arr
+end
+
+#### Verify whether the first file is contained in the second ####
+def is_file_contained(file1, file2)
+  file1_lines = populate_array_from_file(file1)
+  file2_lines = populate_array_from_file(file2)
+  result_lines = file1_lines - file2_lines
+  return result_lines.empty?
+end
+
+#### Extract timing from output file ####
+def get_timing_from_output_file(out_file)
+  File.open(out_file).each do |line|
+   tmp_str = String.new(line)
+   if (tmp_str.include?"time elapsed")
+     tmp_arr = []
+     if $ruby_version_f > 1.8 then
+       tmp_str.split(" ").each do |one_str|
+         tmp_arr << one_str
+       end
+     else
+       tmp_str.each(separator=" ") do |one_str|
+         tmp_arr << one_str.chomp
+       end
+     end
+     return tmp_arr.at(2).to_i
+   end
+  end
+  return 2**30-1
+end
+
+#### Initialize timing information ####
+def init_timing_info(timing_file, tracking_hash, nvm_hash)
+  timing_fp = File.open(timing_file)
+  timing_fp.each do |timing_line|
+    timing_str = String.new(timing_line)
+    if (timing_str.include?"#") then
+      next
+    end
+    tmp_arr = []
+    if $ruby_version_f > 1.8 then
+      timing_str.split(" ").each do |one_str|
+        tmp_arr << one_str
+      end
+    else
+      timing_str.each(separator=" ") do |one_str|
+        tmp_arr << one_str.chomp
+      end
+    end
+    tracking_hash[tmp_arr.at(0)] = 0
+    tracking_hash[tmp_arr.at(1)] = 0
+    tmp_val = []
+    tmp_val << tmp_arr.at(0)
+    tmp_val << tmp_arr.at(2)
+    tmp_val << tmp_arr.at(3)
+    nvm_hash[tmp_arr.at(1)] = tmp_val
+  end
+  timing_fp.close
+end
+
+#### Update the hash table with timing information ####
+def update_runtime_info(all_ver, test_name, runtime)
+  if (all_ver.has_key?(test_name))
+    all_ver[test_name] = all_ver.fetch(test_name) + runtime
+  end
+end
+
+#### Run a crash test once ####
+#### This is expected to fail, so we don't capture output/status
+def run_crash_test_once(test_name, test_dir, logfile, fp)
+  test_in = $data_struct_in_dir + test_name + ".in"
+  test_cmd = $data_struct_dir + test_name + \
+             " `cat " + test_in + "`" + '>> ' + logfile + ' 2>&1'
+             #" `cat " + test_in + "`" + '> /dev/null 2>&1'
+
+  headline = "echo \"#### " + test_cmd + "\" >> " + logfile
+  system(headline)
+
+  status_run = system(test_cmd)
+  return true
+end
+
+#### Run a test twice ####
+def run_test_twice(test_name, test_dir, logfile, all_ver, phase, fp)
+  test_in = $data_struct_in_dir + test_name + ".in"
+  test_ref = $data_struct_in_dir + test_name + ".ref"
+  test_out = test_dir + test_name + "." + \
+             (2*phase).to_s + '.out'
+  test_cmd = $data_struct_dir + test_name + \
+             " `cat " + test_in + "`" + '>> ' + test_out + ' 2>&1'
+
+  headline = "echo \"#### " + test_cmd + "\" >> " + logfile
+  system(headline)
+
+  status_run1 = system(test_cmd)
+  headline = "echo \"#### cat test_out\" >> " + logfile
+  system(headline)
+  cat_cmd = 'cat ' + test_out + ' >> ' + logfile
+  system(cat_cmd)
+  runtime = get_timing_from_output_file(test_out)
+  if (!status_run1 || !is_file_contained(test_ref, test_out))
+    msg = test_name + " failed (Compare " + test_ref + " and " + test_out + ")"
+    print_msg(msg, fp, logfile)
+    return false
+  end
+  rm_cmd = "/bin/rm -f " + test_out
+  system(rm_cmd)
+  test_out = test_dir + test_name + "." + \
+             "." + (2*phase+1).to_s + '.out'
+  test_cmd = $data_struct_dir + test_name + \
+             " `cat " + test_in + "`" + '>> ' + test_out + ' 2>&1'
+
+  headline = "echo \"#### " + test_cmd + "\" >> " + logfile
+  system(headline)
+
+  status_run2 = system(test_cmd)
+  headline = "echo \"#### cat test_out\" >> " + logfile
+  system(headline)
+  cat_cmd = 'cat ' + test_out + ' >> ' + logfile
+  system(cat_cmd)
+  runtime += get_timing_from_output_file(test_out)
+  update_runtime_info(all_ver, test_name, runtime)
+  if (!status_run2 || !is_file_contained(test_ref, test_out))
+    msg = test_name + " failed (Compare " + test_ref + " and " + test_out + ")"
+    print_msg(msg, fp, logfile)
+    return false
+  end
+  rm_cmd = "/bin/rm -f " + test_out
+  system(rm_cmd)
+  return true
+end
+
+#### Run recovery for a test ####
+def run_recovery(test_name, logfile, fp)
+  recover_cmd = 'timeout 60s ./tools/recover ' + test_name + ' >> ' + logfile + \
+                ' 2>> ' + logfile
+
+  headline = "echo \"#### ./tools/recover " + test_name + "\" >>" + logfile
+  system(headline)
+
+  recover_status = system(recover_cmd)
+  if (!recover_status)
+     return false
+  else
+    return true
+  end
+end
+
+#### Main body ####
+
+num_passed_tests = 0
+num_failed_tests = 0
+num_perf_regression = 0
+
+$atlas_src_dir = ""
+
+#check for input - if help display help string, if fail run with atlas failing internally
+arg = ARGV[0]
+if arg != nil
+    arg = String.new(arg).downcase
+    if arg == "help"
+        puts "run_quick_test tests two criteria. First it runs the data structure programs, comparing NVM and non NVM versions, detecting performance regressions. Secondly it runs crash/recovery testing, checking correctness of Atlas crash/recovery capability. This script can also optionally force the programs to fail within atlas to. To do so run ./run_quick_test failatlas. By default run_quick_test only fails the data_structures within their code."
+    elsif arg == "failatlas"
+        $failatlas=true
+        puts "Running tests with chance to fail within atlas"
+    else
+        puts "Failing in data structures only"
+    end
+end
+
+if File.file?("lib/libatlas.a") and File.file?("CMakeCache.txt")
+    #script was invoked from top level of build dir
+    atlas_dir="."
+elsif File.file?("../lib/libatlas.a") and File.file?("../CMakeCache.txt")
+    #invoked from within tests dir change directory
+    Dir.chdir ".."
+    atlas_dir="."
+else
+    puts "Could not find a build of atlas which is not in the src directory, please create a build directory and invoke cmake followed by make"
+    exit 1
+end
+
+if File.file?("../CMakeLists.txt") and File.file?("../src/consistency/consistency.cpp")
+    #build directory is subdir of atlas src tree
+    $atlas_src_dir = ".."
+else
+    puts "Could not find atlas src dir in order to invoke cmake, move your build directory underneath the root Atlas dir"
+    exit 1
+end
+
+atlas_dir += "/"
+
+test_dir = atlas_dir + "tests/"
+$data_struct_dir = test_dir + "data_structures/"
+$data_struct_in_dir = test_dir + "data_structures_inputs/"
+logfile = test_dir + "log"
+clean_cmd = '/bin/rm -f ' + logfile + ' ' + test_dir + "*.out"
+clean_mem = atlas_dir + "tools/clean_mem -f"
+summary_file = test_dir + "summary.txt"
+timing_file = $data_struct_in_dir + "timing.txt"
+
+system(clean_cmd)
+
+all_ver = Hash.new
+nvm_ver = Hash.new
+
+fp = File.open(summary_file, 'w')
+
+get_version(fp, logfile)
+print_msg("Cleaning memory", fp, logfile)
+
+make_cmd = clean_mem + ' >> ' + logfile
+system(make_cmd)
+
+init_timing_info(timing_file, all_ver, nvm_ver)
+print_msg("#################################", fp, logfile)
+print_msg("---- Performing normal testing ----", fp, logfile)
+status_make = make_default(logfile, fp)
+if (!status_make)
+  num_failed_tests += test_array.length
+  print_msg("#### Failed to build tests for normal testing ####", fp, logfile)
+else
+  test_array.each do |test_name|
+    status_run = run_test_twice(\
+                   test_name, test_dir, logfile, all_ver, 0, fp)
+    if (!status_run)
+      print_msg(test_name + " failed normal testing", fp, logfile)
+      num_failed_tests += 1
+    else
+      msg = test_name + ' passed'
+      print_msg(msg, fp, logfile)
+      num_passed_tests += 1
+    end
+  end
+end
+print_msg("---- Performing crash/recovery testing ----", fp, logfile)
+status_make = make_recovery(logfile, fp)
+if (!status_make)
+  num_failed_tests += test_array.length
+  print_msg("#### Failed to build tests for recovery testing ####", fp, logfile)
+else
+  nvm_test_array.each do |test_name|
+    status_run = run_crash_test_once(test_name, test_dir, logfile, fp)
+    if (status_run)
+      msg = test_name + " successfully crashed"
+      print_msg(msg, fp, logfile)
+    else
+      msg = test_name + " failed to crash"
+      print_msg(msg, fp, logfile)
+      num_failed_tests += 1
+      nvm_test_array.delete(test_name)
+    end
+  end
+end
+print_msg("---- Retesting after crash/recovery testing ----", fp, logfile)
+status_make = make_default(logfile, fp)
+if (!status_make)
+  num_failed_tests += test_array.length
+else
+  test_array.each do |test_name|
+    status_recover = run_recovery(test_name, logfile, fp)
+    if (!status_recover)
+      msg = test_name + " failed crash/recovery - could have timed out, longer than 60s"
+      print_msg(msg, fp, logfile)
+      num_failed_tests += 1
+    else
+      msg = test_name + " passed crash/recovery"
+      print_msg(msg, fp, logfile)
+      num_passed_tests += 1
+    end
+    status_run = run_test_twice(\
+                   test_name, test_dir, logfile, all_ver, 1, fp)
+    if (!status_run)
+      print_msg(test_name + " failed retesting after crash/recovery", fp, logfile)
+      num_failed_tests += 1
+    else
+      msg = test_name + ' passed'
+      print_msg(msg, fp, logfile)
+      num_passed_tests += 1
+    end
+  end
+end
+#assume that the atlas build is probably one of the 5 tgts
+nvm_ver.each do |key, value|
+  timing_info_nvm = all_ver.fetch(key)
+  timing_info_orig = all_ver.fetch(value.at(0))
+  if (timing_info_orig != 0)
+    ratio = timing_info_nvm/timing_info_orig
+    if (ratio < value.at(1).to_i || ratio > value.at(2).to_i)
+      print_msg("Possible performance regression for #{key}, (expected ratio between #{value.at(1)} & #{value.at(2)}, but found #{ratio})", fp, logfile)
+      num_perf_regression += 1
+    end
+  else
+    puts "Warning: Base timing is 0, counting as performance regression"
+    num_perf_regression += 1
+  end
+end
+all_ver.clear
+nvm_ver.clear
+print_msg("-----------------------", fp, logfile)
+
+total_tests = num_passed_tests + num_failed_tests
+print_msg("Total number of tests: #{total_tests}", fp, logfile)
+print_msg("Number of tests passed: #{num_passed_tests}", fp, logfile)
+print_msg("Number of tests failed: #{num_failed_tests}", fp, logfile)
+print_msg("Number of possible performance regressions: #{num_perf_regression}", fp, logfile)
+print_msg("-----------------------", fp, logfile)
+print_msg("See summary.txt, log, and *.out files in #{test_dir} for further details", fp, logfile)
+
+fp.close
+
+if (num_failed_tests != 0)
+    exit 1
+else
+    exit 0
+end
