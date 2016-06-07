@@ -21,6 +21,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 //code visibility
 #define MAK_INNER 
 #define MAK_EXTERN extern MAK_INNER
+#define MAK_API
 
 //block
 #define CPP_LOG_HBLKSIZE 12
@@ -90,11 +91,18 @@ MAK_EXTERN MAK_all_interior_pointers;
 
 
 #define AFLUSH_TABLE_SZ 32     //multiples of 2
+#define SFLUSH_TABLE_SZ 8
 #define FL_AFLUSH_TABLE_SZ 8     //multiples of 2
 #define CACHE_LINE_SZ 64
 #define LOG_CACHE_LINE_SZ 6
 
 
+# define INTEGER 1
+# define CHAR 3
+# define ADDR 4
+# define WORD 5
 
+
+#define MAGIC_NUMBER 45312
 
 #endif

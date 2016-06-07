@@ -43,7 +43,16 @@ struct MAK_base_md {
                                 /* bottom_index.                  */
 
     /* persistent logs */
+
+    #define MAK_persistent_log_version  MAK_arrays._persistent_log_version    
+    unsigned long _persistent_log_version;
     
+    #define MAK_persistent_log_start MAK_arrays._persistent_log_start
+    ptr_t _persistent_log_start;
+
+    #define MAK_persistent_initialized MAK_arrays._persistent_initialized
+    int _persistent_initialized;
+   
     
 };
 

@@ -25,9 +25,8 @@ MAK_EXTERN void* MAK_aflush_table[AFLUSH_TABLE_SZ];
 MAK_EXTERN void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ];
 
 #ifndef NO_NVM_LOGS
-  #define SFLUSH_TABLE_SZ 8
-  //used to accumulate changes to the cache line within a FAS before flushing
-  //note that the logs still has to be flushed before the data is modified.
+  /*used to accumulate changes to the cache line within a FAS before flushing
+  note that the logs still has to be flushed before the data is modified. */
   MAK_EXTERN void* MAK_sflush_table[SFLUSH_TABLE_SZ];
 #endif
 
