@@ -159,6 +159,17 @@ MAK_INNER void MAK_update_hc(ptr_t p, hdr* hhdr, hdr_cache_entry* hc, word hc_sz
 MAK_INNER hdr* MAK_get_hdr_and_update_hc(ptr_t p, hdr_cache_entry* hc, word hc_sz);
 MAK_INNER hdr* MAK_get_hdr_no_update(ptr_t p, hdr_cache_entry* hc, word hc_sz);
 
+MAK_INNER void MAK_init_headers(void);
+MAK_INNER void MAK_remove_header(struct hblk *h);
+MAK_INNER void MAK_restart_persistent_scratch_alloc();
+MAK_INNER void MAK_rebuild_metadata_from_headers();
+MAK_INNER struct hblkhdr * MAK_install_header(struct hblk *h);
+MAK_INNER MAK_bool MAK_install_counts(struct hblk *h, size_t sz/* bytes */);
+MAK_INNER void MAK_remove_counts(struct hblk *h, size_t sz/* bytes */);
+MAK_INNER void MAK_apply_to_all_blocks(void (*fn)(struct hblk *h, word client_data),
+     word client_data);
+MAK_INNER struct hblk * MAK_next_used_block(struct hblk *h);
+MAK_INNER struct hblk * MAK_prev_block(struct hblk *h);
 
 # define HBLK_IS_FREE(hdr) (((hdr) -> hb_flags & FREE_BLK) != 0)
 

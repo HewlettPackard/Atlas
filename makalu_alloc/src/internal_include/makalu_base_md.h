@@ -9,9 +9,9 @@ typedef struct {
 
 
 #define MAK_base_md (*(MAK_base_md_ptr))
-MAK_EXTERN struct MAK_base_md* MAK_base_md_ptr;
+MAK_EXTERN struct _MAK_base_md* MAK_base_md_ptr;
 
-struct MAK_base_md {
+struct _MAK_base_md {
 
     /* header metadata*/
     #define MAK_hdr_spaces MAK_base_md._hdr_spaces
@@ -41,26 +41,36 @@ struct MAK_base_md {
     bottom_index * _all_bottom_indices_end;
                                 /* Pointer to last (highest addr) */
                                 /* bottom_index.                  */
+    #define MAK_hdr_free_list MAK_base_md._hdr_free_list
+    hdr* _hdr_free_list;
 
     /* persistent logs */
 
-    #define MAK_persistent_log_version  MAK_arrays._persistent_log_version    
+    #define MAK_persistent_log_version  MAK_base_md._persistent_log_version    
     unsigned long _persistent_log_version;
     
-    #define MAK_persistent_log_start MAK_arrays._persistent_log_start
+    #define MAK_persistent_log_start MAK_base_md._persistent_log_start
     ptr_t _persistent_log_start;
 
-    #define MAK_persistent_initialized MAK_arrays._persistent_initialized
+    #define MAK_persistent_initialized MAK_base_md._persistent_initialized
     int _persistent_initialized;
-   
+
+    #define MAK_persistent_state MAK_base_md._persistent_state
+    char _persistent_state;
+
+
+    /* heap size */
+
+    #define MAK_last_heap_size MAK_base_md._last_heap_size
+    word  _last_heap_size;   
+    
     
 };
 
 
-
-
-
-
+struct hblk {
+    char hb_body[HBLKSIZE];
+};
 
 
 #endif

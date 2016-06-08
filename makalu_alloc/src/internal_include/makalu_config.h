@@ -2,6 +2,7 @@
 #define _MAKALU_CONFIG_H
 
 # include "atomic_ops.h"
+# include "stdlib.h"
 
 
 
@@ -24,10 +25,15 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define MAK_API
 
 //block
+#define SYS_PAGESIZE 4096
 #define CPP_LOG_HBLKSIZE 12
 #define CPP_HBLKSIZE (1 << CPP_LOG_HBLKSIZE)
 #define LOG_HBLKSIZE   ((size_t)CPP_LOG_HBLKSIZE)
 #define HBLKSIZE ((size_t)CPP_HBLKSIZE)
+
+#define MINHINCR 16   /* Minimum heap increment, in blocks of HBLKSIZE  */
+                         /* Must be multiple of largest page size.         */
+#define MAXHINCR 2048 /* Maximum heap increment, in blocks              */
 
 
 //mark
@@ -102,7 +108,10 @@ MAK_EXTERN MAK_all_interior_pointers;
 # define ADDR 4
 # define WORD 5
 
-
 #define MAGIC_NUMBER 45312
+
+#define PERSISTENT_STATE_NONE 0
+#define PERSISTENT_STATE_INCONSISTENT 2
+
 
 #endif

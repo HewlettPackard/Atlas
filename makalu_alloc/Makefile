@@ -19,7 +19,7 @@ OBJS := ${SRC:.c=.o}
 LIBNAME := libmakalu.a
 
 CC := gcc
-CFLAGS := -g -O2
+CFLAGS := -g -O2 -c
 MKDIR := mkdir -p
 AR := ar
 RANLIB := ranlib
@@ -51,7 +51,7 @@ $(LIBNAME): $(OBJS)
 
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
 
 
 
