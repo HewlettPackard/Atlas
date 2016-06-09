@@ -141,6 +141,7 @@ with as few changes as possible.
   uniformity purposes.
 * cmake version 3.1 or later
 * boost library
+* bash 4.0
 
 ## Reference
 
