@@ -142,6 +142,7 @@ with as few changes as possible.
 * cmake version 3.1 or later
 * boost library
 * bash 4.0
+* ruby (for certain test scripts)
 
 ## Reference
 
