@@ -2,11 +2,11 @@
 #define _MAKALU_PERSISTENT_H
 
 typedef struct log_e {
-    intptr_t addr;
+    ptr_t addr;
     char type;
     union {
        char     char_val;
-       intptr_t addr_val;
+       ptr_t addr_val;
        word     word_val;
        int      int_val;
     } val;
@@ -288,8 +288,5 @@ MAK_INNER void MAK_init_persistent_log();
 MAK_INNER void MAK_sync_all_persistent();
 MAK_INNER void MAK_sync_alloc_metadata();
 MAK_INNER void MAK_sync_gc_metadata();
-
-#endif /* MAK_PERSISTENT_PRIVATE_H */
-
 
 #endif //_MAKALU_PERSISTENT_H

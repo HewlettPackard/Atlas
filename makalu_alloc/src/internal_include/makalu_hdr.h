@@ -4,7 +4,7 @@
 
 typedef struct hblkhdr {
 
-    size_t hb_sz;  /* If in use, size in bytes, of objects in the block. */
+    word hb_sz;  /* If in use, size in bytes, of objects in the block. */
                    /* if free, the size in bytes of the whole block      */
                    /* We assume that this is convertible to signed_word  */
                    /* without generating a negative result.  We avoid    */

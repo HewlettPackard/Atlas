@@ -15,7 +15,12 @@ struct _MAK_transient_metadata {
 
 };
 
+MAK_EXTERN struct _MAK_transient_metadata MAK_transient_md;
+
 MAK_INNER ptr_t MAK_transient_scratch_alloc(size_t bytes);
+
+#define GET_MEM(bytes) MAK_get_transient_memory(bytes)
+MAK_INNER ptr_t MAK_get_transient_memory(word bytes);
 
 
 

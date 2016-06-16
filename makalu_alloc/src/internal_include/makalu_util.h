@@ -40,4 +40,8 @@ void MAK_err_printf(const char * format, ...)
 #endif /* __GNUC__ */
 
 
+#define ABORT(msg) MAK_abort(msg)
+MAK_INNER void MAK_abort(const char *msg);
+
+
 #endif

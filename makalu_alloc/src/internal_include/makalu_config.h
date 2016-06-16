@@ -23,6 +23,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define MAK_INNER 
 #define MAK_EXTERN extern MAK_INNER
 #define MAK_API
+#define MAK_INLINE static inline
+#define STATIC static
 
 //block
 #define SYS_PAGESIZE 4096

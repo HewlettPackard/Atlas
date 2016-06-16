@@ -1,4 +1,8 @@
 #include "makalu_internal.h"
+#include <sys/mman.h>
+#include <fcntl.h>
+
+MAK_INNER struct _MAK_transient_metadata MAK_transient_md = {0};
 
 MAK_INNER ptr_t MAK_transient_scratch_alloc(size_t bytes)
 {
@@ -16,10 +20,6 @@ MAK_INNER ptr_t MAK_transient_scratch_alloc(size_t bytes)
         if (bytes_to_get <= bytes) {
           /* Undo the damage, and get memory directly */
             bytes_to_get = bytes;
-#           ifdef USE_MMAP
-                bytes_to_get += MAK_page_size - 1;
-                bytes_to_get &= ~(MAK_page_size - 1);
-#           endif
             result = (ptr_t)GET_MEM(bytes_to_get);
             MAK_transient_scratch_free_ptr -= bytes;
             MAK_transient_scratch_last_end_ptr = result + bytes;
@@ -27,21 +27,30 @@ MAK_INNER ptr_t MAK_transient_scratch_alloc(size_t bytes)
         }
         result = (ptr_t)GET_MEM(bytes_to_get);
         if (result == 0) {
-            if (GC_print_stats)
-                GC_log_printf("Out of memory - trying to allocate less\n");
             MAK_transient_scratch_free_ptr -= bytes;
             bytes_to_get = bytes;
-#           ifdef USE_MMAP
-                bytes_to_get += GC_page_size - 1;
-                bytes_to_get &= ~(GC_page_size - 1);
-#           endif
             result = (ptr_t)GET_MEM(bytes_to_get);
             return result;
         }
-        GC_transient_scratch_free_ptr = result;
-        GC_transient_scratch_end_ptr = GC_transient_scratch_free_ptr + bytes_to_get;
-        GC_transient_scratch_last_end_ptr = GC_transient_scratch_end_ptr;
-        return(GC_transient_scratch_alloc(bytes));
+        MAK_transient_scratch_free_ptr = result;
+        MAK_transient_scratch_end_ptr = MAK_transient_scratch_free_ptr + bytes_to_get;
+        MAK_transient_scratch_last_end_ptr = MAK_transient_scratch_end_ptr;
+        return(MAK_transient_scratch_alloc(bytes));
     }
 }
+
+MAK_INNER ptr_t MAK_get_transient_memory(word bytes)
+{
+    void* result;
+    if (bytes & (MAK_page_size - 1)) 
+        ABORT("Bad GET_MEM arg");
+    
+    result = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+                MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (result == MAP_FAILED)
+        ABORT("Transient scratch space: mmap failed"); 
+    
+    return (ptr_t) result;    
+}
+
 

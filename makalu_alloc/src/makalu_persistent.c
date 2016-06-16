@@ -1,5 +1,7 @@
 #include "makalu_internal.h"
 
+MAK_INNER MAK_persistent_memalign GC_persistent_memalign_func = 0;
+
 void* MAK_aflush_table[AFLUSH_TABLE_SZ] = {0};
 void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ] = {0};
 
@@ -172,7 +174,7 @@ MAK_INNER void end_nvm_atomic() {
    }
    logging_in_session++;
 #endif
-   curr_log_e->addr = (intptr_t) addr;
+   curr_log_e->addr = (ptr_t) addr;
    curr_log_e->val.int_val = val;
    curr_log_e->type = INTEGER;
    curr_log_e->version = MAK_persistent_log_version;
@@ -192,7 +194,7 @@ MAK_INNER void end_nvm_atomic() {
    }
    logging_in_session++;
 #endif
-   curr_log_e->addr = (intptr_t) addr;
+   curr_log_e->addr = (ptr_t) addr;
    curr_log_e->val.char_val = val;
    curr_log_e->type = CHAR;
    curr_log_e->version = MAK_persistent_log_version;
@@ -212,8 +214,8 @@ MAK_INNER void end_nvm_atomic() {
    }
    logging_in_session++;
 #endif
-   curr_log_e->addr = (intptr_t) addr;
-   curr_log_e->val.addr_val = (intptr_t) val;
+   curr_log_e->addr = (ptr_t) addr;
+   curr_log_e->val.addr_val = (ptr_t) val;
    curr_log_e->type = ADDR;
    curr_log_e->version = MAK_persistent_log_version;
    CLFLUSH_SYNC(curr_log_e);
@@ -232,7 +234,7 @@ MAK_INNER void end_nvm_atomic() {
    }
    logging_in_session++;
 #endif
-   curr_log_e->addr = (intptr_t) addr;
+   curr_log_e->addr = (ptr_t) addr;
    curr_log_e->val.word_val = val;
    curr_log_e->type = WORD;
    curr_log_e->version = MAK_persistent_log_version;

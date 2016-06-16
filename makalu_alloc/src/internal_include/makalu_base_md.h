@@ -63,8 +63,10 @@ struct _MAK_base_md {
 
     #define MAK_last_heap_size MAK_base_md._last_heap_size
     word  _last_heap_size;   
-    
-    
+
+    /* gc */
+    #define MAK_mandatory_gc MAK_base_md._mandatory_gc
+    int _mandatory_gc;
 };
 
 
