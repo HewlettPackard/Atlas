@@ -12,7 +12,7 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 
 #ifndef ATLAS_API_H
 #define ATLAS_API_H
@@ -24,73 +24,73 @@
 extern "C" {
 #endif
 
-///
-/// Here are the APIs for initializing/finalizing Atlas. Each of the
-/// following 2 interfaces must be called only once.
+//
+// Here are the APIs for initializing/finalizing Atlas. Each of the
+// following 2 interfaces must be called only once.
 
-///    
+///
 /// Initialize Atlas internal data structures. This should be
 /// called before persistent memory access.
-///    
+///
 void NVM_Initialize();
 
-///    
+///
 /// Finalize Atlas internal data structures. This should be called
 /// before normal program exit. If not called, the implementation
 /// will assume that program exit was abnormal and will require
 /// invocation of recovery before restart.
-///    
+///
 void NVM_Finalize();
 
-///    
-/// No special interfaces are required for lock-based critical
-/// sections if compiler support is available. Use the
-/// compiler-plugin to take advantage of automatic instrumentation
-/// of critical sections.
-///    
+//
+// No special interfaces are required for lock-based critical
+// sections if compiler support is available. Use the
+// compiler-plugin to take advantage of automatic instrumentation
+// of critical sections.
+//
 
-///    
+///
 /// The following 2 interfaces demarcate a failure-atomic section
 /// of code, i.e. code where persistent locations are updated and
 /// all-or-nothing behavior of those updates is required. Note that
 /// no isolation among threads is provided by these 2 interfaces.
-///    
+///
 void nvm_begin_durable();
 void nvm_end_durable();
 
-///    
-/// The following interfaces are for low-level programming of
-/// persistent memory, where the high-level consistency support
-/// afforded by Atlas is not used. Instead, persistence is explicitly
-/// managed by the following interfaces.
-///
+//
+// The following interfaces are for low-level programming of
+// persistent memory, where the high-level consistency support
+// afforded by Atlas is not used. Instead, persistence is explicitly
+// managed by the following interfaces.
+//
 
 ///
 /// Is the following address with associated size within an open
 /// persistent region?
-///    
+///
 int NVM_IsInOpenPR(void *addr, size_t sz /* in bytes */);
 
 ///
 /// Persistent sync of a range of addresses
-///    
+///
 void nvm_psync(void *addr, size_t sz /* in bytes */);
 
 ///
 /// Persistent sync of a range of addresses without a trailing barrier
-///    
+///
 void nvm_psync_acq(void *addr, size_t sz /* in bytes */);
 
-/// This may be invoked by a user program to print out Atlas statistics    
-#ifdef NVM_STATS    
+// This may be invoked by a user program to print out Atlas statistics
+#ifdef NVM_STATS
     void NVM_PrintStats();
 #endif
-    
+
 #ifdef __cplusplus
 }
-#endif    
+#endif
 
-/// End of Atlas APIs
+// End of Atlas APIs
 
 #ifdef NVM_STATS
 extern __thread uint64_t num_flushes;
@@ -121,14 +121,14 @@ extern __thread uint64_t num_flushes;
     {   full_fence();                                       \
         NVM_CLFLUSH(p);                                     \
     }
-        
+
 #define NVM_FLUSH_ACQ_COND(p)                               \
     { if (NVM_IsInOpenPR(p, 1)) {                           \
             full_fence();                                   \
             NVM_CLFLUSH(p);                                 \
         }                                                   \
     }
-        
+
 #define NVM_PSYNC(p1,s) nvm_psync(p1,s)
 
 #define NVM_PSYNC_COND(p1,s)                                \
@@ -143,7 +143,7 @@ extern __thread uint64_t num_flushes;
     {                                                       \
         if (NVM_IsInOpenPR(p1, s)) nvm_psync_acq(p1, s);    \
     }                                                       \
-        
+
 #else
 #define NVM_FLUSH(p)
 #define NVM_FLUSH_COND(p)
@@ -157,14 +157,14 @@ extern __thread uint64_t num_flushes;
 
 static __inline void nvm_clflush(const void *p)
 {
-#ifndef DISABLE_FLUSHES    
-#ifdef NVM_STATS    
+#ifndef DISABLE_FLUSHES
+#ifdef NVM_STATS
     ++num_flushes;
-#endif    
+#endif
     __asm__ __volatile__ (
         "clflush %0 \n" : "+m" (*(char*)(p))
         );
-#endif    
+#endif
 }
 
 // Used in conjunction with clflush.
