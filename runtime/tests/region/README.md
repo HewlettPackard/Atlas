@@ -11,49 +11,48 @@
 [//]: # ( General Public License along with this program. If not, see          )
 [//]: # ( <http://www.gnu.org/licenses/>.                                      )
 
- 
 
-################
-REGION TESTS
-################
-Each script in this directory calls region functions in the atlas
-api and performs some minor work (function test in region_test.h which
-creates a linked list). Change the macros WORK and ITERATIONS to alter
+
+# REGION TESTS
+
+Each script in this directory calls region functions in the Atlas
+API and performs some minor work (function `test` in `region_test.h` which
+creates a linked list). Change the macros `WORK` and `NUM_NODES` to alter
 the amount of work.
 
-The order in which the atlas alloc api is called is in the name eg:
-focclose: FindOrCreateRegion, CloseRegion
-createclosefocclose: CreateRegion, CloseRegion, FindOrCreateRegion,
-CloseRegion 
-finddelete: FindRegion, DeleteRegion
+The order in which the Atlas region api is called is in the filename, e.g.:
+- `focclose.c`: `FindOrCreateRegion`, `CloseRegion`
+- `createclosefocclose.c`: `CreateRegion`, `CloseRegion`, `FindOrCreateRegion`,
+ `CloseRegion`
+- `finddelete.c`: `FindRegion`, `DeleteRegion`
 
-The test script test_region_instr, runs these tests up to 100 times
+The test script `test_region_instr`, runs these tests up to 100 times
 depending on expected behaviour.  There are three behaviours in two
 classes:
 
-Runnable tests which either abort, create regions or find regions.
-Non runnable tests which can only abort.
+1. Runnable tests which either _abort_, _create regions_ or _find regions_.
+2. Non runnable tests which can only _abort_.
 
 The test programs are put into one of the two classes depending on if
 they should run in the first place.  If they are runnable the programs
 either execute one of the three behaviours when run again.
 
-To add a test, edit CMakeLists.txt, and in test_region_instr add the
-test name to the respective local arrays.  Eg creating a test focdelete
-which is runnable and creates regions must be added to runnable_tests
-and tests_create. A test finddelete which is nonrunnable and aborts,
-must only be added to nonrunnable_tests.
+To add a test, edit `CMakeLists.txt`, and in `test_region_instr` add the
+test name to the respective local arrays in function `run_tests`.  E.g.
+creating a test `focdelete` which is runnable and creates regions must be
+added to `runnable_tests` and `tests_create`. A test `finddelete` which is
+nonrunnable and aborts, must only be added to `nonrunnable_tests`.
 
-test_region_instr also does an instrumentation check, verifying
+`test_region_instr` also does an instrumentation check, verifying
 correctness of the compiler plugin. It checks the number of stores,
-lock acquires and releases for focdelete against expected values.
-If the atlas build dir is not under runtime the environment variable
-PLUGIN should be set to the path of NvmInstrumenter.so.
-ie PLUGIN=/path/to/NvmInstrumenter.so
+lock acquires and releases for `focdelete` against expected values.
+If the atlas build directory is not under `runtime` directory the
+environment variable `PLUGIN` should be set to the path of
+`NvmInstrumenter.so`, i.e., `PLUGIN=/path/to/NvmInstrumenter.so`
 
-If neither PLUGIN is set or the build directory is not under runtime,
-no instrumentation checking wil be attempted.
+If neither `PLUGIN` is set or the build directory is not under `runtime`,
+no instrumentation checking will be attempted.
 
-To run the test script do ./test_region_instr false. Run with
-./test_region_instr true to see debug information if there are errors,
+To run the test script do `./test_region_instr false`. Run with
+`./test_region_instr true` to see debug information, if there are errors
 for example.
