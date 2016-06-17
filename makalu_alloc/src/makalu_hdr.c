@@ -456,10 +456,10 @@ MAK_INNER void MAK_rebuild_metadata_from_headers()
     ptr_t end;
     struct hblk* h;
     struct hblk* second;
-    hdr* second_hdr;
+    //hdr* second_hdr;
     word sz;
     word n_blocks;
-    int fl_index;
+    //int fl_index;
     //int count = 0; 
     for(space = 0; space < MAK_n_hdr_spaces; space++)
     {

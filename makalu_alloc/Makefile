@@ -20,7 +20,7 @@ OBJS := ${SRC:.c=.o}
 LIBNAME :=libmakalu.a
 
 CC := gcc
-CFLAGS := -g -O2 -c
+CFLAGS := -g -O2 -Wall -c
 MKDIR := mkdir -p
 AR := ar
 RANLIB := ranlib

@@ -37,10 +37,20 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
                          /* Must be multiple of largest page size.         */
 #define MAXHINCR 2048 /* Maximum heap increment, in blocks              */
 
+# define divHBLKSZ(n) ((n) >> LOG_HBLKSIZE)
+
+# define HBLK_PTR_DIFF(p,q) divHBLKSZ((ptr_t)p - (ptr_t)q)
+        /* Equivalent to subtracting 2 hblk pointers.   */
+        /* We do it this way because a compiler should  */
+        /* find it hard to use an integer division      */
+        /* instead of a shift.  The bundled SunOS 4.1   */
+        /* o.w. sometimes pessimizes the subtraction to */
+        /* involve a call to .div.                      */
+
+
 
 //mark
 
-MAK_EXTERN MAK_all_interior_pointers;
 
 //granule
 #define CPP_WORDSZ 64
@@ -64,6 +74,8 @@ MAK_EXTERN MAK_all_interior_pointers;
 
 //struct hblkhdr hb_marks
 #define MARK_BITS_SZ (MARK_BITS_PER_HBLK/CPP_WORDSZ + 1)
+
+#define MAK_INTERIOR_POINTERS 1
 
 
 //headers
