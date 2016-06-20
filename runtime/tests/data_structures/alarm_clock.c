@@ -12,7 +12,7 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 
 /*
  * Alarm clock
@@ -67,12 +67,12 @@ AlarmClockInfo *CreateNewInfo(uint8_t hour, uint8_t min, uint8_t mode,
     return ninfo;
 }
 
-inline pthread_mutex_t *GetLock(uint8_t hour, uint8_t min)
+static inline pthread_mutex_t *GetLock(uint8_t hour, uint8_t min)
 {
     return AC_LOCK(hour, min);
 }
 
-inline AlarmClockInfo *GetHeader(uint8_t hour, uint8_t min)
+static inline AlarmClockInfo *GetHeader(uint8_t hour, uint8_t min)
 {
     return *AC_TABLE_ENTRY(hour, min);
 }
@@ -118,7 +118,7 @@ int cancel_alarm(uint8_t hour, uint8_t min, int play)
         {
             // Optionally, play the alarm here before essentially removing it
             // ...
-    
+
             if (play)
                 ; // sound an alarm
             if (!prev) *AC_TABLE_ENTRY(hour, min) = cand->next;
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
     gettimeofday(&tv_start, NULL);
 
     pthread_t th;
-    
+
     AlarmClockTab =
         (AlarmClockInfo**)malloc(AC_TABLE_SIZE * sizeof(AlarmClockInfo*));
 

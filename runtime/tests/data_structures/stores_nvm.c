@@ -12,7 +12,7 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +31,7 @@ void bar();
 // Id of Atlas persistent region
 uint32_t stores_rgn_id;
 
-inline uint64_t rdtsc() {
+static inline uint64_t rdtsc() {
     uint32_t lo, hi;
     asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
     return lo | ((uint64_t)hi << 32);
@@ -57,11 +57,11 @@ int main(int argc, char *argv[])
     stores_rgn_id = NVM_FindOrCreateRegion("stores", O_RDWR, NULL);
     // Allocate memory from the above persistent region
     arr = (ARR_TYPE*)nvm_alloc(LOOP_COUNT*sizeof(ARR_TYPE), stores_rgn_id);
-    
+
     assert(!gettimeofday(&tv_start, NULL));
 
     uint64_t start = rdtsc();
-    
+
     int i;
 
     // Atlas failure-atomic section
@@ -94,14 +94,12 @@ int main(int argc, char *argv[])
 #endif
     // Atlas bookkeeping
     NVM_Finalize();
-    
+
     fprintf(stderr, "Sum of elements is %d\n", count);
     fprintf(stderr, "time elapsed %ld us\n",
             tv_end.tv_usec - tv_start.tv_usec +
             (tv_end.tv_sec - tv_start.tv_sec) * 1000000);
     fprintf(stderr, "cycles: %ld\n", end - start);
-    
+
     return 0;
 }
-
-    

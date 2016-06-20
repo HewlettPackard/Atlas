@@ -12,7 +12,7 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +22,7 @@
 
 #define LOOP_COUNT 1000000
 
-inline uint64_t rdtsc() {
+static inline uint64_t rdtsc() {
     uint32_t lo, hi;
     asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
     return lo | ((uint64_t)hi << 32);
@@ -40,13 +40,13 @@ int main(int argc, char *argv[])
     assert(!gettimeofday(&tv_start, NULL));
 
     uint64_t start = rdtsc();
-    
+
     int i;
     for (i=0; i<LOOP_COUNT; ++i)
         arr[i] = i;
 
     uint64_t end = rdtsc();
-    
+
     assert(!gettimeofday(&tv_end, NULL));
 
     for (i=0; i<LOOP_COUNT; ++i)
@@ -59,5 +59,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-    

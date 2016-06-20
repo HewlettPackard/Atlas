@@ -12,7 +12,7 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
+
 
 /*
  * Alarm clock
@@ -75,12 +75,12 @@ AlarmClockInfo *CreateNewInfo(uint8_t hour, uint8_t min, uint8_t mode,
     return ninfo;
 }
 
-inline pthread_mutex_t *GetLock(uint8_t hour, uint8_t min)
+static inline pthread_mutex_t *GetLock(uint8_t hour, uint8_t min)
 {
     return AC_LOCK(hour, min);
 }
 
-inline AlarmClockInfo *GetHeader(uint8_t hour, uint8_t min)
+static inline AlarmClockInfo *GetHeader(uint8_t hour, uint8_t min)
 {
     return *AC_TABLE_ENTRY(hour, min);
 }
@@ -126,7 +126,7 @@ int cancel_alarm(uint8_t hour, uint8_t min, int play)
         {
             // Optionally, play the alarm here before essentially removing it
             // ...
-    
+
             if (play)
                 ; // sound an alarm
             if (!prev) *AC_TABLE_ENTRY(hour, min) = cand->next;
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
     initialize();
     // Set the root of the Atlas persistent region
     NVM_SetRegionRoot(alarm_clock_rgn_id, AlarmClockTab);
-    
+
     pthread_create(&th, 0, (void *(*)(void*))play_alarms, 0);
 
     uint8_t hour = 0;
@@ -237,10 +237,10 @@ int main(int argc, char *argv[])
     // Optionally print Atlas stats
 #ifdef NVM_STATS
     NVM_PrintStats();
-#endif    
+#endif
     // Atlas bookkeeping
     NVM_Finalize();
-    
+
     fprintf(stderr,
             "Set = %d Updated = %d Cancelled = %d Failed canceling = %d\n",
             set_alarms, update_alarms, cancelled_alarms, failed_cancel_alarms);
