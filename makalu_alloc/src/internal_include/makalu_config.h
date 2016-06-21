@@ -4,11 +4,13 @@
 # include "atomic_ops.h"
 # include "stdlib.h"
 
+#include "makalu.h"
+
 
 
 //typedefs
-typedef unsigned long long word;
-typedef long long signed_word;
+typedef MAK_word word;
+typedef MAK_signed_word signed_word;
 typedef AO_t counter_t;
 
 typedef int MAK_bool;
@@ -48,6 +50,10 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
         /* involve a call to .div.                      */
 
 
+# define OBJ_SZ_TO_BLOCKS(sz) divHBLKSZ((sz) + HBLKSIZE-1)
+    /* Size of block (in units of HBLKSIZE) needed to hold objects of   */
+    /* given sz (in bytes).   */
+
 
 //mark
 
@@ -86,6 +92,9 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 #define HDR_CACHE_SIZE 8  /* power of 2 */
 #define MAX_JUMP (HBLKSIZE - 1)
+/* Is the result a forwarding address to someplace closer to the        */
+/* beginning of the block or NULL?                                      */
+#define IS_FORWARDING_ADDR_OR_NIL(hhdr) ((size_t) (hhdr) <= MAX_JUMP)
 
 //heap sizes
 #   define MAX_HEAP_SECTS 1024

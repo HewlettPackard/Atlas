@@ -1,6 +1,8 @@
 #ifndef _MAKALU_UTIL_H
 #define _MAKALU_UTIL_H
 
+#include <string.h>
+
 #ifdef MAK_ASSERTIONS
 #  define MAK_ASSERT(expr) \
                 if (!(expr)) { \
@@ -21,6 +23,7 @@
 # endif
 #endif
 
+#define BUFSZ 1024
 
 void MAK_printf(const char * format, ...)
                         MAK_ATTR_FORMAT_PRINTF(1, 2);
@@ -40,8 +43,17 @@ void MAK_err_printf(const char * format, ...)
 #endif /* __GNUC__ */
 
 
+/* Print warning message, e.g. almost out of memory.    */
+#define WARN(msg, arg) MAK_warn_proc("MAK Warning: " msg, \
+                                               (MAK_word)(arg))
+
+MAK_INNER void MAK_warn_proc(char* msg, MAK_word arg);
+
 #define ABORT(msg) MAK_abort(msg)
 MAK_INNER void MAK_abort(const char *msg);
+
+
+#   define BZERO(x,n)  memset(x, 0, (size_t)(n))
 
 
 #endif

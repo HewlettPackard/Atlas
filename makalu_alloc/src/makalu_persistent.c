@@ -75,8 +75,6 @@ MAK_INNER void add_to_flush_table(void* start_addr, word size, void** table, wor
    char* cl_start = (char*) (((word)(start_addr)) & (~(((word)CACHE_LINE_SZ) - 1))) ;
    char* end = (char*) start_addr + size;
    char* i;
-   void** cle;
-   void* cl;
    for (i = cl_start; i < end; i += CACHE_LINE_SZ){
        void** cle = table + (((word)(cl_start) >> LOG_CACHE_LINE_SZ)
                               & (((word)(tb_sz)) - 1));
@@ -400,5 +398,4 @@ MAK_INNER void MAK_sync_gc_metadata(){
    MAK_FLUSH_ALL_ENTRY(MAK_fl_aflush_table, FL_AFLUSH_TABLE_SZ);
    MAK_STORE_NVM_SYNC(MAK_mandatory_gc, FALSE);
 }
-
 

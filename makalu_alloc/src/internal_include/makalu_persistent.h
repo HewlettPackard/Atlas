@@ -289,4 +289,6 @@ MAK_INNER void MAK_sync_all_persistent();
 MAK_INNER void MAK_sync_alloc_metadata();
 MAK_INNER void MAK_sync_gc_metadata();
 
+# define GET_MEM_PERSISTENT(addr, bytes) \
+       (*MAK_persistent_memalign_func) ((void**) addr, MAK_page_size, bytes)
 #endif //_MAKALU_PERSISTENT_H

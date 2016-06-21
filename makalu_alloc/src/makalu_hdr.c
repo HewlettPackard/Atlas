@@ -124,7 +124,6 @@ static word MAK_curr_hdr_idx_space = 0;
 static inline MAK_bool scratch_alloc_hdr_space(word bytes_to_get)
 {
     word i;
-    word next;
 
     //we have some memory to use;
     if (MAK_curr_hdr_space < MAK_n_hdr_spaces){
@@ -155,7 +154,6 @@ out:
 static hdr* alloc_hdr(void)
 {
     register hdr* result;
-    int attempt;
     if (MAK_hdr_free_list != 0)
     {
         result = MAK_hdr_free_list;
