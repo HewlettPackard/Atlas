@@ -237,8 +237,8 @@ if (CONSISTENCY_FAIL)
     set (CONSISTENCY_FAIL_FLAG "-DCONSISTENCY_FAIL")
 endif ()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -Wall -Winline ${ATLAS_SPECIFIC_FLAGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -std=c++11 -Wall -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Winline ${ATLAS_SPECIFIC_FLAGS}")
 
 #copy necessary files from the src dir to the build dir
 foreach (t ${ATLAS_COPY_FILES})
@@ -257,6 +257,8 @@ else ()
     message ("Building only data structures")
     add_subdirectory (tests/data_structures)
 endif ()
+
+add_subdirectory (examples)
 
 add_subdirectory (src)
 add_library (atlas $<TARGET_OBJECTS:Cache_flush> $<TARGET_OBJECTS:Consistency> $<TARGET_OBJECTS:Logger> $<TARGET_OBJECTS:Util> $<TARGET_OBJECTS:Pregion_mgr> $<TARGET_OBJECTS:Pmalloc>) #defaults to static build
