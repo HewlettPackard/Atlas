@@ -20,7 +20,7 @@
 
 # Keep in sync with the makefile targets
 test_array = [
-              'queue_orig', 'queue_nvm', \
+              'queue', 'queue_nvm', \
               'cow_array_list', 'cow_array_list_nvm', \
               'sll', 'sll_ll', 'sll_nvm',
               'alarm_clock', 'alarm_clock_nvm', \
