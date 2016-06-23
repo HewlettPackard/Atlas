@@ -272,7 +272,7 @@ void * do_work()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
     struct timeval tv_start;
     struct timeval tv_end;

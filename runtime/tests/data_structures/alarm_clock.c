@@ -171,7 +171,7 @@ void *play_alarms()
     return NULL;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
     struct timeval tv_start;
     struct timeval tv_end;

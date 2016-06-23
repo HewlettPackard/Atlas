@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/time.h>
+#include <time.h>
 #include <inttypes.h>
 
 // Atlas includes
@@ -33,13 +34,13 @@ uint32_t stores_rgn_id;
 
 static inline uint64_t rdtsc() {
     uint32_t lo, hi;
-    asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
+    __asm__ volatile ("rdtsc" : "=a" (lo), "=d" (hi));
     return lo | ((uint64_t)hi << 32);
 }
 
 typedef int ARR_TYPE;
 
-int main(int argc, char *argv[])
+int main()
 {
     ARR_TYPE *arr;
     int count = 0;

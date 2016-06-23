@@ -24,11 +24,11 @@
 
 static inline uint64_t rdtsc() {
     uint32_t lo, hi;
-    asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
+    __asm__ volatile ("rdtsc" : "=a" (lo), "=d" (hi));
     return lo | ((uint64_t)hi << 32);
 }
 
-int main(int argc, char *argv[])
+int main()
 {
     int *arr;
     int count = 0;
