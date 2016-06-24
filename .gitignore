@@ -30,3 +30,6 @@
 # Build directories
 compiler-plugin/plugin_build/
 runtime/build-all/
+
+# Temporary files
+*.swp
