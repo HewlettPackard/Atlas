@@ -187,7 +187,7 @@ void initialize()
         AC_TABLE_SIZE * sizeof(AlarmClockInfo*), alarm_clock_rgn_id);
 }
 
-int main(int argc, char *argv[])
+int main()
 {
     struct timeval tv_start;
     struct timeval tv_end;

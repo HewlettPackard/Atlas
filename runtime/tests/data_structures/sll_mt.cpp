@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     
     long j; 
     
-    pthread_t insert_threads[T];
+    pthread_t *insert_threads = new pthread_t[T];
     int rc;
 
     for (j=0; j < T; j++)
@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
         pthread_join(insert_threads[j], NULL);
     }
 
+    delete [] insert_threads;
    
     gettimeofday(&tv_end, NULL);
      

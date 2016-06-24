@@ -43,7 +43,7 @@ void PArena::freeMem(void *ptr, bool should_log)
     if (!PMallocUtil::is_ptr_allocated(ptr))
     {
         fprintf(stderr, "[Atlas-pheap] assert: %p %ld %ld\n",
-                (size_t *)ptr, *((size_t *)ptr),
+                ptr, *((size_t *)ptr),
                 *(size_t *)((char *)ptr+sizeof(size_t)));
         assert(PMallocUtil::is_ptr_allocated(ptr) &&
                "free called on unallocated memory");
