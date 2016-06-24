@@ -67,7 +67,7 @@ void initialize()
         Q->tail_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
         pthread_mutex_init(Q->tail_lock, NULL);
 
-        fprintf(stderr, "Found queue at %p\n", Q);
+        fprintf(stderr, "Found queue at %p\n", (void *)Q);
         traverse();
     }
     else
@@ -76,7 +76,7 @@ void initialize()
         node->val=-1;
         node->next=NULL;
         Q = (queue_t *) nvm_alloc(sizeof(queue_t), queue_rgn_id);
-        fprintf(stderr, "Created Q at %p\n", Q);
+        fprintf(stderr, "Created Q at %p\n", (void *)Q);
 
         Q->head_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
         pthread_mutex_init(Q->head_lock, NULL);
