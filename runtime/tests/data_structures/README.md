@@ -41,7 +41,7 @@ copy-on-write array implementation, inspired by Java
 `CopyOnWriteArrayList`. `cow_array_list_nvm` is the corresponding
 persistent array implementation using Atlas APIs.
 
-1. `queue_orig` shows a vanilla implementation of a multithreaded queue
+1. `queue` shows a vanilla implementation of a multithreaded queue
 (Adapted from Michael & Scott, _Simple, Fast, and Practical
 Non-Blocking and Blocking Concurrent Queue Algorithms_, PODC 1996.)
 `queue_nvm` is the corresponding persistent queue using Atlas APIs.

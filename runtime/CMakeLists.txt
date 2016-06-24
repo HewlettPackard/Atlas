@@ -56,9 +56,9 @@ prepend_paths (ATLAS_TESTS_FILES ${ATLAS_TESTS_DIR} ${ATLAS_TESTS_FILES})
 set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} ${ATLAS_TESTS_FILES})
 
 set (ATLAS_TESTS_DATA_STRUCT_IN_DIR "${ATLAS_TESTS_DIR}/data_structures_inputs")
-set (ATLAS_TESTS_DATA_STRUCT_IN_FILES timing.txt cow_array_list_nvm.ref cow_array_list.ref queue_nvm.ref queue_orig.ref
+set (ATLAS_TESTS_DATA_STRUCT_IN_FILES timing.txt cow_array_list_nvm.ref cow_array_list.ref queue_nvm.ref queue.ref
                        sll_ll.ref sll_nvm.ref sll.ref alarm_clock.ref alarm_clock_nvm.ref cow_array_list.in
-                       cow_array_list_nvm.in queue_nvm.in queue_orig.in sll.in sll_ll.in sll_nvm.in alarm_clock.in
+                       cow_array_list_nvm.in queue_nvm.in queue.in sll.in sll_ll.in sll_nvm.in alarm_clock.in
                        alarm_clock_nvm.in stores.ref stores_nvm.ref stores.in stores_nvm.in)
 prepend_paths (ATLAS_TESTS_DATA_STRUCT_IN_FILES ${ATLAS_TESTS_DATA_STRUCT_IN_DIR} ${ATLAS_TESTS_DATA_STRUCT_IN_FILES})
 set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} ${ATLAS_TESTS_DATA_STRUCT_IN_FILES})

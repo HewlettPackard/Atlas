@@ -142,7 +142,12 @@ with as few changes as possible.
 * cmake version 3.1 or later
 * boost library
 * bash 4.0
-* ruby (for certain test scripts)
+
+For Ubuntu 16.04, these dependencies can be installed with:
+
+    sudo apt-get install llvm clang cmake libboost-all-dev
+
+* ruby (for certain test scripts), see **Installing Ruby** at [gorails](https://gorails.com/setup/ubuntu/16.04) for instructions.
 
 ## Reference
 
