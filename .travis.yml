@@ -1,10 +1,18 @@
+# Ubuntu 14.04 Trusty support
+sudo: required
+dist: trusty
+
 language: cpp
 compiler:
-  - gcc
+  - clang
 before_install:
   - pip install --user cpp-coveralls
+  - sudo apt-get update -qq && sudo apt-get install -qq libboost-all-dev
 script:
-  - make && make test
+  - cd compiler-plugin
+  - ./build_plugin
+  - cd ../runtime
+  - ./tools/run_tests
 after_success:
   - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
 env:

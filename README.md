@@ -12,8 +12,8 @@
 [//]: # ( <http://www.gnu.org/licenses/>.                                      )
 
 
-
 # Atlas: Programming for Persistent Memory
+[![Build Status](https://travis-ci.org/HewlettPackard/Atlas.svg?branch=master)](https://travis-ci.org/HewlettPackard/Atlas)
 
 Data in persistent memory survives certain tolerated events such as
 process termination, OS reboots/crashes, and power
