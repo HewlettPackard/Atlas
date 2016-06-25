@@ -199,7 +199,7 @@ int main()
     // Initialize Atlas
     NVM_Initialize();
     // Create an Atlas persistent region
-    alarm_clock_rgn_id = NVM_FindOrCreateRegion("alarm_clock", O_RDWR, NULL);
+    alarm_clock_rgn_id = NVM_FindOrCreateRegion("alarm_clock", O_RDONLY, NULL);
     // This contains the Atlas restart code to find any reusable data
     initialize();
     // Set the root of the Atlas persistent region
