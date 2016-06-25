@@ -34,6 +34,10 @@
 #include "util.hpp"
 #include "fail.hpp"
 
+#ifdef _NVDIMM_PROLIANT
+#include "fsync.hpp"
+#endif
+
 namespace Atlas {
     
 PRegionMgr *PRegionMgr::Instance_{nullptr};
@@ -519,14 +523,15 @@ int PRegionMgr::mapFile(
 #ifdef _FORCE_FAIL
     fail_program();
 #endif
-    int fd = open(name, does_exist ? flags : flags | O_CREAT | O_TRUNC,
-                  flags == O_RDONLY  ? S_IRUSR : (S_IRUSR | S_IWUSR));
-    if (fd == -1) {
-        perror("open");
-        assert(fd != -1 && "To-be-mapped file not found!");
-    }
-
+    assert(flags == O_RDONLY || flags == O_RDWR || flags == O_WRONLY);
+    int fd = -1;
     if (!does_exist) {
+        fd = open(name, O_RDWR | O_CREAT | O_TRUNC,
+                  flags == O_RDONLY  ? S_IRUSR : (S_IRUSR | S_IWUSR));
+        if (fd == -1) {
+            perror("open");
+            assert(fd != -1 && "To-be-mapped file not found after creation!");
+        }
         off_t offt = lseek(fd, kPRegionSize_-1, SEEK_SET);
         if (offt == -1) {
             perror("lseek");
@@ -538,6 +543,14 @@ int PRegionMgr::mapFile(
             perror("write");
             assert(result != -1 && "To-be-mapped file cannot be written!");
         }
+#ifdef _NVDIMM_PROLIANT
+        fsync_paranoid(name);
+#endif
+    }
+    fd = open(name, flags | O_DIRECT);
+    if (fd == -1) {
+        perror("open");
+        assert(fd != -1 && "To-be-mapped file not found!");
     }
 
     void *addr = mmap(base_addr, kPRegionSize_,
