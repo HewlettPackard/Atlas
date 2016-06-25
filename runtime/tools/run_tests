@@ -129,9 +129,11 @@ if [ -z "$build_fails" ]; then
     debug_print "No builds failed to build" "true"
 else
     debug_print "targets:$build_fails were build fails" "true"
+    exit 1
 fi
 if [ -z "$test_fails" ]; then
     debug_print "No builds failed their tests" "true"
 else
     debug_print "targets:$test_fails were test fails" "true"
+    exit 1
 fi
