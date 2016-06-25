@@ -12,7 +12,7 @@ script:
   - cd compiler-plugin
   - ./build_plugin
   - cd ../runtime
-  - ./tools/run_tests
+  - ./tools/run_tests true
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
