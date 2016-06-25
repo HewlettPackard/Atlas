@@ -28,12 +28,6 @@
 
 #include "util.hpp"
 
-#ifndef _NVDIMM_PROLIANT
-    const char mountpath[]="/dev/shm/";
-#else
-    const char mountpath[]="/mnt/nvm/pmem0/";
-#endif
-
 char *NVM_GetRegionTablePath()
 {
 #ifdef _FORCE_FAIL
@@ -41,9 +35,9 @@ char *NVM_GetRegionTablePath()
 #endif
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen(mountpath) + strlen(usr_name) +
+        (strlen("/dev/shm/") + strlen(usr_name) +
          strlen("/__nvm_region_table") + 1) * sizeof(char));
-    sprintf(s, "%s/%s/__nvm_region_table", mountpath, usr_name);
+    sprintf(s, "/dev/shm/%s/__nvm_region_table", usr_name);
     return s;
 }
     
@@ -54,8 +48,8 @@ char *NVM_GetUserDir()
 #endif
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen(mountpath) + strlen(usr_name) + 1) * sizeof(char));
-    sprintf(s, "%s/%s", mountpath, usr_name);
+        (strlen("/dev/shm/") + strlen(usr_name) + 1) * sizeof(char));
+    sprintf(s, "/dev/shm/%s", usr_name);
     return s;
 }
     
@@ -69,9 +63,9 @@ char *NVM_GetLogDir()
 #else
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen(mountpath) + strlen(usr_name) + strlen("/regions") + 1) *
+        (strlen("/dev/shm/") + strlen(usr_name) + strlen("/regions") + 1) *
         sizeof(char));
-    sprintf(s, "%s/%s/regions", mountpath, usr_name);
+    sprintf(s, "/dev/shm/%s/regions", usr_name);
     return s;
 
 #endif
@@ -149,9 +143,9 @@ char *NVM_GetFullyQualifiedRegionName(const char * name)
 #endif
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen(mountpath) + strlen(usr_name) + strlen("/regions/") +
+        (strlen("/dev/shm/") + strlen(usr_name) + strlen("/regions/") +
          strlen(name) + 1) * sizeof(char));
-    sprintf(s, "%s/%s/regions/%s", mountpath, usr_name, name);
+    sprintf(s, "/dev/shm/%s/regions/%s", usr_name, name);
     return s;
 }
 #endif
@@ -196,9 +190,9 @@ void NVM_qualifyPathName(char *s, const char *name)
     fail_program();
 #endif
 #ifdef PMM_OS
-    sprintf(s, "%s/%s", mountpath, name);
+    sprintf(s, "/dev/pmmfs/%s", name);
 #else
-    sprintf(s, "%s/regions/%s", mountpath, name);
+    sprintf(s, "/dev/shm/regions/%s", name);
 #endif
 }
 
