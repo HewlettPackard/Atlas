@@ -532,12 +532,24 @@ int PRegionMgr::mapFile(
             perror("lseek");
             assert(offt != -1 && "To-be-mapped file lseek error!");
         }
-        
         ssize_t result = write(fd, "", 1);
         if (result == -1) {
             perror("write");
             assert(result != -1 && "To-be-mapped file cannot be written!");
         }
+#ifdef _NVDIMM_PROLIANT
+        fsync_paranoid(name);
+#endif
+        close(fd);
+    }
+#ifdef _NVDIMM_PROLIANT
+    fd = open(name, flags | O_DIRECT);
+#else
+    fd = open(name, flags);
+#endif
+    if (fd == -1) {
+        perror("open");
+        assert(fd != -1 && "To-be-mapped file not found!");
     }
 
     void *addr = mmap(base_addr, kPRegionSize_,
