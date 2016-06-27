@@ -25,8 +25,10 @@ directory to `compiler-plugin` and run `./build_plugin`. The file
 `NvmInstrumenter.so` will be created under the subdirectory
 `plugin_build`.
 
+Ensure the versions of clang and llvm developer tools (ie llvm-config) are the same.
+
 To use clang with instrumentation, it is recommended to use an
 environment variable as used in the Atlas test scripts
 
-    $ACC: clang -Xclang -load -Xclang <path_to_Atlas>/compiler-plugin/NvmInstrumenter.so
-    $ACXX: clang++ -Xclang -load -Xclang <path_to_Atlas>/compiler-plugin/NvmInstrumenter.so
+    $ACC: clang -Xclang -load -Xclang <path_to_Atlas>/compiler-plugin/plugin_build/NvmInstrumenter.so
+    $ACXX: clang++ -Xclang -load -Xclang <path_to_Atlas>/compiler-plugin/plugin_build/NvmInstrumenter.so

@@ -11,4 +11,4 @@ script:
   - cd compiler-plugin
   - ./build_plugin
   - cd ../runtime
-  - ./tools/run_tests
+  - ./tools/run_tests true
