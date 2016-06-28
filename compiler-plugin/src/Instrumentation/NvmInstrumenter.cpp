@@ -448,20 +448,18 @@ bool NvmInstrumenter::performNvmInstrumentation(
     for (SmallVectorImpl<Instruction*>::const_iterator SB = Stores.begin(),
          SE = Stores.end(); SB != SE; ++SB) {
         Instruction *I = *SB;
-        //apparently this is bad practice. should be using dyn_cast as template - if NULL is returned a non-store is present
         assert(isa<StoreInst>(I) && "Found a non-store instruction");
 
         StoreInst *StoreInstruction = cast<StoreInst>(I);
         Value *Addr = StoreInstruction->getPointerOperand();
         Value *Val = StoreInstruction->getValueOperand();
         
-        LoadInst *LI = IRB.CreateLoad(Addr);
-        LI->insertBefore(StoreInstruction);
-        
         unsigned sz;
-        // TODO handle other types
-        if (Val->getType()->isIntegerTy() || Val->getType()->isFloatTy() ||
-            Val->getType()->isDoubleTy())
+        if (Val->getType()->isIntegerTy() ||
+            Val->getType()->isFloatTy() ||
+            Val->getType()->isDoubleTy() ||
+            Val->getType()->isX86_FP80Ty() ||
+            Val->getType()->isFP128Ty())
             sz = Val->getType()->getPrimitiveSizeInBits();
         else if (Val->getType()->isPointerTy()) sz = 64;
         else {
@@ -470,15 +468,18 @@ bool NvmInstrumenter::performNvmInstrumentation(
             assert(0);
         }
 
+        unsigned extra_sz = 0;
+        if (sz > 64) {
+            assert(sz <= 128 && "This type is not supported");
+            extra_sz = sz - 64;
+            assert(!(sz % 8));
+            sz = 64;
+        }
+        
         PointerType *ArgType =
             Type::getInt8PtrTy(F.getParent()->getContext());
         Value *Arg1 = Addr->getType() == ArgType ? NULL :
             IRB.CreatePointerCast(Addr, ArgType);
-#if 0        
-        Value *Arg2 = LI->getType()->isPointerTy() ?
-            IRB.CreatePtrToInt(
-                LI, Type::getInt64Ty(F.getParent()->getContext())) : NULL;
-#endif
         Value *ConstantSize = ConstantInt::get(
             Type::getInt64Ty(F.getParent()->getContext()), sz);
         
@@ -494,6 +495,32 @@ bool NvmInstrumenter::performNvmInstrumentation(
         if (isa<Instruction>(ConstantSize))
             dyn_cast<Instruction>(ConstantSize)->insertBefore(NI);
 
+        if (extra_sz) {
+            Value *Word = ConstantInt::get(
+                Type::getInt64Ty(F.getParent()->getContext()), 8);
+            Value *IntReprOfAddr =
+                IRB.CreatePtrToInt(
+                    Addr, Type::getInt64Ty(F.getParent()->getContext()));
+            if (isa<Instruction>(IntReprOfAddr))
+                dyn_cast<Instruction>(IntReprOfAddr)->insertBefore(
+                    StoreInstruction);
+            Instruction *add_word = BinaryOperator::Create(
+                Instruction::Add,
+                IntReprOfAddr,
+                Word, "add_word", StoreInstruction);
+
+            Value *PtrReprOfIncrement =
+                IRB.CreateIntToPtr(add_word, ArgType);
+            if (isa<Instruction>(PtrReprOfIncrement))
+                dyn_cast<Instruction>(PtrReprOfIncrement)->insertBefore(
+                    StoreInstruction);
+            Value *ExtraConstantSize = ConstantInt::get(
+                Type::getInt64Ty(F.getParent()->getContext()), extra_sz);
+            Value *ExtraArgs[] = {PtrReprOfIncrement, ExtraConstantSize};
+            CallInst::Create(StoreFuncEntry, ArrayRef<Value*>(ExtraArgs),
+                             "", StoreInstruction);
+        }
+            
         Value *BarrierArgs[] = {Arg1 ? Arg1 : Addr};
         if (getenv("USE_TABLE_FLUSH")) {
             CallInst *TFI = CallInst::Create(AsyncDataFlushEntry,
