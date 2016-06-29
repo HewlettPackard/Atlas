@@ -34,6 +34,10 @@
 #include "util.hpp"
 #include "fail.hpp"
 
+#ifdef _NVDIMM_PROLIANT
+#include "fsync.hpp"
+#endif
+
 namespace Atlas {
     
 PRegionMgr *PRegionMgr::Instance_{nullptr};

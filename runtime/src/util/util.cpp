@@ -41,7 +41,7 @@ char *NVM_GetRegionTablePath()
 #endif
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen("/dev/shm/") + strlen(usr_name) +
+        (strlen(mountpath) + strlen(usr_name) +
          strlen("/__nvm_region_table") + 1) * sizeof(char));
     sprintf(s, "%s%s/__nvm_region_table", mountpath, usr_name);
     return s;
@@ -69,7 +69,7 @@ char *NVM_GetLogDir()
 #else
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen("/dev/shm/") + strlen(usr_name) + strlen("/regions") + 1) *
+        (strlen(mountpath) + strlen(usr_name) + strlen("/regions") + 1) *
         sizeof(char));
     sprintf(s, "%s%s/regions", mountpath, usr_name);
     return s;
@@ -149,7 +149,7 @@ char *NVM_GetFullyQualifiedRegionName(const char * name)
 #endif
     const char *usr_name = getpwuid(geteuid())->pw_name;
     char *s = (char*) malloc(
-        (strlen("/dev/shm/") + strlen(usr_name) + strlen("/regions/") +
+        (strlen(mountpath) + strlen(usr_name) + strlen("/regions/") +
          strlen(name) + 1) * sizeof(char));
     sprintf(s, "%s%s/regions/%s", mountpath, usr_name, name);
     return s;
