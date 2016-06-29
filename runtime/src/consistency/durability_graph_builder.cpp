@@ -46,7 +46,7 @@ void CSMgr::buildInitialGraph(LogStructure *lsp)
     // This loop goes through the log entries of one thread at a time
     while (lsp) {
         LogEntry *current_le = lsp->Le;
-        if (!current_le) continue;
+        assert(current_le);
         
         DGraph::VDesc prev_nid = 0;
         FASection *prev_fase = nullptr;

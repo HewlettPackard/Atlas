@@ -56,6 +56,7 @@ void LogMgr::publishLogEntry(LogEntry *le)
             ls->Next = tmp;
             // 16-byte alignment guarantees that an element of type
             // LogStructure is on the same cache line
+            assert(!isOnDifferentCacheLine(&ls->Next, &ls->Le));
             flushLogUncond(&ls->Next);
 
         }while (!LogStructureHeaderPtr_->compare_exchange_weak(
