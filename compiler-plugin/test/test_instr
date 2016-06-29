@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version. This program is
+# distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details. You should have received a copy of the GNU Lesser
+# General Public License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+#
+
+debug_log=log_test_instr.txt
+total_fails=0
+out="instr_out.txt"
+tests=( "strops" "long_double" )
+
+################################################################
+#                       debug_print                            #
+################################################################
+function debug_print
+{
+    local err_str="[TEST_REGION] $1"
+    local echoon="$2"
+    if [ -z "$echoon" ]; then
+        echoon=$debug
+    elif [ "${echoon,,}" == "true" ]; then
+        echoon="true"
+    fi
+    if [ "$echoon" == "true" ]; then
+        echo "$err_str"
+    fi
+    echo "$err_str" >> $debug_log
+}
+################################################################
+#                     test_instrumentation                     #
+################################################################
+function test_instrumentation
+{
+    debug_print "Beginning instrumentation testing" "true"
+    test_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    plugin="$test_dir/../plugin_build/NvmInstrumenter.so"
+    atlas_root="$test_dir/../.."
+    if [ -f "$plugin" ]; then
+        debug_print "Found compiler plugin build"
+    elif [ ! -z "$PLUGIN" ]; then
+        debug_print "Found compiler plugin to test instrumentation in $PLUGIN"
+        plugin="$PLUGIN"
+    else
+        debug_print "Cannot detect a build of atlas instrumentation plugin, ensure it is built with ./build_plugin." "true"
+        debug_print "If your build plugin is outside of compiler_plugin, set \$PLUGIN to it's location" "true"
+        exit 0
+    fi
+    if ! which opt > /dev/null ; then
+        debug_print "Cannot find opt - cannot conduct instrumentation testing, exiting" "true"
+        exit 0
+    fi
+    for testname in ${tests[@]}; do
+        debug_print "Generating llvm ir bitcode file for $testname"
+        clang -c -emit-llvm -O3 -pthread $testname\.c -I$atlas_root/runtime/include &> /dev/null
+        if [ "$?" -ne 0 ]; then
+            debug_print "Failed to generate bitcode for $testname, running next test" "true"
+            continue
+        fi
+        debug_print "Using opt to get instrumentation readout of bitcode for $testname"
+        opt -load $plugin -NvmInstrumenter -stats < $testname\.bc > /dev/null 2> $testname\.out
+        debug_print "Contents of $testname.out are"
+        cat $testname\.out >> $debug_log
+        if [ "$?" -ne 0 ]; then
+            debug_print "Failed to run opt, is it installed? Moving to region testing" "true"
+            return
+        fi
+        debug_print "Using sed to sanitise $testname.out"
+        sed -i 's/^[ ]*//g' $testname\.out
+        if diff $testname\.out test_refs/$testname\.ref ; then
+            debug_print "Instrumentation results were as expected for $testname" "true"
+        else
+            debug_print "Instrumentation stats did not match expected values for $testname, counting as a failure" "true"
+            total_fails=$($total_fails+1)
+        fi
+    done
+    for testname in ${tests[@]}; do
+        rm -f $testname\.out $testname\.bc
+    done
+}
+################################################################
+#                            main                              #
+################################################################
+#Run with debug flag set to true to see output of build commands and which tests are passing.
+#which would have been displayed with debug flag set to true. test_region_log contains output of tests.
+
+help_str="USAGE: ./test_region [debug flag: true or false]"
+
+debug="$1"
+if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
+    debug="false"
+elif [ "${debug,,}" == "true" ]; then #bash4.0 convert to lower
+    debug="true"
+else
+    echo "$help_str"
+    exit 1
+fi
+rm -f $debug_log
+debug_print "Set debug value to $debug"
+test_instrumentation
+if [[ $total_fails -gt 0 ]]; then
+    debug_print "$total_fails fails for region tests" "true"
+    exit 1
+else
+    debug_print "No failures occurred, instrumentation testing passed" "true"
+    exit 0
+fi
