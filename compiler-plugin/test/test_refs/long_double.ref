@@ -1,7 +1,1 @@
-Atlas instrumentation done on foo
-===-------------------------------------------------------------------------===
-... Statistics Collected ...
-===-------------------------------------------------------------------------===
-
 1 nvm_instr - Number of stores instrumented
-

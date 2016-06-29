@@ -15,7 +15,7 @@
 # <http://www.gnu.org/licenses/>.
 #
 
-debug_log=log_test_instr.txt
+debug_log=test_instr_log.txt
 total_fails=0
 out="instr_out.txt"
 tests=( "strops" "long_double" )
@@ -69,19 +69,21 @@ function test_instrumentation
         fi
         debug_print "Using opt to get instrumentation readout of bitcode for $testname"
         opt -load $plugin -NvmInstrumenter -stats < $testname\.bc > /dev/null 2> $testname\.out
-        debug_print "Contents of $testname.out are"
-        cat $testname\.out >> $debug_log
+        debug_print "Using sed to sanitise $testname.out"
+        sed -i '/Number of/!d' $testname\.out
+        debug_print "Results of $testname are" "true"
+        cat $testname\.out | tee -a $debug_log
         if [ "$?" -ne 0 ]; then
             debug_print "Failed to run opt, is it installed? Moving to region testing" "true"
             return
         fi
-        debug_print "Using sed to sanitise $testname.out"
-        sed -i 's/^[ ]*//g' $testname\.out
-        if diff $testname\.out test_refs/$testname\.ref ; then
+        debug_print "Running diff, output is in $debug_log"
+        if diff $testname\.out test_refs/$testname\.ref >> $debug_log; then
             debug_print "Instrumentation results were as expected for $testname" "true"
         else
-            debug_print "Instrumentation stats did not match expected values for $testname, counting as a failure" "true"
-            total_fails=$($total_fails+1)
+            debug_print "Instrumentation stats did not match expected values for $testname" "true"
+            debug_print "Counting as a failure - view diff in $debug_log" "true"
+            total_fails=$(($total_fails+1))
         fi
     done
     for testname in ${tests[@]}; do
