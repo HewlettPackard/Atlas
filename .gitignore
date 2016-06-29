@@ -33,6 +33,7 @@ runtime/build-all/
 
 # Temporary files
 *.swp
+*log.txt
 
 # Doxygen output
 runtime/html/
