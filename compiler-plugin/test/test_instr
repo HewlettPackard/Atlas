@@ -18,7 +18,6 @@
 debug_log=test_instr_log.txt
 total_fails=0
 out="instr_out.txt"
-tests=( "strops" "long_double" )
 
 ################################################################
 #                       debug_print                            #
@@ -44,6 +43,7 @@ function test_instrumentation
 {
     debug_print "Beginning instrumentation testing" "true"
     test_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    cd $test_dir
     plugin="$test_dir/../plugin_build/NvmInstrumenter.so"
     atlas_root="$test_dir/../.."
     if [ -f "$plugin" ]; then
@@ -54,21 +54,38 @@ function test_instrumentation
     else
         debug_print "Cannot detect a build of atlas instrumentation plugin, ensure it is built with ./build_plugin." "true"
         debug_print "If your build plugin is outside of compiler_plugin, set \$PLUGIN to it's location" "true"
-        exit 0
+        exit 1
     fi
     if ! which opt > /dev/null ; then
         debug_print "Cannot find opt - cannot conduct instrumentation testing, exiting" "true"
-        exit 0
+        exit 1
     fi
+    if opt --version | grep assert > /dev/null; then
+        debug_print "Found a version of opt built with asserts"
+    else
+        debug_print "No version of opt with asserts found, cannot check statistics, exiting" "true"
+        exit 1
+    fi
+    tests=($(ls -d *.c))
     for testname in ${tests[@]}; do
+        testname=${testname%.*}
+        if [ ! -f test_refs/$testname\.ref ]; then
+            debug_print "Test $testname does not have a .ref file under test_refs. If this test has just been added, consult the README on how to generate a corresponding .ref file" "true"
+            debug_print "Continuing to next test" "true"
+            continue
+        fi
         debug_print "Generating llvm ir bitcode file for $testname"
-        clang -c -emit-llvm -O3 -pthread $testname\.c -I$atlas_root/runtime/include &> /dev/null
+        clang -c -emit-llvm -pthread $testname\.c -I$atlas_root/runtime/include &> /dev/null
         if [ "$?" -ne 0 ]; then
             debug_print "Failed to generate bitcode for $testname, running next test" "true"
             continue
         fi
         debug_print "Using opt to get instrumentation readout of bitcode for $testname"
         opt -load $plugin -NvmInstrumenter -stats < $testname\.bc > /dev/null 2> $testname\.out
+        if [ "$?" -ne 0 ]; then
+            debug_print "Failed to run opt for $testname, running next test" "true"
+            continue
+        fi
         debug_print "Using sed to sanitise $testname.out"
         sed -i '/Number of/!d' $testname\.out
         debug_print "Results of $testname are" "true"
@@ -86,9 +103,13 @@ function test_instrumentation
             total_fails=$(($total_fails+1))
         fi
     done
-    for testname in ${tests[@]}; do
-        rm -f $testname\.out $testname\.bc
-    done
+    if [ $total_fails -ne 0 ]; then
+        debug_print "Retaining .out files for attempt" "true"
+    else
+        for testname in ${tests[@]}; do
+            rm -f $testname\.out $testname\.bc
+        done
+    fi
 }
 ################################################################
 #                            main                              #
@@ -96,7 +117,7 @@ function test_instrumentation
 #Run with debug flag set to true to see output of build commands and which tests are passing.
 #which would have been displayed with debug flag set to true. test_region_log contains output of tests.
 
-help_str="USAGE: ./test_region [debug flag: true or false]"
+help_str="USAGE: ./test_instr [debug flag: true or false] \nVerifies correctness of instrumentation by compiler_plugin. \nRequires a debug build of LLVM with assertions and the compiler plugin to be built."
 
 debug="$1"
 if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
@@ -104,7 +125,7 @@ if [ "${debug,,}" == "false" ]; then #bash4.0 convert to lower
 elif [ "${debug,,}" == "true" ]; then #bash4.0 convert to lower
     debug="true"
 else
-    echo "$help_str"
+    echo -e "$help_str"
     exit 1
 fi
 rm -f $debug_log
