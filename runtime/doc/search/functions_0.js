@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['acquirelock',['acquireLock',['../classAtlas_1_1Stats.html#a53ce02a1fe1ef8dc02130dc26094656e',1,'Atlas::Stats']]],
+  ['acquirelogreadylock',['acquireLogReadyLock',['../classAtlas_1_1LogMgr.html#a59a9a0533245c7ab6759e5857dc3a6dc',1,'Atlas::LogMgr']]],
+  ['acquirestatslock',['acquireStatsLock',['../classAtlas_1_1LogMgr.html#a4664955168914d218337a086d79bb5b8',1,'Atlas::LogMgr']]],
+  ['add',['add',['../build-all_2tests_2region_2region__test_8h.html#a018ed792aba977ea0d72ace767eb4f67',1,'add():&#160;region_test.h'],['../tests_2region_2region__test_8h.html#a018ed792aba977ea0d72ace767eb4f67',1,'add():&#160;region_test.h']]],
+  ['add_5fcal',['add_cal',['../cow__array__list_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list.c'],['../cow__array__list__nvm_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list_nvm.c'],['../instrumented_2cow__array__list__nvm_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list_nvm.c']]],
+  ['add_5fexecutable',['add_executable',['../src_2recover_2CMakeLists_8txt.html#a7aceb1a94f375e9cd981aa55ebc7322d',1,'add_executable(${t}&quot;${t}.cpp&quot;) target_link_libraries($:&#160;CMakeLists.txt'],['../tests_2consistency_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt'],['../tests_2region_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt']]],
+  ['add_5for_5fupdate_5falarm',['add_or_update_alarm',['../alarm__clock_8c.html#a6a6729faf130ad12404b899a4994cf55',1,'add_or_update_alarm(uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, char *name):&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a6a6729faf130ad12404b899a4994cf55',1,'add_or_update_alarm(uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, char *name):&#160;alarm_clock_nvm.c']]],
+  ['addentrytodeletedmap',['addEntryToDeletedMap',['../classAtlas_1_1Helper.html#ac153e3d2123e5a4228bc6096cff31fb2',1,'Atlas::Helper']]],
+  ['addtomap',['AddToMap',['../recover_8cpp.html#a4997f6f3946f5cc884ceaba654727b42',1,'AddToMap(LogEntry *acq_le, int tid):&#160;recover.cpp'],['../recover_8hpp.html#a6a3191d5aef68059dd1d8e30fdb6481b',1,'AddToMap(LogEntry *, int):&#160;recover.cpp']]],
+  ['addtonodeinfomap',['addToNodeInfoMap',['../classAtlas_1_1DGraph.html#a932a1082553d384e4d29dc646f396846',1,'Atlas::DGraph']]],
+  ['allocfromfreelist',['allocFromFreeList',['../classAtlas_1_1PArena.html#af5b4f6578606febec779f5a62ce8bf0f',1,'Atlas::PArena']]],
+  ['allocfromupdatedfreelist',['allocFromUpdatedFreeList',['../classAtlas_1_1PArena.html#a89afbda5ebf423baf92e4ae0b72b1960',1,'Atlas::PArena']]],
+  ['allocmem',['allocMem',['../classAtlas_1_1PArena.html#a7408fb7cec0e07788443373253a8554b',1,'Atlas::PArena::allocMem()'],['../classAtlas_1_1PRegion.html#af94cbf4a93e32041a2101862b1110b73',1,'Atlas::PRegion::allocMem()'],['../classAtlas_1_1PRegionMgr.html#adede0cf997156ec1f96e495948b8b512',1,'Atlas::PRegionMgr::allocMem()']]],
+  ['allocmemcachelinealigned',['allocMemCacheLineAligned',['../classAtlas_1_1PRegionMgr.html#a03dcd52654d6ae5f4a00862d3a220ade',1,'Atlas::PRegionMgr']]],
+  ['allocmemwithoutlogging',['allocMemWithoutLogging',['../classAtlas_1_1PRegionMgr.html#a403f4a78682e435a5157956348eeeac6',1,'Atlas::PRegionMgr']]],
+  ['allocrawmem',['allocRawMem',['../classAtlas_1_1PArena.html#a21ef5f5d632dc96b93e3b3fe48438126',1,'Atlas::PArena']]],
+  ['allocroot',['allocRoot',['../classAtlas_1_1PRegion.html#ad2de42a64b4e36525a41798e2e5320e2',1,'Atlas::PRegion']]],
+  ['areuserthreadsdone',['areUserThreadsDone',['../classAtlas_1_1LogMgr.html#a6f067c964867b22d613526724eff52ef',1,'Atlas::LogMgr']]],
+  ['asyncdatacacheflush',['AsyncDataCacheFlush',['../table__based_8cpp.html#a8e9cb8d5b4c547edcabcb45362cf8dc3',1,'table_based.cpp']]],
+  ['asyncdataflush',['asyncDataFlush',['../classAtlas_1_1LogMgr.html#a50c413664ebb16e96ab442896fd648a2',1,'Atlas::LogMgr']]],
+  ['asynclogflush',['asyncLogFlush',['../classAtlas_1_1LogMgr.html#a17ddc7236177c08dc35eb38e9b5a6b9d',1,'Atlas::LogMgr']]],
+  ['asyncmemopdatacacheflush',['AsyncMemOpDataCacheFlush',['../table__based_8cpp.html#a827c93b3a9688724e1016671874afd0b',1,'table_based.cpp']]],
+  ['asyncmemopdataflush',['asyncMemOpDataFlush',['../classAtlas_1_1LogMgr.html#a05f9ae1d5cb0a8120f5d70dbde757e36',1,'Atlas::LogMgr']]]
+];

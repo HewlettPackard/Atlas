@@ -1,0 +1,21 @@
+<map id="src/internal_includes/consistency_mgr.hpp" name="src/internal_includes/consistency_mgr.hpp">
+<area shape="rect" id="node7" href="$helper_8hpp.html" title="helper.hpp" alt="" coords="559,177,641,203"/>
+<area shape="rect" id="node11" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="761,259,855,285"/>
+<area shape="rect" id="node37" href="$durability__graph_8hpp.html" title="durability_graph.hpp" alt="" coords="1593,95,1732,121"/>
+<area shape="rect" id="node41" href="$fase_8hpp.html" title="fase.hpp" alt="" coords="827,177,899,203"/>
+<area shape="rect" id="node15" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="2039,557,2177,584"/>
+<area shape="rect" id="node16" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="1387,333,1506,360"/>
+<area shape="rect" id="node26" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="334,483,447,509"/>
+<area shape="rect" id="node27" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="183,408,305,435"/>
+<area shape="rect" id="node29" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="227,333,365,360"/>
+<area shape="rect" id="node30" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="725,333,891,360"/>
+<area shape="rect" id="node31" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="482,408,611,435"/>
+<area shape="rect" id="node32" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="593,333,701,360"/>
+<area shape="rect" id="node33" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="1029,483,1105,509"/>
+<area shape="rect" id="node34" href="$util_8hpp.html" title="util.hpp" alt="" coords="788,408,852,435"/>
+<area shape="rect" id="node19" href="$pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="1766,408,1909,435"/>
+<area shape="rect" id="node20" href="$pregion_8hpp.html" title="pregion.hpp" alt="" coords="1519,408,1609,435"/>
+<area shape="rect" id="node22" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="1687,483,1785,509"/>
+<area shape="rect" id="node23" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="1485,483,1577,509"/>
+<area shape="rect" id="node25" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="1810,483,1926,509"/>
+</map>

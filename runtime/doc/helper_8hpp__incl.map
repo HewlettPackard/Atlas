@@ -1,0 +1,18 @@
+<map id="src/internal_includes/helper.hpp" name="src/internal_includes/helper.hpp">
+<area shape="rect" id="node9" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1517,95,1610,121"/>
+<area shape="rect" id="node13" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="943,393,1082,420"/>
+<area shape="rect" id="node14" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="972,169,1091,196"/>
+<area shape="rect" id="node25" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="1483,319,1596,345"/>
+<area shape="rect" id="node26" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="1526,244,1649,271"/>
+<area shape="rect" id="node28" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="1651,169,1790,196"/>
+<area shape="rect" id="node29" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="280,169,447,196"/>
+<area shape="rect" id="node30" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1825,244,1955,271"/>
+<area shape="rect" id="node31" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="1865,169,1973,196"/>
+<area shape="rect" id="node32" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="1280,319,1356,345"/>
+<area shape="rect" id="node33" href="$util_8hpp.html" title="util.hpp" alt="" coords="2182,244,2246,271"/>
+<area shape="rect" id="node18" href="$pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="960,244,1103,271"/>
+<area shape="rect" id="node19" href="$pregion_8hpp.html" title="pregion.hpp" alt="" coords="609,244,699,271"/>
+<area shape="rect" id="node21" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="709,319,807,345"/>
+<area shape="rect" id="node22" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="832,319,924,345"/>
+<area shape="rect" id="node24" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="483,319,599,345"/>
+</map>

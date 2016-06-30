@@ -1,0 +1,9 @@
+<map id="src/internal_includes/fase.hpp" name="src/internal_includes/fase.hpp">
+<area shape="rect" id="node2" href="$durability__graph_8hpp.html" title="src/internal_includes\l/durability_graph.hpp" alt="" coords="238,95,381,136"/>
+<area shape="rect" id="node4" href="$consistency__mgr_8hpp.html" title="src/internal_includes\l/consistency_mgr.hpp" alt="" coords="343,184,494,225"/>
+<area shape="rect" id="node3" href="$durability__graph__builder_8cpp.html" title="src/consistency/durability\l_graph_builder.cpp" alt="" coords="5,273,176,315"/>
+<area shape="rect" id="node5" href="$consistency_8cpp.html" title="src/consistency/consistency.cpp" alt="" coords="200,281,413,307"/>
+<area shape="rect" id="node6" href="$consistency__mgr_8cpp.html" title="src/consistency/consistency\l_mgr.cpp" alt="" coords="438,273,626,315"/>
+<area shape="rect" id="node7" href="$helper__driver_8cpp.html" title="src/consistency/helper\l_driver.cpp" alt="" coords="650,273,803,315"/>
+<area shape="rect" id="node8" href="$log__pruner_8cpp.html" title="src/consistency/log\l_pruner.cpp" alt="" coords="827,273,962,315"/>
+</map>
