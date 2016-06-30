@@ -24,11 +24,12 @@ for example.
 
 ## Requirements
 
-LLVM must be built debug with assertions enabled. These tests use the LLVM
-opt tool with -stats flag to check instrumentation.
+The LLVM toolchain must be built debug with assertions enabled. This is needed in order to
+run opt with -stats, more on the LLVM Statistic class
+[here](http://llvm.org/docs/ProgrammersManual.html#statistic).
 
-The compiler plugin NvmInstrumenter.so must also be built (with assertions).
-If the compiler plugin is built outside of Atlas/compiler-plugin/plugin_build,
+The compiler plugin `NvmInstrumenter.so` must also be built (with assertions).
+If the compiler plugin is built outside of `plugin_build/`,
 set environment variable PLUGIN to its location.
 
 If these are not met the script will return with a non zero exit code.
@@ -51,5 +52,4 @@ occured. These are generated with clang and opt. Run the following from this dir
     $ rm test.bc
 
 View the contents of `test.ref`, if the correct number of instrumentations have occured,
-move `test.ref` to `test_refs`.
-
+move `test.ref` to `test_refs/`.
