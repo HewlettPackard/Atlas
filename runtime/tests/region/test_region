@@ -19,7 +19,6 @@ debug_log=test_region_log.txt
 total_fails=0
 out="region_out.txt"
 stress_repeats="5"
-instr_testname="focdelete"
 
 ################################################################
 #                       debug_print                            #
@@ -218,61 +217,6 @@ function run_tests
         fi
     done
 }
-################################################################
-#                     test_instrumentation                     #
-################################################################
-function test_instrumentation
-{
-    plugin="$atlas_build/../../compiler-plugin/plugin_build/NvmInstrumenter.so"
-    if [ -f "$plugin" ]; then
-        debug_print "Found compiler plugin build"
-    elif [ ! -z "$PLUGIN" ]; then
-        debug_print "Found compiler plugin to test instrumentation in $PLUGIN"
-        plugin="$PLUGIN"
-    else
-        debug_print "Cannot find compiler plugin - is this build of atlas out of the Atlas/ tree? Try setting PLUGIN to the path of NvmInstrumenter.so." "true"
-        debug_print "Carrying on with region testing" "true"
-        return
-    fi
-
-    debug_print "Generating llvm ir bitcode file for $instr_testname"
-    clang -c -emit-llvm -O3 -pthread $instr_testname\.c -I$atlas_build/include -Iregion_test.h &> /dev/null
-    if [ "$?" -ne 0 ]; then
-        debug_print "Failed to generate bitcode, moving to region testing" "true"
-        return
-    fi
-    debug_print "Using opt to get instrumentation readout of bitcode for $instr_testname"
-    opt -load $plugin -NvmInstrumenter -stats < $instr_testname\.bc > /dev/null 2> $instr_testname\.out
-    if [ "$?" -ne 0 ]; then
-        debug_print "Failed to run opt, is it installed? Moving to region testing" "true"
-        return
-    fi
-    debug_print "Using sed to sanitise $instr_testname\.out"
-    sed_cmd=`sed -i 's/^[ ]*//g' $instr_testname.out`
-    #pre process output file
-    $sed_cmd
-    stats=( "acquires" "releases" "stores" )
-    stats_expected=( "2" "3" "13" )
-    stats_out=()
-    for stat in "${stats[@]}"; do
-        sed_cmd=`sed -n "s/\([0-9]\+\) \(nvm_instr - Number of $stat instrumented\)/\1 /p" $instr_testname\.out`
-        statout=$sed_cmd
-        if [ -z "$statout" ];then
-            debug_print "Failed to find value for number of $stat instrumented in $instr_testname, returning - maybe opt isn't built debug" "true"
-            return
-        fi
-        debug_print "Got $statout for $stat in test $instr_testname"
-        stats_out+=($statout)
-    done
-    diff=$(diff <(echo "${stats_out[@]}") <(echo "${stats_expected[@]}"))
-    if [ -z "$diff" ]; then
-        debug_print "Instrumentation results were as expected" "true"
-        instr_flag="true"
-    else
-        debug_print "Instrumentation stats did not match expected values, counting as a failure" "true"
-        instr_flag="false"
-    fi
-}
 
 ################################################################
 #                      find_atlas_build                        #
@@ -323,7 +267,6 @@ if [ -f "$debug_log" ]; then
 fi
 find_atlas_build
 set_up
-test_instrumentation
 run_tests
 tear_down
 if [[ $total_fails -gt 0 ]]; then

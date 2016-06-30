@@ -15,7 +15,15 @@
 
 # REGION TESTS
 
-Each script in this directory calls region functions in the Atlas
+## Usage
+
+To run the test script do `./test_region_instr false`. Run with
+`./test_region_instr true` to see debug information, if there are errors
+for example.
+
+## Test Structure
+
+Each program in this directory calls region functions in the Atlas
 API and performs some minor work (function `test` in `region_test.h` which
 creates a linked list). Change the macros `WORK` and `NUM_NODES` to alter
 the amount of work.
@@ -43,16 +51,3 @@ creating a test `focdelete` which is runnable and creates regions must be
 added to `runnable_tests` and `tests_create`. A test `finddelete` which is
 nonrunnable and aborts, must only be added to `nonrunnable_tests`.
 
-`test_region_instr` also does an instrumentation check, verifying
-correctness of the compiler plugin. It checks the number of stores,
-lock acquires and releases for `focdelete` against expected values.
-If the atlas build directory is not under `runtime` directory the
-environment variable `PLUGIN` should be set to the path of
-`NvmInstrumenter.so`, i.e., `PLUGIN=/path/to/NvmInstrumenter.so`
-
-If neither `PLUGIN` is set or the build directory is not under `runtime`,
-no instrumentation checking will be attempted.
-
-To run the test script do `./test_region_instr false`. Run with
-`./test_region_instr true` to see debug information, if there are errors
-for example.
