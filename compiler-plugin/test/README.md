@@ -11,7 +11,7 @@
 [//]: # ( General Public License along with this program. If not, see          )
 [//]: # ( <http://www.gnu.org/licenses/>.                                      )
 
-# INSTRUMENTATION TESTS
+# Instrumentation Tests
 
 `test_instr` performs instrumentation checks on different instructions, verifying
 that the compiler plugin performs the correct instrumentations, both type and quantity.
