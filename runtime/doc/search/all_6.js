@@ -30,7 +30,6 @@ var searchData=
   ['get_5ftl_5fcurr_5farena',['get_tl_curr_arena',['../classAtlas_1_1PMallocUtil.html#abc2519cc718ba7e9d4a01c816b41de76',1,'Atlas::PMallocUtil']]],
   ['get_5ftl_5fnext_5farena',['get_tl_next_arena',['../classAtlas_1_1PMallocUtil.html#ab7ea32e11c249c0af3117e45da03cef6',1,'Atlas::PMallocUtil']]],
   ['getarena',['getArena',['../classAtlas_1_1PRegion.html#a1663949c647300f89547d4c61d037778',1,'Atlas::PRegion']]],
-  ['getcompilationinfoforfile',['GetCompilationInfoForFile',['../_8ycm__extra__conf_8py.html#a42a14573593ce75cd6e385a85326111f',1,'.ycm_extra_conf.py']]],
   ['getinstance',['getInstance',['../classAtlas_1_1CSMgr.html#a5fbeb10f4730964eca93009e176cc6a4',1,'Atlas::CSMgr::getInstance()'],['../classAtlas_1_1Helper.html#a6a5e9d22c0a865360eb5bf7c5f2e1e90',1,'Atlas::Helper::getInstance()'],['../classAtlas_1_1LogMgr.html#a5c1c1446255ae4e93b67644a6fca8e4d',1,'Atlas::LogMgr::getInstance()'],['../classAtlas_1_1PRegionMgr.html#a7e5a79086382690d49df147ea25341ca',1,'Atlas::PRegionMgr::getInstance()'],['../classAtlas_1_1Stats.html#ab2a200baf3bd0aeefc7316c1746541ec',1,'Atlas::Stats::getInstance()']]],
   ['getlogpointer',['getLogPointer',['../classAtlas_1_1LogMgr.html#a9f747efcb97d49477ec2dff373abbdcb',1,'Atlas::LogMgr']]],
   ['getlogstructureheader',['GetLogStructureHeader',['../recover_8cpp.html#a8ec5d41d6036b03aacd7518c3e71665a',1,'GetLogStructureHeader():&#160;recover.cpp'],['../recover_8hpp.html#a8ec5d41d6036b03aacd7518c3e71665a',1,'GetLogStructureHeader():&#160;recover.cpp']]],

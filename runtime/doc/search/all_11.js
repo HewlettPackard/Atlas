@@ -30,7 +30,6 @@ var searchData=
   ['sll_5fnvm_2ecpp',['sll_nvm.cpp',['../sll__nvm_8cpp.html',1,'']]],
   ['sll_5fnvm_2ecpp',['sll_nvm.cpp',['../instrumented_2sll__nvm_8cpp.html',1,'']]],
   ['sll_5frgn_5fid',['sll_rgn_id',['../sll__nvm_8cpp.html#a21b615cffd50a2b8f77c0009d76ab8c6',1,'sll_rgn_id():&#160;sll_nvm.cpp'],['../instrumented_2sll__nvm_8cpp.html#a21b615cffd50a2b8f77c0009d76ab8c6',1,'sll_rgn_id():&#160;sll_nvm.cpp']]],
-  ['source_5fextensions',['SOURCE_EXTENSIONS',['../_8ycm__extra__conf_8py.html#a47014996e1e517071cd0412a22adb123',1,'.ycm_extra_conf.py']]],
   ['start',['Start',['../structAtlas_1_1CbLog.html#a49c2ee52c070134449fc09db93a9d648',1,'Atlas::CbLog']]],
   ['startaddr',['StartAddr',['../structAtlas_1_1CbListNode.html#a5fa98cb5d71567ee29283e0ef21280e1',1,'Atlas::CbListNode']]],
   ['stats',['Stats',['../classAtlas_1_1Stats.html',1,'Atlas']]],

@@ -1,7 +1,6 @@
 var searchData=
 [
   ['data',['data',['../structCOW__AL__INTERNAL.html#a83e1b3d35482d1016936bb7773a5ee10',1,'COW_AL_INTERNAL::data()'],['../structNode.html#a7528a03d7e820b37185bf6fbe5c528a2',1,'Node::Data()']]],
-  ['database',['database',['../_8ycm__extra__conf_8py.html#a64dbaa3229ec575b68ec333442e10cee',1,'.ycm_extra_conf.py']]],
   ['dec',['DEC',['../CMakeCCompilerId_8c.html#ad1280362da42492bbc11aa78cbf776ad',1,'DEC():&#160;CMakeCCompilerId.c'],['../CMakeCXXCompilerId_8cpp.html#ad1280362da42492bbc11aa78cbf776ad',1,'DEC():&#160;CMakeCXXCompilerId.cpp']]],
   ['del_5f',['Del_',['../structAtlas_1_1Helper_1_1LogVer.html#abaef57fae73088171395e812b7f70a9b',1,'Atlas::Helper::LogVer']]],
   ['del_5flog_2ecpp',['del_log.cpp',['../del__log_8cpp.html',1,'']]],
@@ -18,7 +17,6 @@ var searchData=
   ['dequeue',['dequeue',['../queue_8c.html#a497e863058498c4102de384f45b7231a',1,'dequeue(int *valp):&#160;queue.c'],['../queue__nvm_8c.html#a497e863058498c4102de384f45b7231a',1,'dequeue(int *valp):&#160;queue_nvm.c'],['../instrumented_2queue__nvm_8c.html#a497e863058498c4102de384f45b7231a',1,'dequeue(int *valp):&#160;queue_nvm.c']]],
   ['dgraph',['DGraph',['../classAtlas_1_1DGraph.html',1,'Atlas']]],
   ['directedgraph',['DirectedGraph',['../classAtlas_1_1DGraph.html#a85a51d85b227e053cb1f8723cabd7541',1,'Atlas::DGraph']]],
-  ['directoryofthisscript',['DirectoryOfThisScript',['../_8ycm__extra__conf_8py.html#aab283cdb607efa6a1a7aaa3f089c63f1',1,'.ycm_extra_conf.py']]],
   ['do_5fwork',['do_work',['../cow__array__list_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;cow_array_list.c'],['../cow__array__list__nvm_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;cow_array_list_nvm.c'],['../queue_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;queue.c'],['../queue__nvm_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;queue_nvm.c'],['../instrumented_2cow__array__list__nvm_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;cow_array_list_nvm.c'],['../instrumented_2queue__nvm_8c.html#a41d0dbd37f5a2726ffe2a8d8b8bb3028',1,'do_work():&#160;queue_nvm.c']]],
   ['doatomicswitch',['DoAtomicSwitch',['../cow__array__list_8c.html#a3e43e8889063820bd9f0ef823edb994b',1,'DoAtomicSwitch(COW_AL *cal, COW_AL_INTERNAL *cal_int):&#160;cow_array_list.c'],['../cow__array__list__nvm_8c.html#a3e43e8889063820bd9f0ef823edb994b',1,'DoAtomicSwitch(COW_AL *cal, COW_AL_INTERNAL *cal_int):&#160;cow_array_list_nvm.c'],['../instrumented_2cow__array__list__nvm_8c.html#a3e43e8889063820bd9f0ef823edb994b',1,'DoAtomicSwitch(COW_AL *cal, COW_AL_INTERNAL *cal_int):&#160;cow_array_list_nvm.c']]],
   ['doconsistentupdate',['doConsistentUpdate',['../classAtlas_1_1CSMgr.html#ab578844c5d867f777a6da89e443e539c',1,'Atlas::CSMgr::doConsistentUpdate()'],['../classAtlas_1_1Helper.html#a8ad8837467463af185ad3a2f61b5eb05',1,'Atlas::Helper::doConsistentUpdate()']]],
