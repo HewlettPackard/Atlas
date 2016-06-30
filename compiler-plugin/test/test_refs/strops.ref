@@ -1,3 +1,2 @@
-1 nvm_instr - Number of memcopies instrumented
 2 nvm_instr - Number of strcats instrumented
-3 nvm_instr - Number of strcpys instrumented
+2 nvm_instr - Number of strcpys instrumented

@@ -12,39 +12,16 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <string.h>
 #include <unistd.h>
-#include "atlas_api.h"
-#include "atlas_alloc.h"
 
-
-
-
-
-int main(){
-  NVM_Initialize();
-  uint32_t rgn_id = NVM_FindOrCreateRegion("strcpy", O_RDWR, NULL);
-
-  char *str1 = nvm_alloc(30*sizeof(char), rgn_id);
-  char *str2 = nvm_alloc(30*sizeof(char), rgn_id);
-
-  char strdummy[] = "test string banter";
-  strcpy(str1, strdummy); 
+void foo( char *str1, char *str2){
   strcpy(str2, str1);
   strncpy(str2, str1, 5);
   strcat(str2, str1);
   strncat(str2, str1, 5);
-  //NVM_STRCPY(str1, strdummy);
-  //NVM_STRCPY(str2, str1);
-  //NVM_STRNCPY(str1, str2, 5);
-  //NVM_STRCAT(str2, str1);
-  //NVM_STRNCAT(str1, str2, 5);
-  //NVM_PrintStats();
-
-  NVM_Finalize();
 }
