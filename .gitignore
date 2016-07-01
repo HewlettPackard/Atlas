@@ -34,3 +34,8 @@ runtime/build-all/
 # Temporary files
 *.swp
 *log.txt
+
+# Jekyll
+_site
+.sass-cache
+.jekyll-metadata
