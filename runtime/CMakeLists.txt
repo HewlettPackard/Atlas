@@ -267,3 +267,6 @@ add_subdirectory (src)
 add_library (atlas $<TARGET_OBJECTS:Cache_flush> $<TARGET_OBJECTS:Consistency> $<TARGET_OBJECTS:Logger> $<TARGET_OBJECTS:Util> $<TARGET_OBJECTS:Pregion_mgr> $<TARGET_OBJECTS:Pmalloc>) #defaults to static build
 
 #install ()
+
+
+add_subdirectory(examples)
