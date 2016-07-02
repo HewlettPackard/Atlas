@@ -242,8 +242,12 @@ if (CONSISTENCY_FAIL)
     set (CONSISTENCY_FAIL_FLAG "-DCONSISTENCY_FAIL")
 endif ()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -std=c11 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
 
 #copy necessary files from the src dir to the build dir
 foreach (t ${ATLAS_COPY_FILES})
