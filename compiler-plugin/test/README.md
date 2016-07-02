@@ -41,7 +41,7 @@ Both C or C++ tests are allowed.
 Tests are placed in this directory `compiler-plugin/test`.
 
 To add a new test `test.c` a corresponding `test.ref` must be created
-and placed under `compiler-plugin/test/tests`.
+and placed under `compiler-plugin/test/test_refs`.
 
 A corresponding `test.ref` file is required to check the expected instrumentation
 occured. These are generated with clang and opt. Run the following from this directory.
