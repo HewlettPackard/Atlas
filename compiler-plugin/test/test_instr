@@ -24,7 +24,7 @@ out="instr_out.txt"
 ################################################################
 function debug_print
 {
-    local err_str="[TEST_REGION] $1"
+    local err_str="[TEST_INSTR] $1"
     local echoon="$2"
     if [ -z "$echoon" ]; then
         echoon=$debug
@@ -35,6 +35,14 @@ function debug_print
         echo "$err_str"
     fi
     echo "$err_str" >> $debug_log
+}
+################################################################
+#                           failed_run                         #
+################################################################
+function failed_run
+{
+    debug_print "Retaining .out .bc files for debugging purposes" "true"
+    total_fails=$(($total_fails+1))
 }
 ################################################################
 #                     test_instrumentation                     #
@@ -52,7 +60,7 @@ function test_instrumentation
         debug_print "Found compiler plugin to test instrumentation in $PLUGIN"
         plugin="$PLUGIN"
     else
-        debug_print "Cannot detect a build of atlas instrumentation plugin, ensure it is built with ./build_plugin." "true"
+        debug_print "Cannot detect a build of atlas instrumentation plugin, ensure it is built with compiler-plugin/build_plugin." "true"
         debug_print "If your build plugin is outside of compiler_plugin, set \$PLUGIN to it's location" "true"
         exit 1
     fi
@@ -66,50 +74,45 @@ function test_instrumentation
         debug_print "No version of opt with asserts found, cannot check statistics, exiting" "true"
         exit 1
     fi
-    tests=($(ls -d *.c))
+
+    tests=($(ls -d *.c *.cpp 2> /dev/null))
     for testname in ${tests[@]}; do
         testname=${testname%.*}
         if [ ! -f test_refs/$testname\.ref ]; then
             debug_print "Test $testname does not have a .ref file under test_refs. If this test has just been added, consult the README on how to generate a corresponding .ref file" "true"
-            debug_print "Continuing to next test" "true"
+            debug_print "Counting as a failure, running next test" "true"
+            failed_run
             continue
         fi
         debug_print "Generating llvm ir bitcode file for $testname"
-        clang -c -emit-llvm -pthread $testname\.c -I$atlas_root/runtime/include &> /dev/null
+        clang -c -emit-llvm $testname\.c -I$atlas_root/runtime/include &> /dev/null
         if [ "$?" -ne 0 ]; then
             debug_print "Failed to generate bitcode for $testname, running next test" "true"
+            failed_run
             continue
         fi
         debug_print "Using opt to get instrumentation readout of bitcode for $testname"
         opt -load $plugin -NvmInstrumenter -stats < $testname\.bc > /dev/null 2> $testname\.out
         if [ "$?" -ne 0 ]; then
             debug_print "Failed to run opt for $testname, running next test" "true"
+            failed_run
             continue
         fi
         debug_print "Using sed to sanitise $testname.out"
         sed -i '/Number of/!d' $testname\.out
         debug_print "Results of $testname are" "true"
         cat $testname\.out | tee -a $debug_log
-        if [ "$?" -ne 0 ]; then
-            debug_print "Failed to run opt, is it installed? Moving to region testing" "true"
-            return
-        fi
         debug_print "Running diff, output is in $debug_log"
         if diff $testname\.out test_refs/$testname\.ref >> $debug_log; then
             debug_print "Instrumentation results were as expected for $testname" "true"
+            debug_print "Run successful - removing $testname\.out and $testname\.bc"
+            rm -f $testname\.out $testname\.bc
         else
             debug_print "Instrumentation stats did not match expected values for $testname" "true"
             debug_print "Counting as a failure - view diff in $debug_log" "true"
-            total_fails=$(($total_fails+1))
+            failed_run
         fi
     done
-    if [ $total_fails -ne 0 ]; then
-        debug_print "Retaining .out files for attempt" "true"
-    else
-        for testname in ${tests[@]}; do
-            rm -f $testname\.out $testname\.bc
-        done
-    fi
 }
 ################################################################
 #                            main                              #
