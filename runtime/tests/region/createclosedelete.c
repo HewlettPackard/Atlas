@@ -12,23 +12,26 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
 
-#include <stdio.h>
-#include <assert.h>
 #include "region_test.h"
+#include <assert.h>
+#include <stdio.h>
 
 uint32_t rgn_id;
 
-int main(){
-    //WORK and ITERATIONS are macros defined in compilation
-    NVM_Initialize();
-    rgn_id = NVM_CreateRegion("createclosedelete", O_RDWR);
-    test(rgn_id);
-    NVM_CloseRegion(rgn_id);
-    rgn_id = NVM_FindRegion("createclosedelete", O_RDWR);
-    test(rgn_id);
-    NVM_DeleteRegion("createclosedelete");
-    NVM_Finalize();
-    return 0;
+int main() {
+  // WORK and ITERATIONS are macros defined in compilation
+  NVM_Initialize();
+
+  rgn_id = NVM_CreateRegion("createclosedelete", O_RDWR);
+  test(rgn_id);
+  NVM_CloseRegion(rgn_id);
+
+  rgn_id = NVM_FindRegion("createclosedelete", O_RDWR);
+  test(rgn_id);
+  NVM_DeleteRegion("createclosedelete");
+
+  NVM_Finalize();
+
+  return 0;
 }
