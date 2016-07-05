@@ -39,7 +39,7 @@ uint32_t stores_rgn_id;
 
 inline uint64_t rdtsc() {
   uint32_t lo, hi;
-  asm volatile("rdtsc" : "=a"(lo), "=d"(hi));
+  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
   return lo | ((uint64_t)hi << 32);
 }
 
