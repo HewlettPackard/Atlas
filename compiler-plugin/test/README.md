@@ -50,5 +50,5 @@ occured. These are generated with clang and opt. Run the following from this dir
     $ opt -load ../plugin_build/NvmInstrumenter.so -NvmInstrumenter -stats < test.bc > /dev/null 2> test.ref; rm test.bc
     $ sed -i '/Number of/!d' test.ref
 
-View the contents of `test.ref`, if the correct number of instrumentations have occured,
+View the contents of `test.ref`. If the correct number of instrumentations have occurred,
 move `test.ref` to `test_refs/`.
