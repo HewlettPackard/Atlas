@@ -38,60 +38,60 @@ void bar();
 uint32_t stores_rgn_id;
 
 inline uint64_t rdtsc() {
-  uint32_t lo, hi;
-  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-  return lo | ((uint64_t)hi << 32);
+    uint32_t lo, hi;
+    __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+    return lo | ((uint64_t)hi << 32);
 }
 
 typedef int ARR_TYPE;
 
 int main(int argc, char *argv[]) {
-  ARR_TYPE *arr;
-  int count = 0;
-  struct timeval tv_start;
-  struct timeval tv_end;
+    ARR_TYPE *arr;
+    int count = 0;
+    struct timeval tv_start;
+    struct timeval tv_end;
 
-  NVM_Initialize();
-  stores_rgn_id = NVM_FindOrCreateRegion("stores", O_RDWR, NULL);
-  arr = (ARR_TYPE *)nvm_alloc(LOOP_COUNT * sizeof(ARR_TYPE), stores_rgn_id);
+    NVM_Initialize();
+    stores_rgn_id = NVM_FindOrCreateRegion("stores", O_RDWR, NULL);
+    arr = (ARR_TYPE *)nvm_alloc(LOOP_COUNT * sizeof(ARR_TYPE), stores_rgn_id);
 
-  assert(!gettimeofday(&tv_start, NULL));
+    assert(!gettimeofday(&tv_start, NULL));
 
-  uint64_t start = rdtsc();
+    uint64_t start = rdtsc();
 
-  int i;
+    int i;
 
-  //    NVM_BEGIN_DURABLE();
-  for (i = 0; i < LOOP_COUNT; i++) {
-    NVM_BEGIN_DURABLE();
+    //    NVM_BEGIN_DURABLE();
+    for (i = 0; i < LOOP_COUNT; i++) {
+        NVM_BEGIN_DURABLE();
 
-    NVM_STR2(arr[i], i, sizeof(arr[i]) * 8);
+        NVM_STR2(arr[i], i, sizeof(arr[i]) * 8);
 
-    NVM_END_DURABLE();
-  }
-  //    NVM_END_DURABLE();
+        NVM_END_DURABLE();
+    }
+    //    NVM_END_DURABLE();
 
-  assert(!gettimeofday(&tv_end, NULL));
+    assert(!gettimeofday(&tv_end, NULL));
 
-  uint64_t end = rdtsc();
+    uint64_t end = rdtsc();
 
-  for (i = 0; i < LOOP_COUNT; ++i) {
-    count += arr[i];
-  }
+    for (i = 0; i < LOOP_COUNT; ++i) {
+        count += arr[i];
+    }
 
-  NVM_CloseRegion(stores_rgn_id);
+    NVM_CloseRegion(stores_rgn_id);
 
 #ifdef NVM_STATS
-  NVM_PrintStats();
+    NVM_PrintStats();
 #endif
 
-  NVM_Finalize();
+    NVM_Finalize();
 
-  fprintf(stderr, "Sume of elements is %d\n", count);
-  fprintf(stderr, "time elapsed %ld us\n",
-          tv_end.tv_usec - tv_start.tv_usec +
-              (tv_end.tv_sec - tv_start.tv_sec) * 1000000);
-  fprintf(stderr, "cycles: %ld\n", end - start);
+    fprintf(stderr, "Sume of elements is %d\n", count);
+    fprintf(stderr, "time elapsed %ld us\n",
+            tv_end.tv_usec - tv_start.tv_usec +
+                (tv_end.tv_sec - tv_start.tv_sec) * 1000000);
+    fprintf(stderr, "cycles: %ld\n", end - start);
 
-  return 0;
+    return 0;
 }

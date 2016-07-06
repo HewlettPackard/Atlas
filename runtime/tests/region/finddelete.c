@@ -19,12 +19,12 @@
 uint32_t rgn_id;
 
 int main() {
-  // WORK and ITERATIONS are macros defined in compilation
-  NVM_Initialize();
-  rgn_id = NVM_FindRegion("finddelete", O_RDWR);
-  test(rgn_id);
-  NVM_DeleteRegion("finddelete");
-  NVM_Finalize();
+    // WORK and ITERATIONS are macros defined in compilation
+    NVM_Initialize();
+    rgn_id = NVM_FindRegion("finddelete", O_RDWR);
+    test(rgn_id);
+    NVM_DeleteRegion("finddelete");
+    NVM_Finalize();
 
-  return 0;
+    return 0;
 }

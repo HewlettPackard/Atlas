@@ -22,28 +22,28 @@
 uint32_t rgn_id;
 
 int main() {
-  NVM_Initialize();
-  rgn_id = NVM_FindOrCreateRegion("free_test", O_RDWR, NULL);
+    NVM_Initialize();
+    rgn_id = NVM_FindOrCreateRegion("free_test", O_RDWR, NULL);
 
-  int *testint;
-  void *rgn_root = NVM_GetRegionRoot(rgn_id);
-  if (!rgn_root) {
-    testint = (int *)nvm_alloc(sizeof(int), rgn_id);
-    *testint = 10;
-    NVM_SetRegionRoot(rgn_id, testint);
-  } else {
-    testint = (int *)rgn_root;
-    printf("testint is %i\n", *testint);
-  }
+    int *testint;
+    void *rgn_root = NVM_GetRegionRoot(rgn_id);
+    if (!rgn_root) {
+        testint = (int *)nvm_alloc(sizeof(int), rgn_id);
+        *testint = 10;
+        NVM_SetRegionRoot(rgn_id, testint);
+    } else {
+        testint = (int *)rgn_root;
+        printf("testint is %i\n", *testint);
+    }
 
 #ifdef CONSISTENCY_FAIL
-  exit(0);
+    exit(0);
 #endif
 
-  nvm_free(testint);
+    nvm_free(testint);
 
-  NVM_DeleteRegion("free_test");
-  NVM_Finalize();
+    NVM_DeleteRegion("free_test");
+    NVM_Finalize();
 
-  return 0;
+    return 0;
 }

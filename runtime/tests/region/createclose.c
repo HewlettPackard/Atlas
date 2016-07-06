@@ -20,12 +20,12 @@
 uint32_t rgn_id;
 
 int main() {
-  // WORK and ITERATIONS are macros defined in compilation
-  NVM_Initialize();
-  rgn_id = NVM_CreateRegion("createclose", O_RDWR);
-  test(rgn_id);
-  NVM_CloseRegion(rgn_id);
-  NVM_Finalize();
+    // WORK and ITERATIONS are macros defined in compilation
+    NVM_Initialize();
+    rgn_id = NVM_CreateRegion("createclose", O_RDWR);
+    test(rgn_id);
+    NVM_CloseRegion(rgn_id);
+    NVM_Finalize();
 
-  return 0;
+    return 0;
 }

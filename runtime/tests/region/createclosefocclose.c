@@ -20,18 +20,18 @@
 uint32_t rgn_id;
 
 int main() {
-  // WORK and ITERATIONS are macros defined in compilation
-  NVM_Initialize();
+    // WORK and ITERATIONS are macros defined in compilation
+    NVM_Initialize();
 
-  rgn_id = NVM_CreateRegion("createclosefindclose", O_RDWR);
-  test(rgn_id);
-  NVM_CloseRegion(rgn_id);
+    rgn_id = NVM_CreateRegion("createclosefindclose", O_RDWR);
+    test(rgn_id);
+    NVM_CloseRegion(rgn_id);
 
-  rgn_id = NVM_FindRegion("createclosefindclose", O_RDWR);
-  test(rgn_id);
-  NVM_CloseRegion(rgn_id);
+    rgn_id = NVM_FindRegion("createclosefindclose", O_RDWR);
+    test(rgn_id);
+    NVM_CloseRegion(rgn_id);
 
-  NVM_Finalize();
+    NVM_Finalize();
 
-  return 0;
+    return 0;
 }
