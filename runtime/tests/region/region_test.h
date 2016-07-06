@@ -38,7 +38,7 @@ pthread_mutex_t root_lock;
 int num_nodes;
 uint32_t global_rgn_id;
 
-void *add(void *unused) {
+void *add() {
   node *current;
   int i;
 
@@ -102,7 +102,7 @@ void test(uint32_t rgn_id) {
 
     for (i = 0; i < THREADS; i++) {
       printf("Creating thead %i\n", i);
-      pthread_create(&tid[i], &attr, add, NULL);
+      pthread_create(&tid[i], &attr, (void *(*)(void *))add, NULL);
       // pthread_create(&tid[i], &attr, *operation, NULL);
     }
 
