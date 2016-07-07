@@ -13,35 +13,30 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 #include <sys/time.h>
-#include <time.h>
-#include <inttypes.h>
 
 // Atlas includes
-#include "atlas_api.h"
 #include "atlas_alloc.h"
+#include "atlas_api.h"
 
 #define LOOP_COUNT 1000000
 
 void bar();
 
-// Id of Atlas persistent region
+// ID of Atlas persistent region
 uint32_t stores_rgn_id;
 
 static inline uint64_t rdtsc() {
     uint32_t lo, hi;
-    __asm__ volatile ("rdtsc" : "=a" (lo), "=d" (hi));
+    __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
     return lo | ((uint64_t)hi << 32);
 }
 
 typedef int ARR_TYPE;
 
-int main()
-{
+int main() {
     ARR_TYPE *arr;
     int count = 0;
     struct timeval tv_start;
@@ -57,7 +52,7 @@ int main()
     // Create an Atlas persistent region
     stores_rgn_id = NVM_FindOrCreateRegion("stores", O_RDWR, NULL);
     // Allocate memory from the above persistent region
-    arr = (ARR_TYPE*)nvm_alloc(LOOP_COUNT*sizeof(ARR_TYPE), stores_rgn_id);
+    arr = (ARR_TYPE *)nvm_alloc(LOOP_COUNT * sizeof(ARR_TYPE), stores_rgn_id);
 
     assert(!gettimeofday(&tv_start, NULL));
 
@@ -66,26 +61,26 @@ int main()
     int i;
 
     // Atlas failure-atomic section
-//    NVM_BEGIN_DURABLE();
-    for (i=0; i<LOOP_COUNT; i++)
-    {
+    for (i = 0; i < LOOP_COUNT; ++i) {
         NVM_BEGIN_DURABLE();
 
 #ifdef _FORCE_FAIL
-        if (i == randval) exit(0);
+        if (i == randval) {
+            exit(0);
+        }
 #endif
         arr[i] = i;
 
         NVM_END_DURABLE();
     }
-//    NVM_END_DURABLE();
-
-    assert(!gettimeofday(&tv_end, NULL));
 
     uint64_t end = rdtsc();
 
-    for (i=0; i<LOOP_COUNT; ++i)
+    assert(!gettimeofday(&tv_end, NULL));
+
+    for (i = 0; i < LOOP_COUNT; ++i) {
         count += arr[i];
+    }
 
     // Close the Atlas persistent region
     NVM_CloseRegion(stores_rgn_id);
@@ -99,7 +94,7 @@ int main()
     fprintf(stderr, "Sum of elements is %d\n", count);
     fprintf(stderr, "time elapsed %ld us\n",
             tv_end.tv_usec - tv_start.tv_usec +
-            (tv_end.tv_sec - tv_start.tv_sec) * 1000000);
+                (tv_end.tv_sec - tv_start.tv_sec) * 1000000);
     fprintf(stderr, "cycles: %ld\n", end - start);
 
     return 0;
