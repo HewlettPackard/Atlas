@@ -54,7 +54,7 @@ int cancelled_alarms = 0;
 int failed_cancel_alarms = 0;
 
 AlarmClockInfo *CreateNewInfo(uint8_t hour, uint8_t min, uint8_t mode,
-                              uint8_t repeat_factor, char *name) {
+                              uint8_t repeat_factor, const char *name) {
     AlarmClockInfo *ninfo = (AlarmClockInfo *)malloc(sizeof(AlarmClockInfo));
     ninfo->hour = hour;
     ninfo->min = min;
@@ -74,7 +74,7 @@ static inline AlarmClockInfo *GetHeader(uint8_t hour, uint8_t min) {
 }
 
 int add_or_update_alarm(uint8_t hour, uint8_t min, uint8_t mode,
-                        uint8_t repeat_factor, char *name) {
+                        uint8_t repeat_factor, const char *name) {
     pthread_mutex_t *bucket_mtx = GetLock(hour, min);
     pthread_mutex_lock(bucket_mtx);
     AlarmClockInfo *header = GetHeader(hour, min);
