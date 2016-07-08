@@ -145,7 +145,7 @@ with as few changes as possible.
 
 For Ubuntu 16.04, these dependencies can be installed with:
 
-    sudo apt-get install llvm clang cmake libboost-all-dev
+    sudo apt-get install llvm clang cmake libboost-graph-dev
 
 * ruby (for certain test scripts), see **Installing Ruby** at [gorails](https://gorails.com/setup/ubuntu/16.04) for instructions.
 
