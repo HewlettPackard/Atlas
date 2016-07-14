@@ -17,8 +17,8 @@
 
 ## Usage
 
-To run the test script do `./test_region_instr false`. Run with
-`./test_region_instr true` to see debug information, if there are errors
+To run the test script do `./test_region false`. Run with
+`./test_region true` to see debug information, if there are errors
 for example.
 
 ## Test Structure
@@ -34,7 +34,7 @@ The order in which the Atlas region api is called is in the filename, e.g.:
  `CloseRegion`
 - `finddelete.c`: `FindRegion`, `DeleteRegion`
 
-The test script `test_region_instr`, runs these tests up to 100 times
+The test script `test_region`, runs these tests up to 100 times
 depending on expected behaviour.  There are three behaviours in two
 classes:
 
@@ -45,7 +45,7 @@ The test programs are put into one of the two classes depending on if
 they should run in the first place.  If they are runnable the programs
 either execute one of the three behaviours when run again.
 
-To add a test, edit `CMakeLists.txt`, and in `test_region_instr` add the
+To add a test, edit `CMakeLists.txt`, and in `test_region` add the
 test name to the respective local arrays in function `run_tests`.  E.g.
 creating a test `focdelete` which is runnable and creates regions must be
 added to `runnable_tests` and `tests_create`. A test `finddelete` which is

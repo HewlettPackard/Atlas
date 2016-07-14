@@ -12,19 +12,19 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
 
-#include <stdio.h>
 #include "region_test.h"
+#include <stdio.h>
 
 uint32_t rgn_id;
 
-int main(){
-    //WORK and ITERATIONS are macros defined in compilation
+int main() {
+    // WORK and ITERATIONS are macros defined in compilation
     NVM_Initialize();
     rgn_id = NVM_FindOrCreateRegion("findclose", O_RDWR, NULL);
     test(rgn_id);
     NVM_CloseRegion(rgn_id);
     NVM_Finalize();
-    return 0; 
+
+    return 0;
 }

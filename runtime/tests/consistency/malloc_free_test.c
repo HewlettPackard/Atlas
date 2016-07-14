@@ -12,32 +12,38 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "atlas_alloc.h"
 #include "atlas_api.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 uint32_t rgn_id;
-int main(){
+
+int main() {
     NVM_Initialize();
     rgn_id = NVM_FindOrCreateRegion("free_test", O_RDWR, NULL);
-    void * rgn_root = NVM_GetRegionRoot(rgn_id);
-    int * testint;
-    if(!rgn_root){
-        testint = nvm_alloc(sizeof(int), rgn_id);
+
+    int *testint;
+    void *rgn_root = NVM_GetRegionRoot(rgn_id);
+    if (!rgn_root) {
+        testint = (int *)nvm_alloc(sizeof(int), rgn_id);
         *testint = 10;
         NVM_SetRegionRoot(rgn_id, testint);
-    }else{
-        testint = rgn_root;
+    } else {
+        testint = (int *)rgn_root;
         printf("testint is %i\n", *testint);
     }
+
 #ifdef CONSISTENCY_FAIL
     exit(0);
 #endif
+
     nvm_free(testint);
+
     NVM_DeleteRegion("free_test");
     NVM_Finalize();
+
     return 0;
 }

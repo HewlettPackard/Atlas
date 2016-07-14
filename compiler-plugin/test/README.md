@@ -41,15 +41,14 @@ Both C or C++ tests are allowed.
 Tests are placed in this directory `compiler-plugin/test`.
 
 To add a new test `test.c` a corresponding `test.ref` must be created
-and placed under `compiler-plugin/test/tests`.
+and placed under `compiler-plugin/test/test_refs`.
 
-A corresponding `test.ref` file is required to check the expected instrumentation
+A `.ref` file is used to check that the expected instrumentation
 occured. These are generated with clang and opt. Run the following from this directory.
 
-    $ clang -c -emit-llvm -pthread test.c &> /dev/null
-    $ opt -load ../plugin_build/NvmInstrumenter.so -NvmInstrumenter -stats < test.bc > /dev/null 2> test.ref
+    $ clang -c -emit-llvm test.c &> /dev/null
+    $ opt -load ../plugin_build/NvmInstrumenter.so -NvmInstrumenter -stats < test.bc > /dev/null 2> test.ref; rm test.bc
     $ sed -i '/Number of/!d' test.ref
-    $ rm test.bc
 
-View the contents of `test.ref`, if the correct number of instrumentations have occured,
+View the contents of `test.ref`. If the correct number of instrumentations have occurred,
 move `test.ref` to `test_refs/`.

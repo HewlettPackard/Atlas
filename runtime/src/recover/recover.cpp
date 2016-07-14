@@ -121,8 +121,6 @@ void R_Initialize(const char *s)
     
     LogMgr::getInstance().setRegionId(nvm_logs_id);
 
-    std::cout << nvm_logs_id << std::endl;
-    
     void *log_base_addr =
         PRegionMgr::getInstance().getPRegion(
             Atlas::LogMgr::getInstance().getRegionId())->get_base_addr();
