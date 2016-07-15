@@ -104,21 +104,21 @@ $(document).ready(function(){initNavTree('md_tests_region_README.html','');});
 <div class="contents">
 <div class="textblock"><h1>REGION TESTS</h1>
 <h2>Usage</h2>
-<p>To run the test script do <code>./test_region_instr false</code>. Run with <code>./test_region_instr true</code> to see debug information, if there are errors for example.</p>
+<p>To run the test script do <code>./test_region false</code>. Run with <code>./test_region true</code> to see debug information, if there are errors for example.</p>
 <h2>Test Structure</h2>
-<p>Each program in this directory calls region functions in the <a class="el" href="namespaceAtlas.html">Atlas</a> API and performs some minor work (function <code>test</code> in <code>region_test.h</code> which creates a linked list). Change the macros <code>WORK</code> and <code>NUM_NODES</code> to alter the amount of work.</p>
+<p>Each program in this directory calls region functions in the <a class="el" href="namespaceAtlas.html">Atlas</a> API and performs some minor work (function <code>test</code> in <code><a class="el" href="region__test_8h.html">region_test.h</a></code> which creates a linked list). Change the macros <code>WORK</code> and <code>NUM_NODES</code> to alter the amount of work.</p>
 <p>The order in which the <a class="el" href="namespaceAtlas.html">Atlas</a> region api is called is in the filename, e.g.:</p><ul>
 <li><code><a class="el" href="focclose_8c.html">focclose.c</a></code>: <code>FindOrCreateRegion</code>, <code>CloseRegion</code></li>
 <li><code><a class="el" href="createclosefocclose_8c.html">createclosefocclose.c</a></code>: <code>CreateRegion</code>, <code>CloseRegion</code>, <code>FindOrCreateRegion</code>, <code>CloseRegion</code></li>
 <li><code><a class="el" href="finddelete_8c.html">finddelete.c</a></code>: <code>FindRegion</code>, <code>DeleteRegion</code></li>
 </ul>
-<p>The test script <code>test_region_instr</code>, runs these tests up to 100 times depending on expected behaviour. There are three behaviours in two classes:</p>
+<p>The test script <code>test_region</code>, runs these tests up to 100 times depending on expected behaviour. There are three behaviours in two classes:</p>
 <ol type="1">
 <li>Runnable tests which either <em>abort</em>, <em>create regions</em> or <em>find regions</em>.</li>
 <li>Non runnable tests which can only <em>abort</em>.</li>
 </ol>
 <p>The test programs are put into one of the two classes depending on if they should run in the first place. If they are runnable the programs either execute one of the three behaviours when run again.</p>
-<p>To add a test, edit <code>CMakeLists.txt</code>, and in <code>test_region_instr</code> add the test name to the respective local arrays in function <code>run_tests</code>. E.g. creating a test <code>focdelete</code> which is runnable and creates regions must be added to <code>runnable_tests</code> and <code>tests_create</code>. A test <code>finddelete</code> which is nonrunnable and aborts, must only be added to <code>nonrunnable_tests</code>. </p>
+<p>To add a test, edit <code>CMakeLists.txt</code>, and in <code>test_region</code> add the test name to the respective local arrays in function <code>run_tests</code>. E.g. creating a test <code>focdelete</code> which is runnable and creates regions must be added to <code>runnable_tests</code> and <code>tests_create</code>. A test <code>finddelete</code> which is nonrunnable and aborts, must only be added to <code>nonrunnable_tests</code>. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -114,18 +114,20 @@ $(document).ready(function(){initNavTree('instrumented_2cow__array__list__nvm_8c
 <div class="title">cow_array_list_nvm.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;assert.h&gt;</code><br />
-<code>#include &lt;pthread.h&gt;</code><br />
-<code>#include &lt;sys/time.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;inttypes.h&gt;</code><br />
-<code>#include &quot;atlas_api.h&quot;</code><br />
+<code>#include &lt;pthread.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;sys/time.h&gt;</code><br />
 <code>#include &quot;atlas_alloc.h&quot;</code><br />
+<code>#include &quot;atlas_api.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for cow_array_list_nvm.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="instrumented_2cow__array__list__nvm_8c__incl.png" border="0" usemap="#tests_2data__structures__instrumented_2cow__array__list__nvm_8c" alt=""/></div>
+<map name="tests_2data__structures__instrumented_2cow__array__list__nvm_8c" id="tests_2data__structures__instrumented_2cow__array__list__nvm_8c">
+</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -146,12 +148,12 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:abfbb7edd52c279d6775e5399ab0a2188"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#abfbb7edd52c279d6775e5399ab0a2188">COW_AL_INTERNAL</a></td></tr>
-<tr class="separator:abfbb7edd52c279d6775e5399ab0a2188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79bd5a552eb6defebffdcce992370476"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL.html">COW_AL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#a79bd5a552eb6defebffdcce992370476">COW_AL</a></td></tr>
-<tr class="separator:a79bd5a552eb6defebffdcce992370476"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ba27bc80533d528f7a685b1f8498542"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#a2ba27bc80533d528f7a685b1f8498542">COW_AL_ITER</a></td></tr>
-<tr class="separator:a2ba27bc80533d528f7a685b1f8498542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63d274282b9935e04a67e5eb483dd32d"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#a63d274282b9935e04a67e5eb483dd32d">COW_AL_INTERNAL</a></td></tr>
+<tr class="separator:a63d274282b9935e04a67e5eb483dd32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae42702b77e713fd62c84141942ea95ea"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL.html">COW_AL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#ae42702b77e713fd62c84141942ea95ea">COW_AL</a></td></tr>
+<tr class="separator:ae42702b77e713fd62c84141942ea95ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a644fbe283102726a4f5c0bcedc2217ab"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instrumented_2cow__array__list__nvm_8c.html#a644fbe283102726a4f5c0bcedc2217ab">COW_AL_ITER</a></td></tr>
+<tr class="separator:a644fbe283102726a4f5c0bcedc2217ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -229,36 +231,36 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a79bd5a552eb6defebffdcce992370476"></a>
+<a class="anchor" id="ae42702b77e713fd62c84141942ea95ea"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="structCOW__AL.html">COW_AL</a> <a class="el" href="structCOW__AL.html">COW_AL</a></td>
+          <td class="memname">typedef struct <a class="el" href="structCOW__AL.html">COW_AL</a>  <a class="el" href="structCOW__AL.html">COW_AL</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="abfbb7edd52c279d6775e5399ab0a2188"></a>
+<a class="anchor" id="a63d274282b9935e04a67e5eb483dd32d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a> <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a></td>
+          <td class="memname">typedef struct <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a>  <a class="el" href="structCOW__AL__INTERNAL.html">COW_AL_INTERNAL</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="a2ba27bc80533d528f7a685b1f8498542"></a>
+<a class="anchor" id="a644fbe283102726a4f5c0bcedc2217ab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a> <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a></td>
+          <td class="memname">typedef struct <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a>  <a class="el" href="structCOW__AL__ITER.html">COW_AL_ITER</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

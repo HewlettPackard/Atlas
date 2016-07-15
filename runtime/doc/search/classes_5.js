@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['helper',['Helper',['../classAtlas_1_1Helper.html',1,'Atlas']]]
+  ['helper',['Helper',['../classAtlas_1_1Helper.html',1,'Atlas']]],
+  ['hlcolor',['hlcolor',['../structhlcolor.html',1,'']]]
 ];

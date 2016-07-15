@@ -29,6 +29,7 @@ var searchData=
   ['get_5ftl_5fcurr_5farena',['get_tl_curr_arena',['../classAtlas_1_1PMallocUtil.html#abc2519cc718ba7e9d4a01c816b41de76',1,'Atlas::PMallocUtil']]],
   ['get_5ftl_5fnext_5farena',['get_tl_next_arena',['../classAtlas_1_1PMallocUtil.html#ab7ea32e11c249c0af3117e45da03cef6',1,'Atlas::PMallocUtil']]],
   ['getarena',['getArena',['../classAtlas_1_1PRegion.html#a1663949c647300f89547d4c61d037778',1,'Atlas::PRegion']]],
+  ['getcursorposition',['getCursorPosition',['../kilo_8c.html#af2d8aae777033f1b6e8e937e1d38d0d4',1,'getCursorPosition(int ifd, int ofd, int *rows, int *cols):&#160;kilo.c'],['../kilo__nvm_8c.html#af2d8aae777033f1b6e8e937e1d38d0d4',1,'getCursorPosition(int ifd, int ofd, int *rows, int *cols):&#160;kilo_nvm.c']]],
   ['getinstance',['getInstance',['../classAtlas_1_1CSMgr.html#a5fbeb10f4730964eca93009e176cc6a4',1,'Atlas::CSMgr::getInstance()'],['../classAtlas_1_1Helper.html#a6a5e9d22c0a865360eb5bf7c5f2e1e90',1,'Atlas::Helper::getInstance()'],['../classAtlas_1_1LogMgr.html#a5c1c1446255ae4e93b67644a6fca8e4d',1,'Atlas::LogMgr::getInstance()'],['../classAtlas_1_1PRegionMgr.html#a7e5a79086382690d49df147ea25341ca',1,'Atlas::PRegionMgr::getInstance()'],['../classAtlas_1_1Stats.html#ab2a200baf3bd0aeefc7316c1746541ec',1,'Atlas::Stats::getInstance()']]],
   ['getlogpointer',['getLogPointer',['../classAtlas_1_1LogMgr.html#a9f747efcb97d49477ec2dff373abbdcb',1,'Atlas::LogMgr']]],
   ['getlogstructureheader',['GetLogStructureHeader',['../recover_8cpp.html#a8ec5d41d6036b03aacd7518c3e71665a',1,'GetLogStructureHeader():&#160;recover.cpp'],['../recover_8hpp.html#a8ec5d41d6036b03aacd7518c3e71665a',1,'GetLogStructureHeader():&#160;recover.cpp']]],
@@ -40,5 +41,6 @@ var searchData=
   ['getrecoverylogpointer',['getRecoveryLogPointer',['../classAtlas_1_1LogMgr.html#ab85d78f209e5c56dab2dabfad254972b',1,'Atlas::LogMgr']]],
   ['getregionid',['getRegionId',['../classAtlas_1_1LogMgr.html#a8429c95f3295aab196d38ea99f794a06',1,'Atlas::LogMgr']]],
   ['getroot',['getRoot',['../classAtlas_1_1PRegion.html#aa2aef5ba5fe2a0f246c4b779aad11df7',1,'Atlas::PRegion']]],
-  ['gettargetnodeinfo',['getTargetNodeInfo',['../classAtlas_1_1DGraph.html#ac96563b973d2796538f2bf47e03d6c5e',1,'Atlas::DGraph']]]
+  ['gettargetnodeinfo',['getTargetNodeInfo',['../classAtlas_1_1DGraph.html#ac96563b973d2796538f2bf47e03d6c5e',1,'Atlas::DGraph']]],
+  ['getwindowsize',['getWindowSize',['../kilo_8c.html#a277a477ea9307a6a5ea10e25120ac23b',1,'getWindowSize(int ifd, int ofd, int *rows, int *cols):&#160;kilo.c'],['../kilo__nvm_8c.html#a277a477ea9307a6a5ea10e25120ac23b',1,'getWindowSize(int ifd, int ofd, int *rows, int *cols):&#160;kilo_nvm.c']]]
 ];

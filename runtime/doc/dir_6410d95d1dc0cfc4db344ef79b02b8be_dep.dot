@@ -1,0 +1,11 @@
+digraph "src/pregion_mgr" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_68267d1309a1af8e8297ef4c3efbcdba {
+    graph [ bgcolor="#ddddee", pencolor="black", label="src" fontname="Helvetica", fontsize="10", URL="dir_68267d1309a1af8e8297ef4c3efbcdba.html"]
+  dir_6410d95d1dc0cfc4db344ef79b02b8be [shape=box, label="pregion_mgr", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_6410d95d1dc0cfc4db344ef79b02b8be.html"];
+  }
+  dir_2172085e7141dfb2a1a9549dec600e64 [shape=box label="internal_includes" URL="dir_2172085e7141dfb2a1a9549dec600e64.html"];
+  dir_6410d95d1dc0cfc4db344ef79b02b8be->dir_2172085e7141dfb2a1a9549dec600e64 [headlabel="5", labeldistance=1.5 headhref="dir_000015_000012.html"];
+}

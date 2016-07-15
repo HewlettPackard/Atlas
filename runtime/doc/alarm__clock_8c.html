@@ -114,17 +114,18 @@ $(document).ready(function(){initNavTree('alarm__clock_8c.html','');});
 <div class="title">alarm_clock.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;pthread.h&gt;</code><br />
+<code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;pthread.h&gt;</code><br />
-<code>#include &lt;inttypes.h&gt;</code><br />
-<code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;sys/time.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for alarm_clock.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="alarm__clock_8c__incl.png" border="0" usemap="#tests_2data__structures_2alarm__clock_8c" alt=""/></div>
+<map name="tests_2data__structures_2alarm__clock_8c" id="tests_2data__structures_2alarm__clock_8c">
+</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -136,24 +137,24 @@ Classes</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:ad8a2bd937d53eabaf5f915641c64244d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#ad8a2bd937d53eabaf5f915641c64244d">AC_TABLE_SIZE</a>&#160;&#160;&#160;32</td></tr>
 <tr class="separator:ad8a2bd937d53eabaf5f915641c64244d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91ac18e70d80636729f60f9eaf4a0958"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d">AC_TABLE_SIZE</a>-1)</td></tr>
+<tr class="memitem:a91ac18e70d80636729f60f9eaf4a0958"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d">AC_TABLE_SIZE</a> - 1)</td></tr>
 <tr class="separator:a91ac18e70d80636729f60f9eaf4a0958"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f0fca11f7a12dfb1b65670eda9350ca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca">AC_TABLE_ENTRY</a>(hour,  min)&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#a36b3dbfdfac45fc80474569e20680654">AlarmClockTab</a> + (((hour)+(min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td></tr>
+<tr class="memitem:a5f0fca11f7a12dfb1b65670eda9350ca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca">AC_TABLE_ENTRY</a>(hour,  min)&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#a36b3dbfdfac45fc80474569e20680654">AlarmClockTab</a> + (((hour) + (min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td></tr>
 <tr class="separator:a5f0fca11f7a12dfb1b65670eda9350ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8225f1583ca7535a97f61b3db1ae82bd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a8225f1583ca7535a97f61b3db1ae82bd">AC_LOCK</a>(hour,  min)&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#adcac3ea9a0ce71b0229d66ccbb34a244">AlarmClockLockTab</a> + (((hour)+(min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td></tr>
+<tr class="memitem:a8225f1583ca7535a97f61b3db1ae82bd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a8225f1583ca7535a97f61b3db1ae82bd">AC_LOCK</a>(hour,  min)&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#adcac3ea9a0ce71b0229d66ccbb34a244">AlarmClockLockTab</a> + (((hour) + (min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td></tr>
 <tr class="separator:a8225f1583ca7535a97f61b3db1ae82bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a52f0037760b68efabf65bb25cc545620"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a52f0037760b68efabf65bb25cc545620">AlarmClockInfo</a></td></tr>
-<tr class="separator:a52f0037760b68efabf65bb25cc545620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac83efea6d320339929e922370e92599c"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#ac83efea6d320339929e922370e92599c">AlarmClockInfo</a></td></tr>
+<tr class="separator:ac83efea6d320339929e922370e92599c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8279ef31d897dbb26c15671bea5ded99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a8279ef31d897dbb26c15671bea5ded99">CreateNewInfo</a> (uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, char *name)</td></tr>
-<tr class="separator:a8279ef31d897dbb26c15671bea5ded99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a6729faf130ad12404b899a4994cf55"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a6a6729faf130ad12404b899a4994cf55">add_or_update_alarm</a> (uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, char *name)</td></tr>
-<tr class="separator:a6a6729faf130ad12404b899a4994cf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311170fb4dc80faa2a895359141048b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a311170fb4dc80faa2a895359141048b0">CreateNewInfo</a> (uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, const char *name)</td></tr>
+<tr class="separator:a311170fb4dc80faa2a895359141048b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a465bc1dee0d3dc8a106500af1fbc1542"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a465bc1dee0d3dc8a106500af1fbc1542">add_or_update_alarm</a> (uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, const char *name)</td></tr>
+<tr class="separator:a465bc1dee0d3dc8a106500af1fbc1542"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9baad77102c7a46c821b9b5242c4b8f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#ae9baad77102c7a46c821b9b5242c4b8f">cancel_alarm</a> (uint8_t hour, uint8_t min, int play)</td></tr>
 <tr class="separator:ae9baad77102c7a46c821b9b5242c4b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a249a3d2faf0cd095b677a1d403cd2f64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="alarm__clock_8c.html#a249a3d2faf0cd095b677a1d403cd2f64">print_alarms</a> ()</td></tr>
@@ -198,7 +199,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#adcac3ea9a0ce71b0229d66ccbb34a244">AlarmClockLockTab</a> + (((hour)+(min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td>
+          <td></td><td>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#adcac3ea9a0ce71b0229d66ccbb34a244">AlarmClockLockTab</a> + (((hour) + (min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -224,7 +225,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#a36b3dbfdfac45fc80474569e20680654">AlarmClockTab</a> + (((hour)+(min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td>
+          <td></td><td>&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#a36b3dbfdfac45fc80474569e20680654">AlarmClockTab</a> + (((hour) + (min)) &amp; <a class="el" href="alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958">AC_TABLE_MASK</a>))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -236,7 +237,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define AC_TABLE_MASK&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d">AC_TABLE_SIZE</a>-1)</td>
+          <td class="memname">#define AC_TABLE_MASK&#160;&#160;&#160;(<a class="el" href="alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d">AC_TABLE_SIZE</a> - 1)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -256,12 +257,12 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a52f0037760b68efabf65bb25cc545620"></a>
+<a class="anchor" id="ac83efea6d320339929e922370e92599c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a> <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a></td>
+          <td class="memname">typedef struct <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a>  <a class="el" href="structAlarmClockInfo.html">AlarmClockInfo</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -269,7 +270,7 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a6a6729faf130ad12404b899a4994cf55"></a>
+<a class="anchor" id="a465bc1dee0d3dc8a106500af1fbc1542"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -300,7 +301,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>name</em>&#160;</td>
         </tr>
         <tr>
@@ -345,7 +346,7 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8279ef31d897dbb26c15671bea5ded99"></a>
+<a class="anchor" id="a311170fb4dc80faa2a895359141048b0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -376,7 +377,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>name</em>&#160;</td>
         </tr>
         <tr>

@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['waitlogready',['waitLogReady',['../classAtlas_1_1LogMgr.html#aa131e83c6722259ef95421bcac0156d2',1,'Atlas::LogMgr']]],
-  ['work',['work',['../structnode.html#a186b23a1603fdb5fea29572dff8d684b',1,'node::work()'],['../build-all_2tests_2region_2region__test_8h.html#a9e9fb915045fc0bb706af9d2d89e5d8c',1,'WORK():&#160;region_test.h'],['../tests_2region_2region__test_8h.html#a9e9fb915045fc0bb706af9d2d89e5d8c',1,'WORK():&#160;region_test.h']]]
+  ['val',['val',['../structnode__t.html#a1ba8b19b7e8433cc10c030bb81980a6b',1,'node_t']]],
+  ['valueorptr',['ValueOrPtr',['../structAtlas_1_1LogEntry.html#a47372518d9a18724508b1d5c7414ef65',1,'Atlas::LogEntry']]],
+  ['vdesc',['VDesc',['../classAtlas_1_1DGraph.html#abd5f715723ced8e0741162403e9b9cc6',1,'Atlas::DGraph']]],
+  ['version',['version',['../structCOW__AL__INTERNAL.html#af359ece78f7cf7291a7abd5b916bfb18',1,'COW_AL_INTERNAL']]],
+  ['viter',['VIter',['../classAtlas_1_1DGraph.html#a05c90b4450c0f5e5a54a14845ee18bde',1,'Atlas::DGraph']]],
+  ['vprop',['VProp',['../structAtlas_1_1DGraph_1_1VProp.html',1,'Atlas::DGraph']]],
+  ['vprop',['VProp',['../structAtlas_1_1DGraph_1_1VProp.html#a8a72488905eb330d6879689457bda854',1,'Atlas::DGraph::VProp::VProp(FASection *fase, bool is_stable)'],['../structAtlas_1_1DGraph_1_1VProp.html#a0e722c460cdcd018423b6b502c05340f',1,'Atlas::DGraph::VProp::VProp()=delete']]]
 ];

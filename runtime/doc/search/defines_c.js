@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['threads',['THREADS',['../build-all_2tests_2region_2region__test_8h.html#a2fcfdf60d28725b11b5a3539d3acd0d4',1,'THREADS():&#160;region_test.h'],['../tests_2region_2region__test_8h.html#a2fcfdf60d28725b11b5a3539d3acd0d4',1,'THREADS():&#160;region_test.h']]]
+  ['platform_5fid',['PLATFORM_ID',['../CMakeCCompilerId_8c.html#adbc5372f40838899018fadbc89bd588b',1,'PLATFORM_ID():&#160;CMakeCCompilerId.c'],['../CMakeCXXCompilerId_8cpp.html#adbc5372f40838899018fadbc89bd588b',1,'PLATFORM_ID():&#160;CMakeCXXCompilerId.cpp']]]
 ];

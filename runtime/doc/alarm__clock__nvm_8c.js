@@ -5,7 +5,7 @@ var alarm__clock__nvm_8c =
     [ "AC_TABLE_ENTRY", "alarm__clock__nvm_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca", null ],
     [ "AC_TABLE_MASK", "alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958", null ],
     [ "AC_TABLE_SIZE", "alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d", null ],
-    [ "AlarmClockInfo", "alarm__clock__nvm_8c.html#a52f0037760b68efabf65bb25cc545620", null ],
+    [ "AlarmClockInfo", "alarm__clock__nvm_8c.html#ac83efea6d320339929e922370e92599c", null ],
     [ "add_or_update_alarm", "alarm__clock__nvm_8c.html#a6a6729faf130ad12404b899a4994cf55", null ],
     [ "cancel_alarm", "alarm__clock__nvm_8c.html#ae9baad77102c7a46c821b9b5242c4b8f", null ],
     [ "CreateNewInfo", "alarm__clock__nvm_8c.html#a8279ef31d897dbb26c15671bea5ded99", null ],

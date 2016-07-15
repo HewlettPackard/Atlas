@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['val',['val',['../structnode__t.html#a1ba8b19b7e8433cc10c030bb81980a6b',1,'node_t']]],
-  ['valueorptr',['ValueOrPtr',['../structAtlas_1_1LogEntry.html#a47372518d9a18724508b1d5c7414ef65',1,'Atlas::LogEntry']]],
-  ['vdesc',['VDesc',['../classAtlas_1_1DGraph.html#abd5f715723ced8e0741162403e9b9cc6',1,'Atlas::DGraph']]],
-  ['version',['version',['../structCOW__AL__INTERNAL.html#af359ece78f7cf7291a7abd5b916bfb18',1,'COW_AL_INTERNAL']]],
-  ['viter',['VIter',['../classAtlas_1_1DGraph.html#a05c90b4450c0f5e5a54a14845ee18bde',1,'Atlas::DGraph']]],
-  ['vprop',['VProp',['../structAtlas_1_1DGraph_1_1VProp.html',1,'Atlas::DGraph']]],
-  ['vprop',['VProp',['../structAtlas_1_1DGraph_1_1VProp.html#a8a72488905eb330d6879689457bda854',1,'Atlas::DGraph::VProp::VProp(FASection *fase, bool is_stable)'],['../structAtlas_1_1DGraph_1_1VProp.html#a0e722c460cdcd018423b6b502c05340f',1,'Atlas::DGraph::VProp::VProp()=delete']]]
+  ['uint64pair',['UInt64Pair',['../util_8hpp.html#ab2332e75b03c6f38b48f0f5e3c61d228',1,'util.hpp']]],
+  ['unlock',['Unlock',['../classAtlas_1_1PArena.html#a8ebb0bedc69f2fd84ce5023af2d1c325',1,'Atlas::PArena']]],
+  ['update_5falarms',['update_alarms',['../alarm__clock_8c.html#a73a75c77a7b7420e26e2c55483a49f6b',1,'update_alarms():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a73a75c77a7b7420e26e2c55483a49f6b',1,'update_alarms():&#160;alarm_clock_nvm.c']]],
+  ['util_2ecpp',['util.cpp',['../util_8cpp.html',1,'']]],
+  ['util_2ehpp',['util.hpp',['../util_8hpp.html',1,'']]]
 ];

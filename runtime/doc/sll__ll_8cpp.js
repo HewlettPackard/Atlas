@@ -2,8 +2,8 @@ var sll__ll_8cpp =
 [
     [ "Node", "structNode.html", "structNode" ],
     [ "SearchResult", "structSearchResult.html", "structSearchResult" ],
-    [ "Node", "sll__ll_8cpp.html#a3b09f37e675bcd48a01bf22155996872", null ],
-    [ "SearchResult", "sll__ll_8cpp.html#a8b2fb764ab999db13b97f00689d43c41", null ],
+    [ "Node", "sll__ll_8cpp.html#a0466fc5f1bc9e6de776e48149b19c471", null ],
+    [ "SearchResult", "sll__ll_8cpp.html#a44d180d5c8cdcef1754e63463914543c", null ],
     [ "copySingleNode", "sll__ll_8cpp.html#a73546f541a725445062e5ad16a500c26", null ],
     [ "createSingleNode", "sll__ll_8cpp.html#a9223bb234aaa786d498c9ab62eaa37bf", null ],
     [ "flushNode", "sll__ll_8cpp.html#aae42a57b02cb0c1ae62419b1146d0acd", null ],

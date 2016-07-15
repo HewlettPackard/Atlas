@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['log2bool',['Log2Bool',['../namespaceAtlas.html#abe1747cb6e59fa5cb44b76d01e791f6e',1,'Atlas']]],
-  ['logentryvec',['LogEntryVec',['../namespaceAtlas.html#ad516f99c01f1c9cd9d924cf659768a96',1,'Atlas']]],
-  ['logversions',['LogVersions',['../classAtlas_1_1Helper.html#a8c7a6b8d57d015baba275f07c8218e17',1,'Atlas::Helper']]]
+  ['ieiter',['IEIter',['../classAtlas_1_1DGraph.html#a3cbe3b4eaf14a211da111197a13c1110',1,'Atlas::DGraph']]],
+  ['intptrpair',['IntPtrPair',['../classAtlas_1_1PRegionExtentMap.html#a2992ce295807119f0f5a7a10c1744ce6',1,'Atlas::PRegionExtentMap']]]
 ];

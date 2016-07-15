@@ -1,4 +1,11 @@
 var searchData=
 [
-  ['global_5frgn_5fid',['global_rgn_id',['../build-all_2tests_2region_2region__test_8h.html#a6b8717ff0b9dd26d354d2bf0b4f8e999',1,'global_rgn_id():&#160;region_test.h'],['../tests_2region_2region__test_8h.html#a6b8717ff0b9dd26d354d2bf0b4f8e999',1,'global_rgn_id():&#160;region_test.h']]]
+  ['failed_5fcancel_5falarms',['failed_cancel_alarms',['../alarm__clock_8c.html#ae2319609ceefa0373d46e8b4b535f69b',1,'failed_cancel_alarms():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#ae2319609ceefa0373d46e8b4b535f69b',1,'failed_cancel_alarms():&#160;alarm_clock_nvm.c']]],
+  ['fase_5f',['Fase_',['../structAtlas_1_1DGraph_1_1VProp.html#aca9fc00351ef3fc232da639bc3556208',1,'Atlas::DGraph::VProp']]],
+  ['features',['features',['../feature__tests_8c.html#a1582568e32f689337602a16bf8a5bff0',1,'features():&#160;feature_tests.c'],['../feature__tests_8cxx.html#a1582568e32f689337602a16bf8a5bff0',1,'features():&#160;feature_tests.cxx']]],
+  ['filematch',['filematch',['../structeditorSyntax.html#ac213cbc72080956af712ff959079b8dc',1,'editorSyntax']]],
+  ['filename',['filename',['../structeditorConfig.html#ad090e4d0f34b13abd6570c6f392b185f',1,'editorConfig']]],
+  ['first',['First',['../structAtlas_1_1FASection.html#afb6a0b8226a1ce7ad70c71960e02b60e',1,'Atlas::FASection']]],
+  ['first_5flog_5ftracker',['first_log_tracker',['../recover_8cpp.html#a749ab9dc0d27380a018b3d35e7813820',1,'recover.cpp']]],
+  ['flags',['flags',['../structeditorSyntax.html#a5d142538e281dfad9bb76ca83d60f971',1,'editorSyntax']]]
 ];

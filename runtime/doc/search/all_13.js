@@ -1,8 +1,22 @@
 var searchData=
 [
-  ['uint64pair',['UInt64Pair',['../util_8hpp.html#ab2332e75b03c6f38b48f0f5e3c61d228',1,'util.hpp']]],
-  ['unlock',['Unlock',['../classAtlas_1_1PArena.html#a8ebb0bedc69f2fd84ce5023af2d1c325',1,'Atlas::PArena']]],
-  ['update_5falarms',['update_alarms',['../alarm__clock_8c.html#a73a75c77a7b7420e26e2c55483a49f6b',1,'update_alarms():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a73a75c77a7b7420e26e2c55483a49f6b',1,'update_alarms():&#160;alarm_clock_nvm.c']]],
-  ['util_2ecpp',['util.cpp',['../util_8cpp.html',1,'']]],
-  ['util_2ehpp',['util.hpp',['../util_8hpp.html',1,'']]]
+  ['tab',['TAB',['../kilo_8c.html#a85602e772502d49e7d6c75d43df11e75a920380215591395ea33ee5df8e293e19',1,'TAB():&#160;kilo.c'],['../kilo__nvm_8c.html#a85602e772502d49e7d6c75d43df11e75a920380215591395ea33ee5df8e293e19',1,'TAB():&#160;kilo_nvm.c']]],
+  ['table_5fbased_2ecpp',['table_based.cpp',['../table__based_8cpp.html',1,'']]],
+  ['tail',['tail',['../structqueue__t.html#a4577d8de2607cdbfab2555e24085c2c8',1,'queue_t']]],
+  ['tail_5flock',['tail_lock',['../structqueue__t.html#ace184ebb9abc9d07911def59fd5cfac7',1,'queue_t']]],
+  ['targetdirectories_2etxt',['TargetDirectories.txt',['../TargetDirectories_8txt.html',1,'']]],
+  ['test',['test',['../region__test_8h.html#ae31b46426c56255139cfe238befc0ac5',1,'region_test.h']]],
+  ['test_5fmemfns_2ec',['test_memfns.c',['../test__memfns_8c.html',1,'']]],
+  ['tests',['tests',['../summary_8txt.html#ae782f4ffa94a052d67049d5cd89bdcc2',1,'summary.txt']]],
+  ['threads',['THREADS',['../region__test_8h.html#a2fcfdf60d28725b11b5a3539d3acd0d4',1,'region_test.h']]],
+  ['tid',['Tid',['../structAtlas_1_1CbListNode.html#a3ad855b787794f9ba9388702e11c9591',1,'Atlas::CbListNode']]],
+  ['tid2log',['Tid2Log',['../recover_8hpp.html#a6f344bdaa91bdfdf3592707f697c02a1',1,'recover.hpp']]],
+  ['timing_2etxt',['timing.txt',['../build-all_2tests_2data__structures__inputs_2timing_8txt.html',1,'']]],
+  ['timing_2etxt',['timing.txt',['../tests_2data__structures__inputs_2timing_8txt.html',1,'']]],
+  ['trace',['trace',['../classAtlas_1_1DGraph.html#a3f45448dbaea14cf14dd98eb5acdf140',1,'Atlas::DGraph::trace()'],['../classAtlas_1_1Helper.html#a67410ad7dd284db5ab662f0fab00ae41',1,'Atlas::Helper::trace()']]],
+  ['tracehelper',['traceHelper',['../classAtlas_1_1DGraph.html#aeef21ba394467c725ba79c79536a938e',1,'Atlas::DGraph']]],
+  ['traverse',['traverse',['../queue__nvm_8c.html#a00e83737b71041e337946d8b3dc648c2',1,'traverse():&#160;queue_nvm.c'],['../instrumented_2queue__nvm_8c.html#a00e83737b71041e337946d8b3dc648c2',1,'traverse():&#160;queue_nvm.c']]],
+  ['try_2etxt',['try.txt',['../try_8txt.html',1,'']]],
+  ['trylock',['tryLock',['../classAtlas_1_1PArena.html#a78e9d67d7d2c445343c1b180fd42cd23',1,'Atlas::PArena']]],
+  ['type',['Type',['../structAtlas_1_1LogEntry.html#acd3702412ca70ef4eaac11fdb32c885a',1,'Atlas::LogEntry']]]
 ];
