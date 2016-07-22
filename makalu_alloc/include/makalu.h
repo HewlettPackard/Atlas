@@ -12,5 +12,4 @@ typedef long long MAK_signed_word;
 typedef int (MAK_CALLBACK *MAK_persistent_memalign)(void** memptr,
               size_t alignment, size_t size);
 
-
 #endif

@@ -10,7 +10,6 @@
 #include "makalu_mark.h"
 
 
-
 MAK_EXTERN word MAK_page_size;
 
 # define HBLKPTR(objptr) ((struct hblk *)(((word) (objptr)) & ~(HBLKSIZE-1)))

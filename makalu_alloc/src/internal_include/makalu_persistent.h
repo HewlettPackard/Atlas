@@ -285,10 +285,15 @@ MAK_INNER void MAK_init_persistent_log();
   MAK_INNER void MAK_recover_metadata();
 #endif
 
+MAK_INNER void MAK_init_persistent_logs();
 MAK_INNER void MAK_sync_all_persistent();
 MAK_INNER void MAK_sync_alloc_metadata();
 MAK_INNER void MAK_sync_gc_metadata();
 
 # define GET_MEM_PERSISTENT(addr, bytes) \
        (*MAK_persistent_memalign_func) ((void**) addr, MAK_page_size, bytes)
+
+# define GET_MEM_PERSISTENT_PTRALIGN(addr, bytes) \
+       (*MAK_persistent_memalign_func)((void**) addr, sizeof(ptr_t), bytes)
+
 #endif //_MAKALU_PERSISTENT_H

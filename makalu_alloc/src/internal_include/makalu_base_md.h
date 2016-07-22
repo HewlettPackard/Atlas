@@ -1,7 +1,6 @@
 #ifndef _MAKALU_BASE_H
 #define _MAKALU_BASE_H
 
-
 typedef struct {
     ptr_t hs_start;
     size_t hs_bytes;
@@ -64,9 +63,35 @@ struct _MAK_base_md {
     #define MAK_last_heap_size MAK_base_md._last_heap_size
     word  _last_heap_size;   
 
+    #define MAK_greatest_plausible_heap_addr MAK_base_md._greatest_plausible_heap_addr
+    void* _greatest_plausible_heap_addr;
+
+    #define MAK_least_plausible_heap_addr MAK_base_md._least_plausible_heap_addr
+     void* _least_plausible_heap_addr;
+
     /* gc */
     #define MAK_mandatory_gc MAK_base_md._mandatory_gc
     int _mandatory_gc;
+
+    #define MAK_obj_map MAK_base_md._obj_map
+    short * _obj_map[MAXOBJGRANULES+1];
+                       /* If not NULL, then a pointer to a map of valid */
+                       /* object addresses.                             */
+                       /* _obj_map[sz_in_granules][i] is                */
+                       /* i % sz_in_granules.                           */
+                       /* This is now used purely to replace a          */
+                       /* division in the marker by a table lookup.     */
+                       /* _obj_map[0] is used for large objects and     */
+                       /* contains all nonzero entries.  This gets us   */
+                       /* out of the marker fast path without an extra  */
+                       /* test.            */  
+ 
+    /* obj kinds */
+    #define MAK_n_kinds MAK_base_md._n_kinds
+    unsigned int _n_kinds;
+
+    #define MAK_persistent_roots_start MAK_base_md._persistent_roots_start
+    ptr_t _persistent_roots_start;
 };
 
 
@@ -74,6 +99,29 @@ struct hblk {
     char hb_body[HBLKSIZE];
 };
 
+struct MAK_fl_hdr;
+
+struct obj_kind {
+   struct MAK_fl_hdr* ok_freelist;
+
+   //struct hblk **ok_reclaim_list;
+                        /* List headers for lists of blocks waiting to be */
+                        /* swept.                                         */
+                        /* Indexed by object size in granules.            */
+   word ok_descriptor;  /* Descriptor template for objects in this      */
+                        /* block.                                       */
+   MAK_bool ok_relocate_descr;
+                        /* Add object size in bytes to descriptor       */
+                        /* template to obtain descriptor.  Otherwise    */
+                        /* template is used as is.                      */
+   MAK_bool ok_init;   /* Clear objects before putting them on the free list. */
+   MAK_bool ok_seen;  /* this object kind has been witnessed. we persist this */
+                     /* information so that we can use to initialize reclaim */
+                     /*   list transiently at the start */
+
+};
+
+MAK_EXTERN struct obj_kind* MAK_obj_kinds;
 
 #endif
 

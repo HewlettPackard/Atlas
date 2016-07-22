@@ -42,6 +42,9 @@ void MAK_err_printf(const char * format, ...)
 # define EXPECT(expr, outcome) (expr)
 #endif /* __GNUC__ */
 
+# define GC_STATIC_ASSERT(expr) (void)sizeof(char[(expr)? 1 : -1])
+
+
 
 /* Print warning message, e.g. almost out of memory.    */
 #define WARN(msg, arg) MAK_warn_proc("MAK Warning: " msg, \

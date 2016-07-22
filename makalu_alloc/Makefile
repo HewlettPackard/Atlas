@@ -6,8 +6,9 @@ LIBDIR := $(BASE_DIR)/lib
 LIBATOMIC_DIR := $(BASE_DIR)/libatomic
 
 SRC_FILES := makalu_base_md.c makalu_hdr.c \
+             makalu_init.c  makalu_mark.c \
              makalu_transient.c makalu_persistent.c \
-             makalu_util.c
+             makalu_util.c 
 
 INCLUDES := -I $(LIBATOMIC_DIR)/include \
             -I $(SRC_DIR)/internal_include \

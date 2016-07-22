@@ -322,7 +322,7 @@ MAK_INNER void log_nvm_word(word* addr, word val){
 
 #endif  //NO_NVM_LOGS
 
-MAK_INNER void MAK_init_persistent_log(){
+MAK_INNER void MAK_init_persistent_logs(){
     int res = GET_MEM_PERSISTENT(&(MAK_persistent_log_start), MAX_LOG_SZ);
     if (res != 0)
         ABORT("Could not allocate space for persistent log!\n");
