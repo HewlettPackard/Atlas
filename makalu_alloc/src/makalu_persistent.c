@@ -1,6 +1,6 @@
 #include "makalu_internal.h"
 
-MAK_INNER MAK_persistent_memalign GC_persistent_memalign_func = 0;
+MAK_INNER MAK_persistent_memalign MAK_persistent_memalign_func = 0;
 
 void* MAK_aflush_table[AFLUSH_TABLE_SZ] = {0};
 void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ] = {0};

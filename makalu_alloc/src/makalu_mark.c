@@ -35,3 +35,31 @@ MAK_INNER void MAK_init_object_map(ptr_t start)
     }
 }
 
+MAK_INNER void MAK_initialize_offsets(void)
+{
+  //visibility of below taken care by the flushing of the MAK_base_md
+    unsigned i;
+    if (MAK_all_interior_pointers) {
+    for (i = 0; i < VALID_OFFSET_SZ; ++i)
+        MAK_valid_offsets[i] = TRUE;
+    } else {
+        BZERO(MAK_valid_offsets, sizeof(MAK_valid_offsets));
+        for (i = 0; i < sizeof(word); ++i)
+            MAK_modws_valid_offsets[i] = FALSE;
+    }
+}
+
+
+MAK_INNER void MAK_register_displacement_inner(size_t offset)
+{
+    if (offset >= VALID_OFFSET_SZ) {
+        ABORT("Bad argument to GC_register_displacement");
+    }
+    if (!MAK_valid_offsets[offset]) {
+      MAK_valid_offsets[offset] = TRUE;
+      MAK_modws_valid_offsets[offset % sizeof(word)] = TRUE;
+    }
+}
+
+
+

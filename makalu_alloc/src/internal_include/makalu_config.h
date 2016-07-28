@@ -27,6 +27,12 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define MAK_INLINE static inline
 #define STATIC static
 
+//run modes
+#define RESTARTING_OFFLINE 10
+#define RESTARTING_ONLINE  11
+#define STARTING_ONLINE    12
+
+
 //block
 #define SYS_PAGESIZE 4096
 #define CPP_LOG_HBLKSIZE 12
@@ -65,8 +71,12 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define CPP_WORDSZ 64
 #define GRANULE_BYTES 16
 #define BYTES_TO_GRANULES(n) ((n)>>4)
+#define EXTRA_BYTES MAK_all_interior_pointers
 
 #define ONES ((word)(signed_word)(-1))
+
+# define ROUNDED_UP_GRANULES(n) \
+        BYTES_TO_GRANULES((n) + (GRANULE_BYTES - 1 + EXTRA_BYTES))
 
 //mark
 #define MAP_LEN BYTES_TO_GRANULES(HBLKSIZE)
@@ -79,7 +89,6 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 #define MAK_INTERIOR_POINTERS 1
 
-#define EXTRA_BYTES MAK_all_interior_pointers
 
 /*number of heap blocks allocated to store persistent roots */
 #define N_PERSISTENT_ROOTS_HBLK 1 
@@ -124,9 +133,17 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
                         /* to be cleared while the allocation lock is   */
                         /* held.                                        */
 
+# define VALID_OFFSET_SZ HBLKSIZE
+
 //allocation
 
 #define ALIGNMENT 8
+
+#define FL_MAX_SIZE 2 * HBLKSIZE
+#define FL_OPTIMAL_SIZE 1 * HBLKSIZE
+/* upto and including 256 bytes in thread local freelist */
+/* Note there is a 0 byte freelist */ 
+#define TINY_FREELISTS 25   
 
 //obj kinds
 #define PTRFREE 0

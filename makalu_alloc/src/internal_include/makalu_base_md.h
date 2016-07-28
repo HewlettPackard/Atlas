@@ -86,6 +86,15 @@ struct _MAK_base_md {
                        /* out of the marker fast path without an extra  */
                        /* test.            */  
  
+    #define MAK_valid_offsets MAK_base_md._valid_offsets
+    char _valid_offsets[VALID_OFFSET_SZ];
+
+    #define MAK_modws_valid_offsets MAK_base_md._modws_valid_offsets
+    char _modws_valid_offsets[sizeof(word)];
+
+    #define MAK_size_map MAK_base_md._size_map
+    size_t _size_map[MAXOBJBYTES+1];
+ 
     /* obj kinds */
     #define MAK_n_kinds MAK_base_md._n_kinds
     unsigned int _n_kinds;

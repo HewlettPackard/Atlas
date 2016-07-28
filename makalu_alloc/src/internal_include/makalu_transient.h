@@ -35,6 +35,13 @@ struct _MAK_transient_metadata {
 
     #define MAK_reclaim_list MAK_transient_md._reclaim_list
     struct hblk** _reclaim_list[MAXOBJKINDS];
+
+    #define MAK_fl_max_count MAK_transient_md._fl_max_count
+    word _fl_max_count[MAXOBJGRANULES+1];
+
+    #define MAK_fl_optimal_count MAK_transient_md._fl_optimal_count
+    word _fl_optimal_count[MAXOBJGRANULES+1];
+
 };
 
 

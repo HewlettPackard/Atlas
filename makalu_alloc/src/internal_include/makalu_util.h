@@ -42,7 +42,7 @@ void MAK_err_printf(const char * format, ...)
 # define EXPECT(expr, outcome) (expr)
 #endif /* __GNUC__ */
 
-# define GC_STATIC_ASSERT(expr) (void)sizeof(char[(expr)? 1 : -1])
+# define MAK_STATIC_ASSERT(expr) (void)sizeof(char[(expr)? 1 : -1])
 
 
 
@@ -55,8 +55,12 @@ MAK_INNER void MAK_warn_proc(char* msg, MAK_word arg);
 #define ABORT(msg) MAK_abort(msg)
 MAK_INNER void MAK_abort(const char *msg);
 
+#define EXIT() (void)exit(1)
 
-#   define BZERO(x,n)  memset(x, 0, (size_t)(n))
+#define BZERO(x,n)  memset(x, 0, (size_t)(n))
+
+
+
 
 
 #endif
