@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['compiler_5fid',['COMPILER_ID',['../CMakeCCompilerId_8c.html#a81dee0709ded976b2e0319239f72d174',1,'COMPILER_ID():&#160;CMakeCCompilerId.c'],['../CMakeCXXCompilerId_8cpp.html#a81dee0709ded976b2e0319239f72d174',1,'COMPILER_ID():&#160;CMakeCXXCompilerId.cpp']]]
+  ['initial_5fsize',['INITIAL_SIZE',['../cow__array__list_8c.html#a40958a1382463445e451148e3a93e049',1,'INITIAL_SIZE():&#160;cow_array_list.c'],['../cow__array__list__nvm_8c.html#a40958a1382463445e451148e3a93e049',1,'INITIAL_SIZE():&#160;cow_array_list_nvm.c'],['../instrumented_2cow__array__list__nvm_8c.html#a40958a1382463445e451148e3a93e049',1,'INITIAL_SIZE():&#160;cow_array_list_nvm.c']]]
 ];

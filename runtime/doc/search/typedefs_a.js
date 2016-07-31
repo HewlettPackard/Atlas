@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['queue_5ft',['queue_t',['../queue_8c.html#a51132c897ca4b741ae06f5aebdcc41ba',1,'queue_t():&#160;queue.c'],['../queue__nvm_8c.html#a51132c897ca4b741ae06f5aebdcc41ba',1,'queue_t():&#160;queue_nvm.c'],['../instrumented_2queue__nvm_8c.html#a51132c897ca4b741ae06f5aebdcc41ba',1,'queue_t():&#160;queue_nvm.c']]]
+  ['r2aiter',['R2AIter',['../recover_8hpp.html#a03c883ed9eaa2bfdc20e45f53aea7e07',1,'recover.hpp']]],
+  ['region_5fid_5ft',['region_id_t',['../namespaceAtlas.html#ab456827ead7100e86f8a36e0da37b313',1,'Atlas']]]
 ];

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['_5fbsd_5fsource',['_BSD_SOURCE',['../kilo_8c.html#ad3d8a3bd0c0b677acef144f2c2ef6d73',1,'_BSD_SOURCE():&#160;kilo.c'],['../kilo__nvm_8c.html#ad3d8a3bd0c0b677acef144f2c2ef6d73',1,'_BSD_SOURCE():&#160;kilo_nvm.c']]],
-  ['_5fgnu_5fsource',['_GNU_SOURCE',['../kilo_8c.html#a369266c24eacffb87046522897a570d5',1,'_GNU_SOURCE():&#160;kilo.c'],['../kilo__nvm_8c.html#a369266c24eacffb87046522897a570d5',1,'_GNU_SOURCE():&#160;kilo_nvm.c']]]
+  ['ac_5flock',['AC_LOCK',['../alarm__clock_8c.html#a8225f1583ca7535a97f61b3db1ae82bd',1,'AC_LOCK():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a8225f1583ca7535a97f61b3db1ae82bd',1,'AC_LOCK():&#160;alarm_clock_nvm.c']]],
+  ['ac_5ftable_5fentry',['AC_TABLE_ENTRY',['../alarm__clock_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca',1,'AC_TABLE_ENTRY():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca',1,'AC_TABLE_ENTRY():&#160;alarm_clock_nvm.c']]],
+  ['ac_5ftable_5fmask',['AC_TABLE_MASK',['../alarm__clock_8c.html#a91ac18e70d80636729f60f9eaf4a0958',1,'AC_TABLE_MASK():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958',1,'AC_TABLE_MASK():&#160;alarm_clock_nvm.c']]],
+  ['ac_5ftable_5fsize',['AC_TABLE_SIZE',['../alarm__clock_8c.html#ad8a2bd937d53eabaf5f915641c64244d',1,'AC_TABLE_SIZE():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#ad8a2bd937d53eabaf5f915641c64244d',1,'AC_TABLE_SIZE():&#160;alarm_clock_nvm.c']]]
 ];

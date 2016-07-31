@@ -1,8 +1,8 @@
 <map id="src/internal_includes/durability_graph.hpp" name="src/internal_includes/durability_graph.hpp">
 <area shape="rect" id="node2" href="$durability__graph__builder_8cpp.html" title="src/consistency/durability\l_graph_builder.cpp" alt="" coords="5,184,176,225"/>
-<area shape="rect" id="node3" href="$consistency__mgr_8hpp.html" title="src/internal_includes\l/consistency_mgr.hpp" alt="" coords="343,95,494,136"/>
-<area shape="rect" id="node4" href="$consistency_8cpp.html" title="src/consistency/consistency.cpp" alt="" coords="200,191,413,218"/>
-<area shape="rect" id="node5" href="$consistency__mgr_8cpp.html" title="src/consistency/consistency\l_mgr.cpp" alt="" coords="438,184,626,225"/>
-<area shape="rect" id="node6" href="$helper__driver_8cpp.html" title="src/consistency/helper\l_driver.cpp" alt="" coords="650,184,803,225"/>
-<area shape="rect" id="node7" href="$log__pruner_8cpp.html" title="src/consistency/log\l_pruner.cpp" alt="" coords="827,184,962,225"/>
+<area shape="rect" id="node3" href="$consistency__mgr_8hpp.html" title="src/internal_includes\l/consistency_mgr.hpp" alt="" coords="344,95,493,136"/>
+<area shape="rect" id="node4" href="$consistency_8cpp.html" title="src/consistency/consistency.cpp" alt="" coords="201,191,413,218"/>
+<area shape="rect" id="node5" href="$consistency__mgr_8cpp.html" title="src/consistency/consistency\l_mgr.cpp" alt="" coords="437,184,625,225"/>
+<area shape="rect" id="node6" href="$helper__driver_8cpp.html" title="src/consistency/helper\l_driver.cpp" alt="" coords="649,184,802,225"/>
+<area shape="rect" id="node7" href="$log__pruner_8cpp.html" title="src/consistency/log\l_pruner.cpp" alt="" coords="826,184,961,225"/>
 </map>

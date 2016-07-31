@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['uint64pair',['UInt64Pair',['../util_8hpp.html#ab2332e75b03c6f38b48f0f5e3c61d228',1,'util.hpp']]]
+  ['vdesc',['VDesc',['../classAtlas_1_1DGraph.html#abd5f715723ced8e0741162403e9b9cc6',1,'Atlas::DGraph']]],
+  ['viter',['VIter',['../classAtlas_1_1DGraph.html#a05c90b4450c0f5e5a54a14845ee18bde',1,'Atlas::DGraph']]]
 ];

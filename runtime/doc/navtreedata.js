@@ -1,8 +1,6 @@
 var NAVTREE =
 [
   [ "Atlas Runtime", "index.html", [
-    [ "README", "md_build-all_README.html", null ],
-    [ "Kilo", "md_examples_kilo_README.html", null ],
     [ "README", "md_README.html", null ],
     [ "README", "md_tests_data_structures_README.html", null ],
     [ "README", "md_tests_region_README.html", null ],
@@ -36,8 +34,6 @@ var NAVTREE =
         [ "Functions", "globals_func.html", "globals_func" ],
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
-        [ "Enumerations", "globals_enum.html", null ],
-        [ "Enumerator", "globals_eval.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -46,12 +42,11 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"CMakeCCompilerId_8c.html",
-"classAtlas_1_1PRegion.html#af94cbf4a93e32041a2101862b1110b73",
-"globals_func_b.html",
-"kilo_8c.html#a9b164d73265700624aa8b76290850c13",
-"queue_8c.html#a04f4e435f924985d0bb22381a251cbf8",
-"structAtlas_1_1LogEntry.html#a181da6087c6f24d0eb5d5f197329246e"
+"alarm__clock_8c.html",
+"classAtlas_1_1PRegionMgr.html#a7f529e2f0ab4296d3a27de23bda98cf7",
+"instrumented_2cow__array__list__nvm_8c.html#a40958a1382463445e451148e3a93e049",
+"recover_8cpp.html#a93002513cb74c6a4c155f6019d70fc25",
+"structSearchResult.html#a8c3f31e4a95e86256cc4b0b10a4b249e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

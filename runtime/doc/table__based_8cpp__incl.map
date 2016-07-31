@@ -1,18 +1,19 @@
 <map id="src/cache_flush/table_based.cpp" name="src/cache_flush/table_based.cpp">
-<area shape="rect" id="node2" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="696,95,789,121"/>
-<area shape="rect" id="node9" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="1800,393,1938,420"/>
-<area shape="rect" id="node10" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="1374,169,1492,196"/>
-<area shape="rect" id="node22" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="23,319,136,345"/>
-<area shape="rect" id="node23" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="117,244,240,271"/>
-<area shape="rect" id="node25" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="217,169,356,196"/>
-<area shape="rect" id="node26" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="2102,169,2268,196"/>
-<area shape="rect" id="node27" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="416,244,546,271"/>
-<area shape="rect" id="node28" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="382,169,490,196"/>
-<area shape="rect" id="node29" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="818,319,894,345"/>
-<area shape="rect" id="node30" href="$util_8hpp.html" title="util.hpp" alt="" coords="672,244,736,271"/>
-<area shape="rect" id="node14" href="$pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="1479,244,1622,271"/>
-<area shape="rect" id="node16" href="$pregion_8hpp.html" title="pregion.hpp" alt="" coords="1306,244,1395,271"/>
-<area shape="rect" id="node18" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="1105,319,1204,345"/>
-<area shape="rect" id="node19" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="1522,319,1614,345"/>
-<area shape="rect" id="node21" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="1228,319,1344,345"/>
+<area shape="rect" id="node2" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1100,95,1192,121"/>
+<area shape="rect" id="node8" href="$atlas__api_8h.html" title="atlas_api.h" alt="" coords="218,393,303,420"/>
+<area shape="rect" id="node10" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="327,393,466,420"/>
+<area shape="rect" id="node11" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="733,169,850,196"/>
+<area shape="rect" id="node23" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="1159,319,1272,345"/>
+<area shape="rect" id="node24" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="1158,244,1281,271"/>
+<area shape="rect" id="node25" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="1209,169,1347,196"/>
+<area shape="rect" id="node26" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="1504,169,1671,196"/>
+<area shape="rect" id="node27" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1607,244,1735,271"/>
+<area shape="rect" id="node28" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="1372,169,1480,196"/>
+<area shape="rect" id="node29" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="956,319,1032,345"/>
+<area shape="rect" id="node30" href="$util_8hpp.html" title="util.hpp" alt="" coords="1759,244,1823,271"/>
+<area shape="rect" id="node15" href="$pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="585,244,728,271"/>
+<area shape="rect" id="node17" href="$pregion_8hpp.html" title="pregion.hpp" alt="" coords="279,244,368,271"/>
+<area shape="rect" id="node19" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="142,319,241,345"/>
+<area shape="rect" id="node20" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="457,319,549,345"/>
+<area shape="rect" id="node22" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="265,319,381,345"/>
 </map>

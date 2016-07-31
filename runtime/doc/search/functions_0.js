@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['abappend',['abAppend',['../kilo_8c.html#a9dd3715258f4c42aeb40ae92f51422e9',1,'abAppend(struct abuf *ab, const char *s, int len):&#160;kilo.c'],['../kilo__nvm_8c.html#a9dd3715258f4c42aeb40ae92f51422e9',1,'abAppend(struct abuf *ab, const char *s, int len):&#160;kilo_nvm.c']]],
-  ['abfree',['abFree',['../kilo_8c.html#aa676d43ad5c715bcf8ec2c3b2df0f4e0',1,'abFree(struct abuf *ab):&#160;kilo.c'],['../kilo__nvm_8c.html#aa676d43ad5c715bcf8ec2c3b2df0f4e0',1,'abFree(struct abuf *ab):&#160;kilo_nvm.c']]],
   ['acquirelock',['acquireLock',['../classAtlas_1_1Stats.html#a53ce02a1fe1ef8dc02130dc26094656e',1,'Atlas::Stats']]],
   ['acquirelogreadylock',['acquireLogReadyLock',['../classAtlas_1_1LogMgr.html#a59a9a0533245c7ab6759e5857dc3a6dc',1,'Atlas::LogMgr']]],
   ['acquirestatslock',['acquireStatsLock',['../classAtlas_1_1LogMgr.html#a4664955168914d218337a086d79bb5b8',1,'Atlas::LogMgr']]],
