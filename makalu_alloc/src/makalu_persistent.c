@@ -380,10 +380,9 @@ MAK_INNER void MAK_sync_alloc_metadata(){
 
    if (MAK_persistent_state == PERSISTENT_STATE_NONE)
        return;
-  #ifdef SEPARATE_HDR_ALLOC
+
    MAK_NVM_ASYNC_RANGE(&MAK_hdr_idx_free_ptr, sizeof(ptr_t));
    MAK_NVM_ASYNC_RANGE(&MAK_hdr_free_list, sizeof(hdr*));
-  #endif
    //flush the table
    MAK_FLUSH_ALL_ENTRY(MAK_aflush_table, AFLUSH_TABLE_SZ);
    MAK_STORE_NVM_SYNC(MAK_persistent_state, PERSISTENT_STATE_NONE);

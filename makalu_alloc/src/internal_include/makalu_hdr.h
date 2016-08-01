@@ -13,9 +13,17 @@ typedef struct hblkhdr {
                                 /* mark.h.                              */
 
     struct hblk * hb_block;     /* The corresponding block.             */
-    short * hb_map;
+    short * hb_map;      /* Essentially a table of remainders    */
+                               /* mod BYTES_TO_GRANULES(hb_sz), except */
+                               /* for large blocks.  See GC_obj_map.   */
+
     unsigned char hb_flags;
-    unsigned char hb_large_block;
+    unsigned char hb_obj_kind;
+                         /* Kind of objects in the block.  Each kind    */
+                         /* identifies a mark procedure and a set of    */
+                         /* list headers.  Sometimes called regions.    */
+
+    unsigned char hb_large_block;  
     char page_reclaim_state;
     word dummy_for_cache_alignment[3];
     counter_t hb_n_marks;       /* Number of set mark bits, excluding   */

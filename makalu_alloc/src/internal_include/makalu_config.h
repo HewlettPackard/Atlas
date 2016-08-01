@@ -69,6 +69,26 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 # define HBLKPTR(objptr) ((struct hblk *)(((word) (objptr)) & ~(HBLKSIZE-1)))
 
+#define UNIQUE_THRESHOLD 32
+/* Sizes up to this many HBLKs each have their own free list    */
+
+# define FL_COMPRESSION 8
+        /* In between sizes map this many distinct sizes to a single    */
+        /* bin.                                                         */
+# define HUGE_THRESHOLD 256
+        /* Sizes of at least this many heap blocks are mapped to a      */
+        /* single free list.                                            */
+
+# define N_HBLK_FLS (HUGE_THRESHOLD - UNIQUE_THRESHOLD)/FL_COMPRESSION \
+                                 + UNIQUE_THRESHOLD
+
+/* The number of objects in a block dedicated to a certain size.        */
+/* may erroneously yield zero (instead of one) for large objects.       */
+# define HBLK_OBJS(sz_in_bytes) (HBLKSIZE/(sz_in_bytes))
+
+
+#define BLOCK_NEARLY_FULL_THRESHOLD(size_in_bytes) (7 * HBLK_OBJS(size_in_bytes) / 8)
+
 //granule
 #define CPP_WORDSZ 64
 #define GRANULE_BYTES 16

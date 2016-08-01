@@ -42,6 +42,13 @@ struct _MAK_transient_metadata {
     #define MAK_fl_optimal_count MAK_transient_md._fl_optimal_count
     word _fl_optimal_count[MAXOBJGRANULES+1];
 
+    #define MAK_hblkfreelist MAK_transient_md._hblkfreelist
+    struct hblk* _hblkfreelist[N_HBLK_FLS+1];
+
+    #define MAK_free_bytes MAK_transient_md._free_bytes
+    word _free_bytes[N_HBLK_FLS+1];
+
+
 };
 
 
