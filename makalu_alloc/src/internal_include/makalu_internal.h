@@ -8,11 +8,12 @@
 #include "makalu_transient.h"
 #include "makalu_persistent.h"
 #include "makalu_mark.h"
+#include "makalu_init.h"
+#include "makalu_reclaim.h"
+#include "makalu_block.h"
 
 
 MAK_EXTERN word MAK_page_size;
-
-# define HBLKPTR(objptr) ((struct hblk *)(((word) (objptr)) & ~(HBLKSIZE-1)))
 
 
 

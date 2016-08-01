@@ -34,6 +34,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 
 //block
+
 #define SYS_PAGESIZE 4096
 #define CPP_LOG_HBLKSIZE 12
 #define CPP_HBLKSIZE (1 << CPP_LOG_HBLKSIZE)
@@ -66,11 +67,14 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
     /* Size of block (in units of HBLKSIZE) needed to hold objects of   */
     /* given sz (in bytes).   */
 
+# define HBLKPTR(objptr) ((struct hblk *)(((word) (objptr)) & ~(HBLKSIZE-1)))
 
 //granule
 #define CPP_WORDSZ 64
 #define GRANULE_BYTES 16
 #define BYTES_TO_GRANULES(n) ((n)>>4)
+#define GRANULES_TO_BYTES(n) ((n)<<4)
+#define GRANULES_TO_WORDS(n) ((n)<<1)
 #define EXTRA_BYTES MAK_all_interior_pointers
 
 #define ONES ((word)(signed_word)(-1))
