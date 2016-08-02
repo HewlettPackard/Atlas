@@ -6,7 +6,6 @@ typedef struct MAK_fl_hdr {
      signed_word count;
 } fl_hdr;
 
-
 struct _MAK_transient_metadata {
     
     /*transient scratch memory */
@@ -48,6 +47,11 @@ struct _MAK_transient_metadata {
     #define MAK_free_bytes MAK_transient_md._free_bytes
     word _free_bytes[N_HBLK_FLS+1];
 
+    #define MAK_n_heap_sects MAK_transient_md._n_heap_sects
+    word _n_heap_sects;
+
+    # define MAK_heap_sects MAK_transient_md._heap_sects
+    HeapSect _heap_sects[MAX_HEAP_SECTS];        /* Heap segments potentially  */ 
 
 };
 

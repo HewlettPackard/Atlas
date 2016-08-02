@@ -91,6 +91,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 //granule
 #define CPP_WORDSZ 64
+#define WORDSZ ((word)CPP_WORDSZ)
+#define SIGNB  ((word)1 << (WORDSZ-1))
 #define GRANULE_BYTES 16
 #define BYTES_TO_GRANULES(n) ((n)>>4)
 #define GRANULES_TO_BYTES(n) ((n)<<4)

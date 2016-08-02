@@ -60,8 +60,22 @@ struct _MAK_base_md {
 
     /* heap size */
 
+
+    #define MAK_heapsize MAK_base_md._heapsize
+    word _heapsize;
+ 
+
+    #define MAK_last_heap_addr MAK_base_md._last_heap_addr
+    ptr_t _last_heap_addr;
+
     #define MAK_last_heap_size MAK_base_md._last_heap_size
-    word  _last_heap_size;   
+    word  _last_heap_size;
+
+    #define MAK_prev_heap_addr MAK_base_md._prev_heap_addr
+    ptr_t _prev_heap_addr;
+
+    #define MAK_max_heapsize MAK_base_md._max_heapsize
+    word _max_heapsize;
 
     #define MAK_greatest_plausible_heap_addr MAK_base_md._greatest_plausible_heap_addr
     void* _greatest_plausible_heap_addr;
