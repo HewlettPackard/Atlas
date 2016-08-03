@@ -81,7 +81,12 @@ struct _MAK_base_md {
     void* _greatest_plausible_heap_addr;
 
     #define MAK_least_plausible_heap_addr MAK_base_md._least_plausible_heap_addr
-     void* _least_plausible_heap_addr;
+    void* _least_plausible_heap_addr;
+
+    #define MAK_large_free_bytes MAK_base_md._large_free_bytes
+    word _large_free_bytes;
+    /* Total bytes contained in blocks on large object free */
+    /* list.  */
 
     /* gc */
     #define MAK_mandatory_gc MAK_base_md._mandatory_gc

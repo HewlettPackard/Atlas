@@ -147,7 +147,162 @@ MAK_INNER void MAK_add_to_heap(struct hblk *space, size_t bytes, word expansion_
     //(since prev_heap_addr is logged) in the case of a crash
     MAK_NO_LOG_STORE_NVM(MAK_greatest_plausible_heap_addr, greatest_addr);
     MAK_NO_LOG_STORE_NVM(MAK_least_plausible_heap_addr, least_addr);
+}
 
+STATIC struct hblk * MAK_free_block_ending_at(struct hblk *h)
+{
+    struct hblk * p = h - 1;
+    hdr * phdr;
+
+    phdr = HDR(p);
+    while (0 != phdr && IS_FORWARDING_ADDR_OR_NIL(phdr)) {
+        p = FORWARDED_ADDR(p,phdr);
+        phdr = HDR(p);
+    }
+    if (0 != phdr) {
+        if(HBLK_IS_FREE(phdr)) {
+            return p;
+        } else {
+            return 0;
+        }
+    }
+    p = MAK_prev_block(h - 1);
+    if (0 != p) {
+      phdr = HDR(p);
+      if (HBLK_IS_FREE(phdr) && (ptr_t)p + phdr -> hb_sz == (ptr_t)h) {
+        return p;
+      }
+    }
+    return 0;
+}
+
+STATIC int MAK_hblk_fl_from_blocks(word blocks_needed)
+{
+    if (blocks_needed <= UNIQUE_THRESHOLD) return (int)blocks_needed;
+    if (blocks_needed >= HUGE_THRESHOLD) return N_HBLK_FLS;
+    return (int)(blocks_needed - UNIQUE_THRESHOLD)/FL_COMPRESSION
+                                        + UNIQUE_THRESHOLD;
 
 }
 
+STATIC void MAK_remove_from_fl(hdr *hhdr, int n)
+{
+    int index;
+
+    MAK_ASSERT(((hhdr -> hb_sz) & (HBLKSIZE-1)) == 0);
+#   ifndef USE_MUNMAP
+      /* We always need index to maintain free counts.  */
+      if (FL_UNKNOWN == n) {
+          index = MAK_hblk_fl_from_blocks(divHBLKSZ(hhdr -> hb_sz));
+      } else {
+          index = n;
+      }
+#   endif
+    if (hhdr -> hb_prev == 0) {
+#       ifdef USE_MUNMAP
+          if (FL_UNKNOWN == n) {
+            index = MAK_hblk_fl_from_blocks(divHBLKSZ(hhdr -> hb_sz));
+          } else {
+            index = n;
+          }
+#       endif
+        MAK_ASSERT(HDR(MAK_hblkfreelist[index]) == hhdr);
+        MAK_hblkfreelist[index] = hhdr -> hb_next;
+    } else {
+        hdr *phdr;
+        phdr = HDR(hhdr -> hb_prev);
+        phdr -> hb_next = hhdr -> hb_next;
+    }
+    MAK_ASSERT(MAK_free_bytes[index] >= hhdr -> hb_sz);
+    INCR_FREE_BYTES(index, - (signed_word)(hhdr -> hb_sz));
+    if (0 != hhdr -> hb_next) {
+        hdr * nhdr;
+        MAK_ASSERT(!IS_FORWARDING_ADDR_OR_NIL(NHDR(hhdr)));
+        nhdr = HDR(hhdr -> hb_next);
+        nhdr -> hb_prev = hhdr -> hb_prev;
+    }
+    MAK_LOG_NVM_WORD(&(hhdr -> hb_sz), hhdr -> hb_sz);
+    MAK_LOG_NVM_CHAR((char*)(&(hhdr -> hb_flags)), (char) (hhdr -> hb_flags));
+}
+
+STATIC void MAK_add_to_fl(struct hblk *h, hdr *hhdr)
+{
+    int index = MAK_hblk_fl_from_blocks(divHBLKSZ(hhdr -> hb_sz));
+    struct hblk *second = MAK_hblkfreelist[index];
+    hdr * second_hdr;
+#   if defined(MAK_ASSERTIONS) 
+      struct hblk *next = (struct hblk *)((word)h + hhdr -> hb_sz);
+      hdr * nexthdr = HDR(next);
+      struct hblk *prev = MAK_free_block_ending_at(h);
+      hdr * prevhdr = HDR(prev);
+      MAK_ASSERT(nexthdr == 0 || !HBLK_IS_FREE(nexthdr)
+                || (signed_word)MAK_heapsize < 0);
+                /* In the last case, blocks may be too large to merge. */
+      MAK_ASSERT(prev == 0 || !HBLK_IS_FREE(prevhdr)
+                || (signed_word)MAK_heapsize < 0);
+#   endif
+    MAK_ASSERT(((hhdr -> hb_sz) & (HBLKSIZE-1)) == 0);
+    MAK_hblkfreelist[index] = h;
+
+    INCR_FREE_BYTES(index, hhdr -> hb_sz);
+    MAK_ASSERT(MAK_free_bytes[index] <= MAK_large_free_bytes);
+
+    hhdr -> hb_next = second;
+    hhdr -> hb_prev = 0;
+
+    if (0 != second) {
+      second_hdr = HDR(second);
+      second_hdr -> hb_prev = h;
+    }
+    //TODO: Do we really need the following? The only need for this is when it comes through
+     //get_first_part_of(). Why not set the FREE_BLK flag there?
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_flags, hhdr -> hb_flags | FREE_BLK);
+}
+
+
+
+MAK_INNER void MAK_newfreehblk(struct hblk *hbp, word size)
+{
+    struct hblk *next, *prev;
+    hdr *hhdr, *prevhdr, *nexthdr;
+    MAK_bool coalesced_prev = FALSE;
+    next = (struct hblk *)((word)hbp + size);
+    nexthdr = HDR(next);
+    prev = MAK_free_block_ending_at(hbp);
+
+    /* Coalesce with predecessor, if possible. */
+    if (0 != prev) {
+        prevhdr = HDR(prev);
+        if ((signed_word)(size + prevhdr -> hb_sz) > 0) {
+            MAK_remove_from_fl(prevhdr, FL_UNKNOWN);
+            MAK_NO_LOG_STORE_NVM(prevhdr -> hb_sz, (prevhdr -> hb_sz) + size);
+          
+            hbp = prev;
+            hhdr = prevhdr;
+            coalesced_prev = TRUE;
+        }
+    }
+    /*just so that we don't have to log later multiple times within the transaction*/
+    MAK_LOG_NVM_ADDR(&(MAK_hdr_free_ptr), MAK_hdr_free_ptr);
+
+    if (!coalesced_prev) {
+        hhdr = MAK_install_header(hbp);
+        if (!hhdr) {
+            ABORT ("Could not install header while trying to install new acquired block\n");
+        }
+        MAK_NO_LOG_STORE_NVM(hhdr->hb_sz, size);
+        MAK_NO_LOG_STORE_NVM(hhdr->hb_flags, 0);
+    }
+
+    /* Coalesce with successor, if possible */
+    if(0 != nexthdr && HBLK_IS_FREE(nexthdr) 
+     && (signed_word)(hhdr -> hb_sz + nexthdr -> hb_sz) > 0
+         /* no overflow */) {
+        MAK_remove_from_fl(nexthdr, FL_UNKNOWN);
+        MAK_NO_LOG_STORE_NVM(hhdr -> hb_sz, hhdr -> hb_sz + nexthdr -> hb_sz);
+        MAK_remove_header(next);
+    }
+
+    MAK_STORE_NVM_WORD(&(MAK_large_free_bytes), MAK_large_free_bytes +size);
+    MAK_add_to_fl(hbp, hhdr);
+}
