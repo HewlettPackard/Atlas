@@ -23,10 +23,6 @@ STATIC void MAK_init()
         MAK_fl_optimal_count[sz] = (word) FL_OPTIMAL_SIZE / (word) (sz * GRANULE_BYTES);
     } 
     
-    MAK_thr_init();
-    MAK_init_parallel();
-
-    MAK_is_initialized = TRUE;
 }
 
 STATIC void MAK_init_size_map(void)
@@ -154,6 +150,10 @@ MAK_API void* MAK_CALL MAK_start(MAK_persistent_memalign funcptr)
     MAK_sync_all_persistent();
     MAK_STORE_NVM_SYNC(MAK_persistent_initialized, MAGIC_NUMBER);
     MAK_init();
+    MAK_thr_init();
+
+    MAK_is_initialized = TRUE;
+
     return res;
 }
 
@@ -236,6 +236,10 @@ MAK_API void MAK_CALL MAK_restart(char* start_addr,
     MAK_fixup_transient_freelist();
 
     MAK_init();
+    MAK_thr_init();
+
+    MAK_is_initialized = TRUE;
+
     return;
 
 out:
@@ -264,8 +268,10 @@ MAK_API void MAK_CALL MAK_start_off(char* start_addr,
         MAK_sync_alloc_metadata();
     }
     
-    
     MAK_init();
+    MAK_mark_init();
+    MAK_start_mark_threads();
+    MAK_is_initialized = TRUE;
 }
 
 

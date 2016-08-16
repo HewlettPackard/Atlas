@@ -2,6 +2,7 @@
 
 
 MAK_INNER int MAK_all_interior_pointers = MAK_INTERIOR_POINTERS;
+static MAK_bool MAK_mark_stack_too_small = FALSE;
 
 MAK_INNER void MAK_init_persistent_roots()
 {
@@ -53,7 +54,7 @@ MAK_INNER void MAK_initialize_offsets(void)
 MAK_INNER void MAK_register_displacement_inner(size_t offset)
 {
     if (offset >= VALID_OFFSET_SZ) {
-        ABORT("Bad argument to GC_register_displacement");
+        ABORT("Bad argument to MAK_register_displacement");
     }
     if (!MAK_valid_offsets[offset]) {
       MAK_valid_offsets[offset] = TRUE;
@@ -61,5 +62,87 @@ MAK_INNER void MAK_register_displacement_inner(size_t offset)
     }
 }
 
+STATIC void alloc_mark_stack(size_t n)
+{
+    mse * new_stack = (mse *)MAK_transient_scratch_alloc(n * sizeof(struct MAK_ms_entry));
+    MAK_mark_stack_too_small = FALSE;
+    if (MAK_mark_stack_size != 0) {
+        if (new_stack != 0) {
+///////////////////////////////////////////////////
+//          Kumud TODO: right now this transient memory is leaked. In the future
+//                      we probably should return to the underlying system
+///////////////////////////////////////////
+            MAK_mark_stack = new_stack;
+            MAK_mark_stack_size = n;
+            MAK_mark_stack_limit = new_stack + n;
+        } else {
+              WARN("Failed to grow mark stack to %lu frames\n",
+                            (unsigned long) n);
+        }
+    } else {
+        if (new_stack == 0) {
+            ABORT("No space for mark stack\n");
+        }
+        MAK_mark_stack = new_stack;
+        MAK_mark_stack_size = n;
+        MAK_mark_stack_limit = new_stack + n;
+    }
+    MAK_mark_stack_top = MAK_mark_stack-1;
+}
 
+MAK_INNER void MAK_mark_init(void)
+{
+    alloc_mark_stack(INITIAL_MARK_STACK_SIZE);
+}
+
+
+/* Mark using the local mark stack until the global mark stack is empty */
+/* and there are no active workers. Update GC_first_nonempty to reflect */
+/* progress.                                                            */
+/* Caller does not hold mark lock.                                      */
+/* Caller has already incremented GC_helper_count.  We decrement it,    */
+/* and maintain GC_active_count.                                        */
+STATIC void MAK_mark_local(mse *local_mark_stack, int id)
+{
+    //TODO: to be filled
+
+}
+
+#ifdef MAK_THREADS
+STATIC MAK_bool MAK_help_wanted = FALSE;  /* Protected by mark lock       */
+STATIC unsigned MAK_helper_count = 0;    /* Number of running helpers.   */
+                                        /* Protected by mark lock       */
+//STATIC unsigned MAK_active_count = 0;    /* Number of active helpers.    */
+                                        /* Protected by mark lock       */
+                                        /* May increase and decrease    */
+                                        /* within each mark cycle.  But */
+                                        /* once it returns to 0, it     */
+                                        /* stays zero for the cycle.    */
+
+
+MAK_INNER void MAK_help_marker()
+{
+
+    mse local_mark_stack[LOCAL_MARK_STACK_SIZE];
+    unsigned my_id;
+    if (!MAK_parallel_mark) return;
+    MAK_acquire_mark_lock();
+    while (!MAK_help_wanted) {
+        MAK_wait_marker();
+    }
+
+    my_id = MAK_helper_count;
+    if (my_id >= (unsigned) MAK_n_markers) {
+        /* This test is useful only if original threads can also        */
+      /* act as helpers.  Under Linux they can't.                       */
+
+        MAK_release_mark_lock();
+        return;
+    }
+    MAK_helper_count = my_id + 1;
+    MAK_release_mark_lock();
+    MAK_mark_local(local_mark_stack, my_id);
+    /* MAK_mark_local decrements GC_helper_count. */
+}
+#endif
 

@@ -6,8 +6,4 @@
 /* restarting online after a crash. */
 MAK_EXTERN int MAK_run_mode;
 
-MAK_INNER void MAK_thr_init(void);
-MAK_INNER void MAK_init_parallel(void);
-
-
 #endif

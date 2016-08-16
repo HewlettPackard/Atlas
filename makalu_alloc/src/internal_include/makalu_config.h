@@ -32,6 +32,15 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define RESTARTING_ONLINE  11
 #define STARTING_ONLINE    12
 
+// multi-threaded support
+#define MAK_THREADS 1
+#define START_THREAD_LOCAL_IMMEDIATE 1
+/* if this flag is commented out */
+/* we don't start local allocation until we have allocated */
+/* optimal count worth of memory from global freelist */
+
+
+
 
 //block
 
@@ -160,6 +169,19 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
                         /* held.                                        */
 
 # define VALID_OFFSET_SZ HBLKSIZE
+#define MAK_N_MARKERS 6    /* Number of threads to be started */
+                           /* for parallel marking offline    */
+
+#define INITIAL_MARK_STACK_SIZE (1*HBLKSIZE)
+                /* INITIAL_MARK_STACK_SIZE * sizeof(mse) should be a    */
+                /* multiple of HBLKSIZE.                                */
+
+#define LOCAL_MARK_STACK_SIZE HBLKSIZE
+        /* Under normal circumstances, this is big enough to guarantee  */
+        /* We don't overflow half of it in a single call to             */
+        /* GC_mark_from.                                                */
+
+
 
 //allocation
 
@@ -167,6 +189,9 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 #define FL_MAX_SIZE 2 * HBLKSIZE
 #define FL_OPTIMAL_SIZE 1 * HBLKSIZE
+#define LOCAL_FL_MAX_SIZE 2 * HBLKSIZE   /* thread local */
+#define LOCAL_FL_OPTIMAL_SIZE 1 * HBLKSIZE /* thread local */
+
 /* upto and including 256 bytes in thread local freelist */
 /* Note there is a 0 byte freelist */ 
 #define TINY_FREELISTS 25   
@@ -187,6 +212,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define TOP_SZ (1 << LOG_TOP_SZ)
 
 #define HDR_CACHE_SIZE 8  /* power of 2 */
+#define LOCAL_HDR_CACHE_SZ 8 /* power of 2 */
 #define MAX_JUMP (HBLKSIZE - 1)
 /* Is the result a forwarding address to someplace closer to the        */
 /* beginning of the block or NULL?                                      */
@@ -228,9 +254,10 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 //#define NO_NVM_LOGS 1
 
 
-#define AFLUSH_TABLE_SZ 32     //multiples of 2
+#define AFLUSH_TABLE_SZ 32    /* power of 2 */ 
+#define LOCAL_AFLUSH_TABLE_SZ 8 /* power of 2 */
 #define SFLUSH_TABLE_SZ 8
-#define FL_AFLUSH_TABLE_SZ 8     //multiples of 2
+#define FL_AFLUSH_TABLE_SZ 8   /* power of 2 */ 
 #define CACHE_LINE_SZ 64
 #define LOG_CACHE_LINE_SZ 6
 

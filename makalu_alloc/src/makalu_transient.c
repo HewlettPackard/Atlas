@@ -10,7 +10,7 @@ MAK_INNER ptr_t MAK_get_transient_memory(word bytes)
     if (bytes & (MAK_page_size - 1)) 
         ABORT("Bad GET_MEM arg");
     
-    result = mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+    result = mmap(NULL, bytes, PROT_READ | PROT_WRITE,
                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (result == MAP_FAILED)
         ABORT("Transient scratch space: mmap failed"); 

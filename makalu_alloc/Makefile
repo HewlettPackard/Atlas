@@ -9,7 +9,8 @@ SRC_FILES := makalu_base_md.c makalu_hdr.c \
              makalu_init.c  makalu_mark.c \
              makalu_transient.c makalu_persistent.c \
              makalu_util.c makalu_reclaim.c \
-             makalu_block.c makalu_thread.c
+             makalu_block.c makalu_thread.c \
+             makalu_local_heap.c
 
 INCLUDES := -I $(LIBATOMIC_DIR)/include \
             -I $(SRC_DIR)/internal_include \
