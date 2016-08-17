@@ -86,9 +86,6 @@ struct _MAK_transient_metadata {
 };
 
 
-MAK_INNER MAK_bool MAK_alloc_reclaim_list(unsigned k);
-
-
 MAK_EXTERN struct _MAK_transient_metadata MAK_transient_md;
 
 MAK_INNER ptr_t MAK_transient_scratch_alloc(size_t bytes);

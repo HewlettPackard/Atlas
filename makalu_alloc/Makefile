@@ -48,7 +48,7 @@ directories:
 	$(MKDIR) $(LIBDIR)
 
 $(LIBDIR)/$(LIBNAME): $(OBJS)
-	$(AR) cru $@ $^
+	$(AR) cr $@ $^
 	$(RANLIB) $@
 
 .PHONY: clean

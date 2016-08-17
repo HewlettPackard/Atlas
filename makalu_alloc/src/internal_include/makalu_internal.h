@@ -16,6 +16,4 @@
 
 MAK_EXTERN word MAK_page_size;
 
-
-
 #endif

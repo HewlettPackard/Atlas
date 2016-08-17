@@ -1,6 +1,7 @@
-#ifdef MAK_THREADS
 
 #include "makalu_local_heap.h"
+
+#ifdef MAK_THREADS
 
 static word tlfs_max_count[TINY_FREELISTS] = {0};
 static word tlfs_optimal_count[TINY_FREELISTS] = {0};
@@ -22,19 +23,19 @@ MAK_INNER void MAK_init_thread_local()
     total_local_fl_size = 2 * total * sizeof (void*);
 }
 
-STATIC void MAK_alloc_tlfs()
+STATIC MAK_tlfs alloc_tlfs()
 {
     MAK_tlfs ret;
-    LOCK();
+    MAK_LOCK();
     if (tlfs_fl != NULL){
         ret = tlfs_fl;
         tlfs_fl = ret -> next;
-        UNLOCK();
+        MAK_UNLOCK();
     } else {
        word size = sizeof(struct thread_local_freelists);
        size += total_local_fl_size;
        ret = (MAK_tlfs) MAK_transient_scratch_alloc(size);
-       UNLOCK();
+       MAK_UNLOCK();
        BZERO(ret, size);
     }
     return ret;
@@ -42,32 +43,32 @@ STATIC void MAK_alloc_tlfs()
 
 MAK_INNER void MAK_set_my_thread_local(void)
 {
-    MAK_tlfs tlfs = MAK_alloc_tlfs();
+    MAK_tlfs tlfs = alloc_tlfs();
     if (tlfs == 0)
          ABORT("Failed to allocate memory for thread registering");
 
     int i;
-    register local_fl_hdr *fl_hdr;
+    register fl_hdr *flh;
     void** fl_array = tlfs -> fl_array;
     word fl_array_idx = 0;
     for (i = 1; i < TINY_FREELISTS; ++i) {
-        fl_hdr = &(p->ptrfree_freelists[i]);
-        fl_hdr -> fl = fl_array + fl_array_idx;
+        flh = &(tlfs -> ptrfree_freelists[i]);
+        flh -> fl = fl_array + fl_array_idx;
        #ifdef START_THREAD_LOCAL_IMMEDIATE
-        fl_hdr -> count = (signed_word)(0);
+        flh -> count = (signed_word)(0);
        #else
-        fl_hdr -> count = (signed_word)(-(tlfs_optimal_count[i]));
+        flh -> count = (signed_word)(-(tlfs_optimal_count[i]));
        #endif
         fl_array_idx += tlfs_max_count[i];
     }
 
     for (i = 1; i < TINY_FREELISTS; ++i) {
-        fl_hdr = &(p->normal_freelists[i]);
-        fl_hdr->fl = fl_array + fl_array_idx;
+        flh = &(tlfs -> normal_freelists[i]);
+        flh->fl = fl_array + fl_array_idx;
        #ifdef START_THREAD_LOCAL_IMMEDIATE
-        fl_hdr->count = (signed_word)(0);
+        flh->count = (signed_word)(0);
        #else
-        fl_hdr->count = (signed_word)(-(tlfs_optimal_count[i]));
+        flh->count = (signed_word)(-(tlfs_optimal_count[i]));
        #endif
         fl_array_idx += tlfs_max_count[i];
     }
@@ -76,12 +77,12 @@ MAK_INNER void MAK_set_my_thread_local(void)
     /* We now handle most of them like regular free lists, to ensure    */
     /* That explicit deallocation works.  However, allocation of a      */
     /* size 0 "gcj" object is always an error.                          */
-    fl_hdr = &(p -> ptrfree_freelists[0]);
-    fl_hdr->fl = NULL;
-    fl_hdr->count = (signed_word)(-(tlfs_optimal_count[1]));
-    fl_hdr = &(p -> normal_freelists[0]);
-    fl_hdr->fl = NULL;
-    fl_hdr->count = (signed_word)(-(tlfs_optimal_count[1]));
+    flh = &(tlfs -> ptrfree_freelists[0]);
+    flh->fl = NULL;
+    flh->count = (signed_word)(-(tlfs_optimal_count[1]));
+    flh = &(tlfs -> normal_freelists[0]);
+    flh->fl = NULL;
+    flh->count = (signed_word)(-(tlfs_optimal_count[1]));
     
 
     my_tlfs =  tlfs;

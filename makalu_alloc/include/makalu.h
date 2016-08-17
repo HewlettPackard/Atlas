@@ -5,6 +5,8 @@
 #define MAK_CALL 
 #define MAK_CALLBACK MAK_CALL
 
+#include <stddef.h>
+
 typedef unsigned long long MAK_word;
 typedef long long MAK_signed_word;
 

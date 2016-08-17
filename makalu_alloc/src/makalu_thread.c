@@ -1,9 +1,10 @@
-#ifdef MAK_THREADS
 
 #include "makalu_internal.h"
-#include "makalu_thread_local.h"
+#include "makalu_local_heap.h"
 
-STATIC pthread_mutex_t MAK_global_ml = PTHREAD_MUTEX_INITIALIZER;
+#ifdef MAK_THREADS
+
+MAK_INNER pthread_mutex_t MAK_global_ml = PTHREAD_MUTEX_INITIALIZER;
 STATIC pthread_mutex_t MAK_granule_ml[TINY_FREELISTS];
 
 STATIC pthread_mutex_t mark_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -53,7 +54,6 @@ STATIC pthread_t MAK_mark_threads[MAK_N_MARKERS];
 
 STATIC void * MAK_mark_thread(void * id)
 {
-    word my_mark_no = 0;
     int cancel_state;
     if ((word)id == (word)-1) return 0; /* to make compiler happy */
     DISABLE_CANCEL(cancel_state);
@@ -84,8 +84,7 @@ MAK_INNER void MAK_start_mark_threads(void)
     for (i = 0; i < MAK_n_markers - 1; ++i) {
         if (0 != REAL_FUNC(pthread_create)(MAK_mark_threads + i, &attr,
                               MAK_mark_thread, (void *)(word)i)) {
-            WARN("Marker thread creation failed, errno = %" GC_PRIdPTR "\n",
-               errno);
+            WARN("Marker thread creation failed", 0);
             /* Don't try to create other marker threads.    */
             MAK_n_markers = i + 1;
             if (i == 0) MAK_parallel_mark = FALSE;
@@ -94,7 +93,6 @@ MAK_INNER void MAK_start_mark_threads(void)
     }
     pthread_attr_destroy(&attr);
 }
-
 
 MAK_INNER void MAK_thr_init(void)
 {

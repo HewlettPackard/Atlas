@@ -1,9 +1,11 @@
 #ifndef _MAKALU_LOCAL_HEAP
 #define _MAKALU_LOCAL_HEAP
 
-#ifdef MAK_THREADS
 
 #include "makalu_internal.h"
+
+#ifdef MAK_THREADS
+
 
 typedef struct thread_local_freelists {
 

@@ -7,6 +7,7 @@
 
 MAK_EXTERN long MAK_n_markers;
 MAK_EXTERN MAK_bool MAK_parallel_mark;
+MAK_EXTERN pthread_mutex_t MAK_global_ml;
 
 #define MAK_LOCK() { pthread_mutex_lock(&MAK_global_ml); }
 #define MAK_UNLOCK() { pthread_mutex_unlock(&MAK_global_ml); }
@@ -51,7 +52,7 @@ MAK_INNER void MAK_start_mark_threads(void);
 #define MAK_notify_all_marker()
 
 
-# define DISABLE_CANCEL(state) 
+#define DISABLE_CANCEL(state) 
 
 #define MAK_thr_init() 
 #define MAK_start_mark_threads()
