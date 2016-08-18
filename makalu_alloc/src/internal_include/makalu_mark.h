@@ -35,5 +35,15 @@ MAK_INNER void MAK_help_marker(void);
 # define mark_bit_from_hdr(hhdr,n) \
               (((hhdr)->hb_marks[divWORDSZ(n)] >> modWORDSZ(n)) & (word)1)
 
+# define clear_and_flush_mark_bit_from_hdr(hhdr, n, aflush_tb, aflush_tb_sz) \
+       { \
+           word* addr = (hhdr)->hb_marks+divWORDSZ(n); \
+           word bits = ~ ((word) 1 << modWORDSZ(n)); \
+           (*(addr) &= (bits)); \
+           MAK_NVM_ASYNC_RANGE_VIA(addr, sizeof(word), \
+                 aflush_tb, aflush_tb_sz); \
+       }
 
-#endif
+
+
+#endif // _MAKALU_MARK_H

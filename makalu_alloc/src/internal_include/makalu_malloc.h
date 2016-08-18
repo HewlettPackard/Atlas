@@ -5,6 +5,7 @@ MAK_INNER void * MAK_core_malloc(size_t);
 MAK_INNER void * MAK_generic_malloc(size_t lb, int k);
 MAK_INNER ptr_t MAK_alloc_large(size_t lb, int k, unsigned flags);
 MAK_INNER ptr_t MAK_allocobj(size_t gran, int kind);
-
+MAK_INNER void MAK_core_free(void* p, hdr* hhdr, int knd, 
+     size_t sz, size_t ngranules);
 
 #endif

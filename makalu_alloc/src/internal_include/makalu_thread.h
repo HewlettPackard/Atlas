@@ -21,10 +21,13 @@ MAK_EXTERN pthread_mutex_t MAK_global_ml;
         { \
                 MAK_unlock_gran(gran); \
         }
-# define DISABLE_CANCEL(state) \
+
+#define NEED_CANCEL_STATE(x) x
+
+#define DISABLE_CANCEL(state) \
         { pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &state); }
 
-# define RESTORE_CANCEL(state) \
+#define RESTORE_CANCEL(state) \
         { pthread_setcancelstate(cancel_state, ((void *)0)); }
 
 
@@ -54,6 +57,7 @@ MAK_INNER void MAK_start_mark_threads(void);
 #define MAK_wait_marker()
 #define MAK_notify_all_marker()
 
+#define NEED_CANCEL_STATE(x)
 
 #define DISABLE_CANCEL(state) 
 #define RESTORE_CANCEL(state) 

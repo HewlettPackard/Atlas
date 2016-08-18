@@ -70,7 +70,7 @@ MAK_INNER MAK_bool MAK_try_expand_hp(word needed_blocks,
        MAK_bool ignore_off_page, MAK_bool retry)
 {
     word blocks_to_get;
-    int cancel_state;
+    NEED_CANCEL_STATE(int cancel_state);
 
     DISABLE_CANCEL(cancel_state);
 
@@ -262,7 +262,7 @@ STATIC void MAK_remove_from_fl(hdr *hhdr, int n)
         nhdr -> hb_prev = hhdr -> hb_prev;
     }
     MAK_LOG_NVM_WORD(&(hhdr -> hb_sz), hhdr -> hb_sz);
-    MAK_LOG_NVM_CHAR((char*)(&(hhdr -> hb_flags)), (char) (hhdr -> hb_flags));
+    MAK_LOG_NVM_CHAR(&(hhdr -> hb_flags), hhdr -> hb_flags);
 }
 
 STATIC void MAK_add_to_fl(struct hblk *h, hdr *hhdr)
@@ -345,6 +345,81 @@ MAK_INNER void MAK_newfreehblk(struct hblk *hbp, word size)
 
     MAK_STORE_NVM_WORD(&(MAK_large_free_bytes), MAK_large_free_bytes +size);
     MAK_add_to_fl(hbp, hhdr);
+}
+
+
+/*
+ * Free a heap block.
+ *
+ * Coalesce the block with its neighbors if possible.
+ *
+ * All mark words are assumed to be cleared.
+ */
+
+MAK_INNER void MAK_freehblk(struct hblk *hbp)
+{
+    struct hblk *next, *prev;
+    hdr *hhdr, *prevhdr, *nexthdr;
+    signed_word size;
+    hhdr = HDR(hbp);
+    size = hhdr->hb_sz;
+    size = HBLKSIZE * OBJ_SZ_TO_BLOCKS(size);
+    if (size <= 0)
+        ABORT("Deallocating excessively large block.  Too large an allocation?");
+        /* Probably possible if we try to allocate more than half the address */
+        /* space at once.  If we don't catch it here, strange things happen   */
+        /* later.                                                             */
+
+    if (MAK_persistent_state == PERSISTENT_STATE_NONE)
+        MAK_STORE_NVM_SYNC(MAK_persistent_state, PERSISTENT_STATE_INCONSISTENT);
+
+    MAK_remove_counts(hbp, (word)size);
+    MAK_STORE_NVM_WORD(&(hhdr->hb_sz), size);
+
+    /* Check for duplicate deallocation in the easy case */
+    if (HBLK_IS_FREE(hhdr)) {
+        ABORT("Duplicate large block deallocation");
+    }
+
+    MAK_STORE_NVM_CHAR(&(hhdr -> hb_flags), hhdr -> hb_flags | FREE_BLK);
+    next = (struct hblk *)((word)hbp + size);
+    nexthdr = HDR(next);
+    prev = MAK_free_block_ending_at(hbp);
+
+    /* Coalesce with predecessor, if possible. */
+    if (0 != prev) {
+        prevhdr = HDR(prev);
+        if ((signed_word)(hhdr -> hb_sz + prevhdr -> hb_sz) > 0) {
+            if (MAK_run_mode == RESTARTING_OFFLINE){
+                MAK_LOG_NVM_WORD(&(prevhdr -> hb_sz), prevhdr -> hb_sz);
+            } else {
+                MAK_remove_from_fl(prevhdr, FL_UNKNOWN);
+            }
+            MAK_NO_LOG_STORE_NVM(prevhdr -> hb_sz, prevhdr -> hb_sz + hhdr -> hb_sz);
+            MAK_remove_header(hbp);
+            hbp = prev;
+            hhdr = prevhdr;
+        }
+    }
+
+    /* Coalesce with successor, if possible */
+    if(0 != nexthdr && HBLK_IS_FREE(nexthdr)
+       && (signed_word)(hhdr -> hb_sz + nexthdr -> hb_sz) > 0
+        /* no overflow */) {
+        if (MAK_run_mode == RESTARTING_OFFLINE){
+            MAK_LOG_NVM_CHAR(&(nexthdr -> hb_flags), nexthdr -> hb_flags);
+            MAK_LOG_NVM_WORD(&(nexthdr -> hb_sz), nexthdr -> hb_sz);
+        } else {
+            MAK_remove_from_fl(nexthdr, FL_UNKNOWN);
+        }
+        MAK_NO_LOG_STORE_NVM(hhdr -> hb_sz, hhdr -> hb_sz + nexthdr -> hb_sz);
+        MAK_remove_header(next);
+    }
+    MAK_STORE_NVM_WORD(&(MAK_large_free_bytes), MAK_large_free_bytes + size);
+    if (MAK_run_mode != RESTARTING_OFFLINE)
+    {
+        MAK_add_to_fl(hbp, hhdr);
+    }
 }
 
 

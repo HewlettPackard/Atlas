@@ -5,7 +5,7 @@ typedef struct log_e {
     ptr_t addr;
     char type;
     union {
-       char     char_val;
+       unsigned char     char_val;
        ptr_t addr_val;
        word     word_val;
        int      int_val;
@@ -183,7 +183,7 @@ MAK_EXTERN void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ];
   MAK_INNER void store_nvm_int(int* addr, int val);
 
   #define MAK_STORE_NVM_CHAR(addr, val) store_nvm_char(addr, val)
-  MAK_INNER void store_nvm_char(char* addr, char val);
+  MAK_INNER void store_nvm_char(unsigned char* addr, unsigned char val);
 
   #define MAK_STORE_NVM_ADDR(addr, val) store_nvm_addr((void**)addr, (void*) val)
   MAK_INNER void store_nvm_addr(void** addr, void* val);
@@ -197,7 +197,7 @@ MAK_EXTERN void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ];
   MAK_INNER void log_nvm_int(int* addr, int val);
 
   #define MAK_LOG_NVM_CHAR(addr, val) log_nvm_char(addr, val)
-  MAK_INNER void log_nvm_char(char* addr, char val);
+  MAK_INNER void log_nvm_char(unsigned char* addr, unsigned char val);
 
   #define MAK_LOG_NVM_ADDR(addr, val) log_nvm_addr((void**)addr, (void*) val)
   MAK_INNER void log_nvm_addr(void** addr, void* val);
@@ -207,7 +207,7 @@ MAK_EXTERN void* MAK_fl_aflush_table[FL_AFLUSH_TABLE_SZ];
 
 #else // !NVM_DEBUG
   MAK_INNER void create_int_log_entry(int* addr, int val);
-  MAK_INNER void create_char_log_entry(char* addr, char val);
+  MAK_INNER void create_char_log_entry(unsigned char* addr, unsigned char val);
   MAK_INNER void create_addr_log_entry(void** addr, void* val);
   MAK_INNER void create_word_log_entry(word* addr, word val);
 

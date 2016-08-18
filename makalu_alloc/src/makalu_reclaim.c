@@ -294,3 +294,105 @@ MAK_INNER void MAK_continue_reclaim(size_t gran /* granules */, int kind)
         if (flh -> count > 0) return; 
     }
 }
+
+
+MAK_INNER void MAK_truncate_freelist(fl_hdr* flh, word ngranules, int k,
+                         word keep, word max,
+                         hdr_cache_entry* hc, word hc_sz,
+                         void** aflush_tb, word aflush_tb_sz)
+{
+    struct hblk** rlh = &(MAK_reclaim_list[k][ngranules]);
+    size_t sz = GRANULES_TO_BYTES(ngranules);
+    word full_threshold = (word) BLOCK_NEARLY_FULL_THRESHOLD(sz);
+
+
+    signed_word t_count = flh -> count;
+    signed_word k_count = keep < t_count ? (signed_word) keep : t_count;
+
+    if (k_count == t_count){
+        return;
+    }
+
+
+    word start = flh -> start_idx;
+    signed_word n_truncated = t_count - k_count;
+
+
+    hdr* hhdr;
+    struct hblk* h;
+    word bit_no;
+    void* p;
+    signed_word i;
+
+    void** flp = flh -> fl;
+    for (i = 0; i < n_truncated; i++){
+        p =  flp[ (start + (word) i) % max ];
+        hhdr = MAK_get_hdr_and_update_hc(p, hc, hc_sz);
+        h = hhdr -> hb_block;
+        bit_no = MARK_BIT_NO((ptr_t)p - (ptr_t) h, sz);
+
+        if (!mark_bit_from_hdr(hhdr, bit_no))
+        {
+            WARN("Double deallocation detected\n", 0);
+            //printf("someone else already deleted this item %p\n", p);
+            //printf("Pointer: %p, hb_block: %p, bb_size: %lu\n", p,
+            //       hhdr -> hb_block, (word) hhdr -> hb_sz);
+            continue;
+        }
+
+        clear_and_flush_mark_bit_from_hdr(hhdr, bit_no, aflush_tb, aflush_tb_sz);
+        --hhdr -> hb_n_marks;
+        //if a page becomes completely empty, remove from the reclaim list
+        //deallocate the page from that size class
+        if (hhdr -> hb_n_marks == 0)
+        {
+            struct hblk* n_hb = hhdr -> hb_next;
+            struct hblk* p_hb = hhdr -> hb_prev;
+            if (n_hb != NULL){
+                hdr* n_hhdr = MAK_get_hdr_and_update_hc(n_hb -> hb_body,
+                                                 hc, hc_sz);
+                n_hhdr -> hb_prev = p_hb;
+                hhdr -> hb_next = NULL;
+            }
+            if (p_hb != NULL){
+                hdr* p_hhdr = MAK_get_hdr_and_update_hc(p_hb -> hb_body,
+                                                 hc, hc_sz);
+                p_hhdr -> hb_next = n_hb;
+                hhdr -> hb_prev = NULL;
+            }
+
+            if (h == *rlh){
+                *rlh = n_hb;
+            }
+
+            MAK_LOCK();
+            MAK_START_NVM_ATOMIC;
+            MAK_freehblk(h);
+            MAK_END_NVM_ATOMIC;
+            MAK_UNLOCK();
+            continue;
+        }
+        /* sufficient number of memory objects within the page are free */
+        /* add it back to the reclaim list */
+        else if (hhdr -> page_reclaim_state == IN_FLOATING
+                        && hhdr -> hb_n_marks <= full_threshold)
+        {
+            hhdr -> page_reclaim_state = IN_RECLAIMLIST;
+            struct hblk* top_hb = *rlh;
+            hhdr -> hb_next = top_hb;
+            hhdr -> hb_prev = NULL;
+            if (top_hb != NULL){
+                hdr* top_hhdr = MAK_get_hdr_and_update_hc(top_hb -> hb_body, hc, hc_sz);
+                top_hhdr -> hb_prev = h;
+            }
+            *rlh = h;
+        }
+
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks),
+            sizeof(hhdr -> hb_n_marks), aflush_tb, aflush_tb_sz);
+    }
+    flh -> count = k_count;
+    flh -> start_idx = (start + (word) n_truncated) % max;
+}
+
+

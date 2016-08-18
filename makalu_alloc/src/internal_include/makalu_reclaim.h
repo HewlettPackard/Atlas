@@ -17,4 +17,10 @@ MAK_INNER signed_word MAK_reclaim_to_array_generic(struct hblk * hbp,
                                   void** aflush_tb,
                                   word aflush_tb_sz,
                                   void** list);
+
+MAK_INNER void MAK_truncate_freelist(fl_hdr* flh, word ngranules, int k,
+                         word keep, word max,
+                         hdr_cache_entry* hc, word hc_sz,
+                         void** aflush_tb, word aflush_tb_sz);
+
 #endif

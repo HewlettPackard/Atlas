@@ -242,6 +242,54 @@ MAK_INNER ptr_t MAK_allocobj(size_t gran, int kind)
     return (flh -> fl[idx]);
 }
 
+#ifdef MAK_THREADS
+MAK_INNER void MAK_core_free(void* p, hdr* hhdr, int knd, 
+    size_t sz, size_t ngranules){
 
+    fl_hdr* flh;
+    struct obj_kind * ok;
+    struct hblk* h = hhdr -> hb_block;
+
+    ok = &MAK_obj_kinds[knd];
+    if (EXPECT(ngranules <= MAXOBJGRANULES, TRUE)) {
+        if (ok -> ok_init) {
+            BZERO((word *)p, sz);
+        }
+        flh = &(ok -> ok_freelist[ngranules]);
+
+        MAK_LOCK_GRAN(ngranules);
+        signed_word count = flh -> count;
+        word max_count = MAK_fl_max_count[ngranules];
+        word idx = (flh -> start_idx + count) % max_count;
+        void** flp = flh -> fl;
+        flp[idx] = p;
+        count = flh -> count = count + 1;
+        //also now we are addding to the global freelist, 
+        //cache the header in the global cache as well.
+        MAK_update_hc(h -> hb_body, hhdr, MAK_hdr_cache, HDR_CACHE_SIZE);
+        if (count >= max_count){
+            //TODO:truncate
+            MAK_truncate_freelist(flh, ngranules, knd,
+                 MAK_fl_optimal_count[ngranules], max_count,
+                 &(MAK_hdr_cache[0]), (word) HDR_CACHE_SIZE,
+                 &(MAK_fl_aflush_table[0]), (word) FL_AFLUSH_TABLE_SZ);
+
+        }
+        MAK_UNLOCK_GRAN(ngranules);
+    } else {
+        MAK_LOCK();
+        MAK_START_NVM_ATOMIC;
+
+        MAK_freehblk(h);
+
+        MAK_END_NVM_ATOMIC;
+        MAK_UNLOCK();
+    }
+}
+
+#else // ! defined MAK_THREADS
+
+
+#endif // MAK_THREADS
 
 

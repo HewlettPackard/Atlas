@@ -133,10 +133,10 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 //struct hblkhdr hb_marks
 #define MARK_BITS_SZ (MARK_BITS_PER_HBLK/CPP_WORDSZ + 1)
-
+#  define MARK_BIT_NO(offset, sz) BYTES_TO_GRANULES((unsigned)(offset))
 #  define MARK_BIT_OFFSET(sz) BYTES_TO_GRANULES(sz)
 
-#define MAK_INTERIOR_POINTERS 1
+#define MAK_INTERIOR_POINTERS 0 /* 1 */
 
 
 /*number of heap blocks allocated to store persistent roots */

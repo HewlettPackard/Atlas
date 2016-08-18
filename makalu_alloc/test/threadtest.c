@@ -102,5 +102,10 @@ int main(){
 
     __map_transient_region();
     void* ret = MAK_start(&__nvm_region_allocator);
+    int i;
+    for (i=0; i < 10; i++) {
+        void* p = MAK_malloc(sizeof(int));
+        printf("Allocated address: %p\n", p);
+    }
     return 0;
 }

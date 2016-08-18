@@ -185,7 +185,7 @@ MAK_INNER void end_nvm_atomic() {
 #else
   MAK_INNER
 #endif
- void create_char_log_entry(char* addr, char val) {
+ void create_char_log_entry(unsigned char* addr, unsigned char val) {
 #ifdef NVM_DEBUG
    if ((char*) curr_log_e > MAK_persistent_log_start + MAX_LOG_SZ){
        ABORT("Run out of space to create a log entry\n");
@@ -253,14 +253,14 @@ MAK_INNER void store_nvm_int(int* addr, int val){
     CLFLUSH_FAS(addr, sizeof(int));
 }
 
-MAK_INNER void store_nvm_char(char* addr, char val){
+MAK_INNER void store_nvm_char(unsigned char* addr, unsigned char val){
     if (!logging_in_session && !log_anywhere){
        ABORT("Aborting: Cannot log outside an active log\n");
     }
     if (logging_in_session)
     create_char_log_entry(addr, *(addr));
     *(addr) = (val);
-    CLFLUSH_FAS(addr, sizeof(char));
+    CLFLUSH_FAS(addr, sizeof(unsigned char));
 }
 
 MAK_INNER void store_nvm_addr(void** addr, void* val){
@@ -293,7 +293,7 @@ MAK_INNER void log_nvm_int(int* addr, int val){
     create_int_log_entry(addr, val);
 }
 
-MAK_INNER void log_nvm_char(char* addr, char val){
+MAK_INNER void log_nvm_char(unsigned char* addr, unsigned char val){
     if (!logging_in_session && !log_anywhere){
        ABORT("Aborting: Cannot log outside an active log\n");
     }
@@ -347,8 +347,8 @@ MAK_INNER void MAK_recover_metadata(){
              CLFLUSH_FAS((int*)(e -> addr), sizeof(int));
              break;
           case CHAR:
-             *((char*)(e->addr)) = e->val.char_val;
-             CLFLUSH_FAS((char*)(e -> addr), sizeof(char));
+             *((unsigned char*)(e->addr)) = e->val.char_val;
+             CLFLUSH_FAS((unsigned char*)(e -> addr), sizeof(unsigned char));
              break;
           case ADDR:
              *((void**)(e->addr)) = (void*) (e->val.addr_val);
