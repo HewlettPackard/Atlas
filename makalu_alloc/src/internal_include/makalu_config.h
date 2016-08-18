@@ -33,7 +33,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define STARTING_ONLINE    12
 
 // multi-threaded support
-#define MAK_THREADS 1
+//#define MAK_THREADS 1
 #define START_THREAD_LOCAL_IMMEDIATE 1
 /* if this flag is commented out */
 /* we don't start local allocation until we have allocated */
@@ -49,6 +49,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define CPP_HBLKSIZE (1 << CPP_LOG_HBLKSIZE)
 #define LOG_HBLKSIZE   ((size_t)CPP_LOG_HBLKSIZE)
 #define HBLKSIZE ((size_t)CPP_HBLKSIZE)
+#define HBLKDISPL(objptr) (((size_t) (objptr)) & (HBLKSIZE-1))
 #define MAK_FREE_SPACE_DIVISOR 3
 
 #define CPP_MAXOBJBYTES (CPP_HBLKSIZE/2)
@@ -108,6 +109,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define BYTES_TO_GRANULES(n) ((n)>>4)
 #define GRANULES_TO_BYTES(n) ((n)<<4)
 #define GRANULES_TO_WORDS(n) ((n)<<1)
+#define WORDS_TO_BYTES(x)   ((x)<<3)
 
 #define BYTES_PER_WORD      ((word)(sizeof (word)))
 

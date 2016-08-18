@@ -19,6 +19,7 @@ MAK_API void MAK_CALL MAK_restart(char* start_addr, MAK_persistent_memalign func
 MAK_API void MAK_CALL MAK_start_off(char* start_addr,
               MAK_persistent_memalign funcptr);
 MAK_API void* MAK_CALL MAK_malloc(size_t /*size in bytes */);
+MAK_API void MAK_CALL MAK_free(void * /*pointer */);
 
 MAK_API void MAK_CALL MAK_close(void);
 

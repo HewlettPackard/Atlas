@@ -183,6 +183,8 @@ MAK_INNER struct hblk * MAK_prev_block(struct hblk *h);
 
 
 MAK_INNER hdr * MAK_find_header(ptr_t h);
+MAK_INNER void* MAK_hc_base_with_hdr(void *p, 
+  hdr_cache_entry *hct, unsigned int hct_sz, hdr** hdr_ret);
 
 #define ENSURE_64_BIT_COPY(dest, src) \
 { \

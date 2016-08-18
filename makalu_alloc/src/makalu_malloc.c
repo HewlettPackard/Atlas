@@ -288,6 +288,51 @@ MAK_INNER void MAK_core_free(void* p, hdr* hhdr, int knd,
 }
 
 #else // ! defined MAK_THREADS
+MAK_API void MAK_CALL MAK_free(void * p)
+{
+    hdr *hhdr;
+    size_t sz; /* In bytes */
+    size_t ngranules;   /* sz in granules */
+    fl_hdr *flh;
+    int knd;
+    struct obj_kind * ok;
+
+    if (p == 0) return;
+        /* Required by ANSI.  It's not my fault ...     */
+    MAK_LOCK();
+    void* r = MAK_hc_base_with_hdr(p, MAK_hdr_cache,
+                     (unsigned int) HDR_CACHE_SIZE, &hhdr);
+    if (r == 0) return;
+
+    sz = hhdr -> hb_sz;
+    ngranules = BYTES_TO_GRANULES(sz);
+    knd = hhdr -> hb_obj_kind;
+    ok = &MAK_obj_kinds[knd];
+    if (EXPECT(ngranules <= MAXOBJGRANULES, TRUE)) {
+        if (ok -> ok_init) {
+            BZERO((word *)r, sz);
+        }
+        flh = &(ok -> ok_freelist[ngranules]);
+        signed_word count = flh -> count;
+        word max_count = MAK_fl_max_count[ngranules];
+        word idx = (flh -> start_idx + count) % max_count;
+        void** flp = flh -> fl;
+        flp[idx] = r;
+        count = flh -> count = count + 1;
+        if (count >= max_count){
+           MAK_truncate_freelist(flh, ngranules, knd,
+              MAK_fl_optimal_count[ngranules], max_count,
+              &(MAK_hdr_cache[0]), (word) HDR_CACHE_SIZE,
+              &(MAK_fl_aflush_table[0]), (word) FL_AFLUSH_TABLE_SZ);
+        }
+        MAK_UNLOCK();
+    } else {
+        MAK_START_NVM_ATOMIC;
+        MAK_freehblk(hhdr -> hb_block);
+        MAK_END_NVM_ATOMIC;
+        MAK_UNLOCK();
+    }
+}
 
 
 #endif // MAK_THREADS

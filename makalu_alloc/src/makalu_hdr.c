@@ -28,7 +28,7 @@ MAK_INNER hdr * MAK_find_header(ptr_t h)
 /* header corresponding to p, if p can possibly be a valid      */
 /* object pointer, and 0 otherwise.                             */
 /* GUARANTEED to return 0 for a pointer past the first page     */
-/* of an object unless both GC_all_interior_pointers is set     */
+/* of an object unless both MAK_all_interior_pointers is set     */
 /* and p is in fact a valid object pointer.                     */
 /* Never returns a pointer to a free hblk.                      */
 
@@ -80,7 +80,7 @@ MAK_INNER void MAK_update_hc(ptr_t p, hdr* hhdr, hdr_cache_entry* hc, word hc_sz
     hdr_cache_entry* entry = HCE(p, hc, hc_sz);
     entry -> block_addr = ((word) (p)) >> LOG_HBLKSIZE;
     //if (HBLKPTR(p) != hhdr -> hb_block){
-    //    GC_printf("hhdr block: %p, mismatched HBLKPTR(p): %p\n", hhdr -> hb_block, p);
+    //    MAK_printf("hhdr block: %p, mismatched HBLKPTR(p): %p\n", hhdr -> hb_block, p);
     //}
     entry -> hce_hdr = hhdr;
 }
@@ -91,7 +91,7 @@ MAK_INNER hdr* MAK_get_hdr_no_update(ptr_t p, hdr_cache_entry* hc, word hc_sz){
      if (EXPECT(HCE_VALID_FOR(hce, p), TRUE)) {
          hhdr = hce -> hce_hdr;
          if (EXPECT(hhdr -> hb_block == HBLKPTR(p), TRUE)){
-             //GC_printf("Header found in cache\n");
+             //MAK_printf("Header found in cache\n");
              return hhdr;
          }
      }
@@ -104,13 +104,13 @@ MAK_INNER hdr* MAK_get_hdr_and_update_hc(ptr_t p, hdr_cache_entry* hc, word hc_s
      if (EXPECT(HCE_VALID_FOR(hce, p), TRUE)) {
          hhdr = hce -> hce_hdr;
          if (EXPECT(hhdr -> hb_block == HBLKPTR(p), TRUE)){
-             //GC_printf("Header found in cache\n");
+             //MAK_printf("Header found in cache\n");
              return hhdr;
          }
      }
      hhdr = HDR(p);
      //if (HBLKPTR(p) != hhdr -> hb_block){
-     // GC_printf("hhdr block: %p, mismatched HBLKPTR(p): %p\n", hhdr -> hb_block, p);
+     // MAK_printf("hhdr block: %p, mismatched HBLKPTR(p): %p\n", hhdr -> hb_block, p);
      //}
 
      hce -> block_addr = ((word)(hhdr -> hb_block)) >> LOG_HBLKSIZE;
@@ -163,7 +163,7 @@ static hdr* alloc_hdr(void)
         //so it is ok to be out of sync with the transaction
         MAK_hdr_free_list = (hdr *) (result -> hb_next);
         result->hb_prev = result->hb_next = 0;
-        //GC_printf("Hdr being allocated: %p\n", result);
+        //MAK_printf("Hdr being allocated: %p\n", result);
         //headers in the header freelist have all size set to zero, 
         //but we need to log it so that
         //undoing of a transaction can leave it size = 0, 
@@ -180,7 +180,7 @@ static hdr* alloc_hdr(void)
         MAK_NO_LOG_STORE_NVM(MAK_hdr_free_ptr, new_free_ptr);
         //headers size does not need to be set to zero because the 
         //free_ptr would be rewinded in case of a crash
-        //GC_printf("%dth header allocated\n", hdr_alloc_count);
+        //MAK_printf("%dth header allocated\n", hdr_alloc_count);
         return (result);
     }
     //we expand the hdr scratch space based on the 
@@ -239,7 +239,7 @@ static bottom_index* alloc_bi(void)
     if (new_free_ptr <= MAK_hdr_idx_end_ptr){
         //incase of a crash we reset the free_ptr
         MAK_hdr_idx_free_ptr = new_free_ptr;
-        //GC_printf("%dth bottom index allocated\n", alloc_bi_count);
+        //MAK_printf("%dth bottom index allocated\n", alloc_bi_count);
         return (result);
     }
     word bytes_to_get = MINHINCR * HBLKSIZE;
@@ -280,7 +280,7 @@ MAK_INNER void MAK_remove_header(struct hblk *h)
     //free_hdr(*ha);
     hdr* hhdr = *ha;
     //we don't log because whoever called this to be removed has already logged the appropriate fields in the header
-    //e.g. GC_newfreehblk calls GC_remove_from_fl before it calls this function which makes sure that hb_prev, hb_next, and hb_sz is logged
+    //e.g. MAK_newfreehblk calls MAK_remove_from_fl before it calls this function which makes sure that hb_prev, hb_next, and hb_sz is logged
     MAK_NO_LOG_STORE_NVM(hhdr->hb_sz, 0);
   #ifdef FIXED_SIZE_GLOBAL_FL
     //The below is necessary for header cache to work properly
@@ -315,9 +315,9 @@ static MAK_bool get_index(word addr)
     BZERO(r, sizeof (bottom_index));
     r -> hash_link = old;
     //no need to log changes to r because in case of failure r. 
-    //Relies on the original value of GC_scratch_free_ptr being logged before the
+    //Relies on the original value of MAK_scratch_free_ptr being logged before the
     //start of any allocation
-    //during GC_free, the MAK_top_index is read without a lock held. So, we have to
+    //during MAK_free, the MAK_top_index is read without a lock held. So, we have to
     //ensure that the write is a 64-bit write instead of 2 32 bytes write which compiler
     //can generate
     ENSURE_64_BIT_COPY(MAK_top_index[i], r);
@@ -470,12 +470,12 @@ MAK_INNER void MAK_rebuild_metadata_from_headers()
         for (; (((ptr_t) curr) + sizeof(hdr)) <= end; curr++){
             sz = curr -> hb_sz;
 
-            //GC_printf("Scanning header %d\n", count);
+            //MAK_printf("Scanning header %d\n", count);
             //count++;
             //if (count == 1172)
             //{
             //   count = count + 1 - 1;
-            //   GC_printf("Happy to die!\n");
+            //   MAK_printf("Happy to die!\n");
             //}
 
             //if its an unallocated header 
@@ -515,7 +515,7 @@ MAK_INNER void MAK_rebuild_metadata_from_headers()
             }
         }
     }
-    //No need to flush here. Will be flushed by GC_sync_alloc_metadata
+    //No need to flush here. Will be flushed by MAK_sync_alloc_metadata
     MAK_hdr_free_list = hdr_fl;
 
     return;
@@ -665,4 +665,71 @@ MAK_INNER struct hblk * MAK_prev_block(struct hblk *h)
     }
     return(0);
 }
+
+/* Given a pointer, this method returns the pointer */
+/* to the base of the memory object given a valid pointer */
+/* within the object. Else, it returns zero. */
+/* For a valid pointer it also returns */
+/* the corresponding header hct_size is expected */
+/* to be multiples of 2. Called without */
+/* the allocation lock held */
+
+MAK_INNER void* MAK_hc_base_with_hdr(void *p, 
+  hdr_cache_entry *hct, unsigned int hct_sz, hdr** hdr_ret){
+    ptr_t r;
+    struct hblk *h;
+    bottom_index *bi;
+    hdr *candidate_hdr;
+    hdr_cache_entry* hce;
+    ptr_t limit;
+    *hdr_ret = NULL;
+    int hce_valid = 0;
+    if (!MAK_is_initialized) return 0;
+    r = p;
+    h = HBLKPTR(r);
+    hce = hct + (((word)(r) >> LOG_HBLKSIZE) & (hct_sz - 1));
+    if (EXPECT(HCE_VALID_FOR(hce, r), 1)) {
+        candidate_hdr = (hce -> hce_hdr);
+        if (EXPECT(candidate_hdr -> hb_block == h, TRUE)){
+            hce_valid = 1;
+            //MAK_printf("[MAK_hc_base_with_hdr] Header found in cache\n");
+        }
+    }
+    if (hce_valid == 0) {
+        GET_BI(r, bi);
+        candidate_hdr = HDR_FROM_BI(bi, r);
+        if (candidate_hdr == 0) return(0);
+        while (IS_FORWARDING_ADDR_OR_NIL(candidate_hdr)) {
+           h = FORWARDED_ADDR(h,candidate_hdr);
+           r = (ptr_t)h;
+           candidate_hdr = HDR(h);
+        }
+        if (HBLK_IS_FREE(candidate_hdr)) return(0);
+    }
+    r = (ptr_t)((word)r & ~(WORDS_TO_BYTES(1) - 1));
+    {
+        size_t offset = HBLKDISPL(r);
+        word sz = candidate_hdr -> hb_sz;
+        size_t obj_displ = offset % sz;
+
+        r -= obj_displ;
+        limit = r + sz;
+        if (limit > (ptr_t)(h + 1) && sz <= HBLKSIZE) {
+            return(0);
+        }
+        if ((ptr_t)p >= limit) {
+            return(0);
+        }
+    }
+
+    if (hce_valid == 0)
+    {
+        MAK_update_hc(r, candidate_hdr, hct, hct_sz);
+    }
+
+    *hdr_ret = candidate_hdr;
+    return ((void*)r);
+}
+
+
 
