@@ -96,19 +96,30 @@ MAK_INNER void MAK_mark_init(void)
 }
 
 
+/* clear all mark bits in the header */
+MAK_INNER void MAK_clear_hdr_marks(hdr *hhdr)
+{
+    size_t last_bit = FINAL_MARK_BIT(hhdr -> hb_sz);
+    BZERO(hhdr -> hb_marks, sizeof(hhdr->hb_marks));
+    set_mark_bit_from_hdr(hhdr, last_bit);
+    hhdr -> hb_n_marks = 0;
+}
+
+
+#ifdef MAK_THREADS
+
 /* Mark using the local mark stack until the global mark stack is empty */
-/* and there are no active workers. Update GC_first_nonempty to reflect */
+/* and there are no active workers. Update MAK_first_nonempty to reflect */
 /* progress.                                                            */
 /* Caller does not hold mark lock.                                      */
-/* Caller has already incremented GC_helper_count.  We decrement it,    */
-/* and maintain GC_active_count.                                        */
+/* Caller has already incremented MAK_helper_count.  We decrement it,    */
+/* and maintain MAK_active_count.                                        */
 STATIC void MAK_mark_local(mse *local_mark_stack, int id)
 {
     //TODO: to be filled
 
 }
 
-#ifdef MAK_THREADS
 STATIC MAK_bool MAK_help_wanted = FALSE;  /* Protected by mark lock       */
 STATIC unsigned MAK_helper_count = 0;    /* Number of running helpers.   */
                                         /* Protected by mark lock       */
@@ -142,7 +153,7 @@ MAK_INNER void MAK_help_marker()
     MAK_helper_count = my_id + 1;
     MAK_release_mark_lock();
     MAK_mark_local(local_mark_stack, my_id);
-    /* MAK_mark_local decrements GC_helper_count. */
+    /* MAK_mark_local decrements MAK_helper_count. */
 }
 #endif
 

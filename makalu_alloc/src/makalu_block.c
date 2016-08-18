@@ -306,3 +306,205 @@ MAK_INNER void MAK_newfreehblk(struct hblk *hbp, word size)
     MAK_STORE_NVM_WORD(&(MAK_large_free_bytes), MAK_large_free_bytes +size);
     MAK_add_to_fl(hbp, hhdr);
 }
+
+
+/*
+ * Return a pointer to a block starting at h of length bytes.
+ * Memory for the block is mapped.
+ * Remove the block from its free list, and return the remainder (if any)
+ * to its appropriate free list.
+ * May fail by returning 0.
+ * The header for the returned block must be set up by the caller.
+ * If the return value is not 0, then hhdr is the header for it.
+ */
+STATIC struct hblk * MAK_get_first_part(struct hblk *h, hdr *hhdr,
+                                       size_t bytes, int index)
+{
+    word total_size = hhdr -> hb_sz;
+    struct hblk * rest;
+    hdr * rest_hdr;
+
+    MAK_ASSERT((total_size & (HBLKSIZE-1)) == 0);
+    MAK_remove_from_fl(hhdr, index);
+    if (total_size == bytes) return h;
+    rest = (struct hblk *)((word)h + bytes);
+    rest_hdr = MAK_install_header(rest);
+    if (0 == rest_hdr) {
+        /* FIXME: This is likely to be very bad news ... */
+        ABORT("Header allocation failed: Dropping block.\n");
+        return(0);
+    }
+    MAK_NO_LOG_STORE_NVM(rest_hdr -> hb_sz, total_size - bytes);
+    rest_hdr -> hb_flags = 0;
+#   ifdef MAK_ASSERTIONS
+      /* Mark h not free, to avoid assertion about adjacent free blocks. */
+        hhdr -> hb_flags &= ~FREE_BLK;
+#   endif
+    MAK_add_to_fl(rest, rest_hdr);
+    return h;
+}
+
+/* Initialize hdr for a block containing the indicated size and         */
+/* kind of objects.                                                     */
+/* Return FALSE on failure.                                             */
+
+STATIC MAK_bool setup_header(hdr * hhdr, struct hblk *block, size_t byte_sz,
+                            int kind, unsigned flags)
+{
+    word descr;
+    size_t granules;
+
+    /* Set size, kind and mark proc fields */
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_sz, byte_sz);
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_obj_kind, (unsigned char)kind);
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_flags, (unsigned char)flags);
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_block, block);
+    descr = MAK_obj_kinds[kind].ok_descriptor;
+    if (MAK_obj_kinds[kind].ok_relocate_descr) descr += byte_sz;
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_descr, descr);
+
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_large_block, (unsigned char)(byte_sz > MAXOBJBYTES));
+    granules = BYTES_TO_GRANULES(byte_sz);
+    size_t index = (hhdr -> hb_large_block? 0 : granules);
+    MAK_NO_LOG_STORE_NVM(hhdr -> hb_map, MAK_obj_map[index]);
+
+    MAK_clear_hdr_marks(hhdr);
+    return (TRUE);
+}
+
+STATIC struct hblk *
+MAK_allochblk_nth(size_t sz, int kind, unsigned flags, int n,
+                 MAK_bool may_split)
+{
+    struct hblk *hbp;
+    hdr * hhdr;         /* Header corr. to hbp */
+                        /* Initialized after loop if hbp !=0    */
+                        /* Gcc uninitialized use warning is bogus.      */
+    struct hblk *thishbp;
+    hdr * thishdr;              /* Header corr. to hbp */
+    signed_word size_needed;    /* number of bytes in requested objects */
+    signed_word size_avail;     /* bytes available in this block        */
+
+    size_needed = HBLKSIZE * OBJ_SZ_TO_BLOCKS(sz);
+    
+    if (MAK_persistent_state == PERSISTENT_STATE_NONE)
+        MAK_STORE_NVM_SYNC(MAK_persistent_state, PERSISTENT_STATE_INCONSISTENT);
+
+    hbp = MAK_hblkfreelist[n];
+    /* search for a big enough block in free list */
+    for(; 0 != hbp; hbp = hhdr -> hb_next) {
+        hhdr = HDR(hbp);
+        size_avail = hhdr->hb_sz;
+        if (size_avail < size_needed) continue;
+        if (size_avail != size_needed) {
+            signed_word next_size;
+            if (!may_split) continue;
+            /* If the next heap block is obviously better, go on.     */
+            /* This prevents us from disassembling a single large block */
+            /* to get tiny blocks.                                    */
+            thishbp = hhdr -> hb_next;
+            if (thishbp != 0) {
+                thishdr = HDR(thishbp);
+                next_size = (signed_word)(thishdr -> hb_sz);
+                if (next_size < size_avail
+                  && next_size >= size_needed) {
+                    continue;
+                }
+            }
+        }        
+
+        if( size_avail >= size_needed ) {
+            MAK_START_NVM_ATOMIC;
+            MAK_LOG_NVM_ADDR(&(MAK_hdr_free_ptr), MAK_hdr_free_ptr);
+            hbp = MAK_get_first_part(hbp, hhdr, size_needed, n);
+            break;
+        }
+    }
+
+    if (0 == hbp) return 0;
+
+    /* Set up header */
+    if (!setup_header(hhdr, hbp, sz, kind, flags)) {
+        ABORT("We could not setup header for the block(s) we are trying to allocate. Leaking memory!!!\n");
+        return(0); /* ditto */
+    }
+    MAK_STORE_NVM_WORD(&(MAK_large_free_bytes), MAK_large_free_bytes - size_needed);
+    
+    MAK_END_NVM_ATOMIC;
+
+    if (!MAK_install_counts(hbp, (word)size_needed)) {
+        /* This leaks memory under very rare conditions. */
+        ABORT("We could not istall counts for the block(s) we are trying to allocate. Leaking memory!!!\n");
+        return(0);
+    }
+
+    return( hbp );
+}
+
+/*
+ * Allocate (and return pointer to) a heap block
+ *   for objects of size sz bytes, searching the nth free list.
+ *
+ * NOTE: We set obj_map field in header correctly.
+ *       Caller is responsible for building an object freelist in block.
+ *
+ * The client is responsible for clearing the block, if necessary.
+ */
+MAK_INNER struct hblk *
+MAK_allochblk(size_t sz, int kind, unsigned flags/* IGNORE_OFF_PAGE or 0 */)
+{
+    word blocks;
+    int start_list;
+    int i;
+    struct hblk *result;
+    int split_limit; /* Highest index of free list whose blocks we      */
+                     /* split.                                          */
+
+    MAK_ASSERT((sz & (GRANULE_BYTES - 1)) == 0);
+    blocks = OBJ_SZ_TO_BLOCKS(sz);
+    if ((signed_word)(blocks * HBLKSIZE) < 0) {
+        return 0;
+    }
+    start_list = MAK_hblk_fl_from_blocks(blocks);
+    /* Try for an exact match first. */
+    result = MAK_allochblk_nth(sz, kind, flags, start_list, FALSE);
+
+    if (0 != result) return result;
+    
+    split_limit = N_HBLK_FLS;
+
+    if (start_list < UNIQUE_THRESHOLD) {
+       /* No reason to try start_list again, since all blocks are exact  */
+       /* matches.                                                       */
+        ++start_list;
+    }
+    for (i = start_list; i <= split_limit; ++i) {
+        struct hblk * result = MAK_allochblk_nth(sz, kind, flags, i, TRUE);
+        if (0 != result) return result;
+    }
+    return 0;
+}
+
+/* Allocate a new heapblock for small objects of size gran granules.    */
+/* Add all of the heapblock's objects to the free list for objects      */
+/* of that size.  Set all mark bits if objects are uncollectible.       */
+/* Will fail to do anything if we are out of memory.                    */
+MAK_INNER void MAK_new_hblk(size_t gran, int kind)
+{
+    struct hblk *h;       /* the new heap block */
+    MAK_bool clear = MAK_obj_kinds[kind].ok_init;
+
+    MAK_STATIC_ASSERT((sizeof (struct hblk)) == HBLKSIZE);
+
+    /* Allocate a new heap block */
+    h = MAK_allochblk(GRANULES_TO_BYTES(gran), kind, 0);
+    if (h == 0) return;
+
+    /* Build the free list */
+    fl_hdr* flh = &(MAK_obj_kinds[kind].ok_freelist[gran]);
+    flh -> count = MAK_build_array_fl(h, GRANULES_TO_WORDS(gran), clear,
+                                &(MAK_hdr_cache[0]), (word) HDR_CACHE_SIZE,
+                                &(MAK_fl_aflush_table[0]), (word) FL_AFLUSH_TABLE_SZ,
+                                flh -> fl);
+
+}

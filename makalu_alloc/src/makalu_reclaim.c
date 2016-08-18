@@ -89,3 +89,51 @@ MAK_INNER void MAK_restart_block_freelists()
      }
 }
 
+
+MAK_INNER signed_word MAK_build_array_fl(struct hblk *h, size_t sz_in_words, MAK_bool clear,
+                           hdr_cache_entry* hc, word hc_sz,
+                           void** aflush_tb, word aflush_tb_sz,
+                           void** list)
+{
+    word *p;
+    word *last_object;            /* points to last object in new hblk    */
+    signed_word idx = 0;
+    hdr* hhdr = MAK_get_hdr_and_update_hc(h -> hb_body, hc, hc_sz); 
+    
+    /* Do a few prefetches here, just because its cheap.          */
+    /* If we were more serious about it, these should go inside   */
+    /* the loops.  But write prefetches usually don't seem to     */
+    /* matter much.                                               */
+    PREFETCH_FOR_WRITE((ptr_t)h);
+    PREFETCH_FOR_WRITE((ptr_t)h + 128);
+    PREFETCH_FOR_WRITE((ptr_t)h + 256);
+    PREFETCH_FOR_WRITE((ptr_t)h + 378);
+
+    if (clear) BZERO(h, HBLKSIZE);
+
+    p = (word *)(h -> hb_body); /*first object in *h  */
+    last_object = (word *)((char *)h + HBLKSIZE);
+    last_object -= sz_in_words;
+    /* Last place for last object to start */
+
+    /* make a list of all objects in *h with head as last object */
+    while (p <= last_object) {
+       /* current object's link points to last object */
+        list[idx] = (void*) p;
+        idx++;
+        p += sz_in_words;
+    }
+
+    size_t sz = hhdr -> hb_sz;
+    unsigned i;
+    for (i = 0; i < MARK_BITS_SZ; ++i) {
+        hhdr -> hb_marks[i] = ONES;
+    }
+    hhdr -> hb_n_marks = HBLK_OBJS(sz);
+    hhdr -> page_reclaim_state = IN_FLOATING;
+    MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_marks), sizeof (hhdr -> hb_marks),
+                           aflush_tb, aflush_tb_sz);
+    MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), sizeof (hhdr -> hb_n_marks),
+                           aflush_tb, aflush_tb_sz);
+    return idx;
+}

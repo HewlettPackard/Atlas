@@ -100,6 +100,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 //granule
 #define CPP_WORDSZ 64
+#  define LOGWL  ((word)6)    /* log[2] of CPP_WORDSZ */
 #define WORDSZ ((word)CPP_WORDSZ)
 #define SIGNB  ((word)1 << (WORDSZ-1))
 #define GRANULE_BYTES 16
@@ -113,11 +114,18 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 # define ROUNDED_UP_GRANULES(n) \
         BYTES_TO_GRANULES((n) + (GRANULE_BYTES - 1 + EXTRA_BYTES))
 
+#define divWORDSZ(n) ((n) >> LOGWL)     /* divide n by size of word */
+#  define modWORDSZ(n) ((n) & 0x3f)        /* n mod size of word            */
+
 //mark
 #define MAP_LEN BYTES_TO_GRANULES(HBLKSIZE)
 
 #define MARK_BITS_PER_HBLK (HBLKSIZE/GRANULE_BYTES) 
   /* upper bound */
+
+#  define FINAL_MARK_BIT(sz) \
+           ((sz) > MAXOBJBYTES ? MARK_BITS_PER_HBLK \
+                : BYTES_TO_GRANULES((sz) * HBLK_OBJS(sz)))
 
 //struct hblkhdr hb_marks
 #define MARK_BITS_SZ (MARK_BITS_PER_HBLK/CPP_WORDSZ + 1)

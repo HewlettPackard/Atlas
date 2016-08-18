@@ -44,7 +44,13 @@ void MAK_err_printf(const char * format, ...)
 
 # define MAK_STATIC_ASSERT(expr) (void)sizeof(char[(expr)? 1 : -1])
 
-
+#if defined(__GNUC__) && __GNUC__ >= 3
+#           define PREFETCH(x) __builtin_prefetch((x), 0, 0)
+#           define PREFETCH_FOR_WRITE(x) __builtin_prefetch((x), 1)
+#else
+#           define PREFETCH(x)
+#           define PREFETCH_FOR_WRITE(x)
+#endif
 
 /* Print warning message, e.g. almost out of memory.    */
 #define WARN(msg, arg) MAK_warn_proc("MAK Warning: " msg, \
@@ -58,8 +64,6 @@ MAK_INNER void MAK_abort(const char *msg);
 #define EXIT() (void)exit(1)
 
 #define BZERO(x,n)  memset(x, 0, (size_t)(n))
-
-
 
 
 
