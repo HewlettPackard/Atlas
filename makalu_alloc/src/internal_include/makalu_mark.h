@@ -25,5 +25,15 @@ MAK_INNER void MAK_help_marker(void);
 # define set_mark_bit_from_hdr(hhdr,n) \
               OR_WORD((hhdr)->hb_marks+divWORDSZ(n), (word)1 << modWORDSZ(n))
 
+# define set_mark_bit_from_hdr_unsafe(hhdr, n) \
+       { \
+           word* addr = (hhdr)->hb_marks+divWORDSZ(n); \
+           word bits = (word) 1 << modWORDSZ(n); \
+           (*(addr) |= (bits)); \
+       }
+
+# define mark_bit_from_hdr(hhdr,n) \
+              (((hhdr)->hb_marks[divWORDSZ(n)] >> modWORDSZ(n)) & (word)1)
+
 
 #endif

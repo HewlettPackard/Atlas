@@ -13,5 +13,7 @@ MAK_INNER struct hblk *
 MAK_allochblk(size_t sz, int kind, unsigned flags/* IGNORE_OFF_PAGE or 0 */);
 
 MAK_INNER void MAK_new_hblk(size_t gran, int kind);
+MAK_INNER MAK_bool MAK_try_expand_hp(word needed_blocks,
+       MAK_bool ignore_off_page, MAK_bool retry);
 
 #endif

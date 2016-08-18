@@ -1,5 +1,7 @@
 #include "makalu_internal.h"
 
+STATIC word MAK_free_space_divisor = MAK_FREE_SPACE_DIVISOR;
+
 
 MAK_INNER MAK_bool MAK_expand_hp_inner(word n)
 {
@@ -62,6 +64,42 @@ MAK_INNER MAK_bool MAK_finish_expand_hp_inner(){
 
 out:
     return (TRUE);
+}
+
+MAK_INNER MAK_bool MAK_try_expand_hp(word needed_blocks,
+       MAK_bool ignore_off_page, MAK_bool retry)
+{
+    word blocks_to_get;
+    int cancel_state;
+
+    DISABLE_CANCEL(cancel_state);
+
+    blocks_to_get = MAK_heapsize/(HBLKSIZE*MAK_free_space_divisor)
+                        + needed_blocks;
+    if (blocks_to_get > MAXHINCR) {
+      word slop;
+
+      /* Get the minimum required to make it likely that we can satisfy */
+      /* the current request */
+      if (ignore_off_page) {
+        slop = 4;
+      } else {
+        slop = 2 * MINHINCR;
+        if (slop > needed_blocks) slop = needed_blocks;
+      }
+      if (needed_blocks + slop > MAXHINCR) {
+        blocks_to_get = needed_blocks + slop;
+      } else {
+        blocks_to_get = MAXHINCR;
+      }
+    }
+
+    if (!MAK_expand_hp_inner(blocks_to_get)
+        && !MAK_expand_hp_inner(needed_blocks)) {
+        ABORT("Out of memory, could not expand heap!");
+    }
+    RESTORE_CANCEL(cancel_state);
+    return(TRUE);
 }
 
 
@@ -148,6 +186,8 @@ MAK_INNER void MAK_add_to_heap(struct hblk *space, size_t bytes, word expansion_
     MAK_NO_LOG_STORE_NVM(MAK_greatest_plausible_heap_addr, greatest_addr);
     MAK_NO_LOG_STORE_NVM(MAK_least_plausible_heap_addr, least_addr);
 }
+
+
 
 STATIC struct hblk * MAK_free_block_ending_at(struct hblk *h)
 {

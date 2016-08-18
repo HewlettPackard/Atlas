@@ -12,6 +12,7 @@
 #include "makalu_reclaim.h"
 #include "makalu_block.h"
 #include "makalu_thread.h"
+#include "makalu_malloc.h"
 
 
 MAK_EXTERN word MAK_page_size;

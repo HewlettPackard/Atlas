@@ -5,5 +5,6 @@
 /* the first time, collecting offline or */
 /* restarting online after a crash. */
 MAK_EXTERN int MAK_run_mode;
+MAK_EXTERN MAK_bool MAK_is_initialized;
 
 #endif

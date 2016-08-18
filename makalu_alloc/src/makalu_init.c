@@ -1,6 +1,6 @@
 #include "makalu_internal.h"
 
-STATIC MAK_bool MAK_is_initialized = FALSE;
+MAK_INNER MAK_bool MAK_is_initialized = FALSE;
 STATIC ptr_t beginMAKPersistentMd = 0;
 static ptr_t endMAKPersistentMd = 0;
 

@@ -49,6 +49,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define CPP_HBLKSIZE (1 << CPP_LOG_HBLKSIZE)
 #define LOG_HBLKSIZE   ((size_t)CPP_LOG_HBLKSIZE)
 #define HBLKSIZE ((size_t)CPP_HBLKSIZE)
+#define MAK_FREE_SPACE_DIVISOR 3
 
 #define CPP_MAXOBJBYTES (CPP_HBLKSIZE/2)
 #define MAXOBJBYTES ((size_t)CPP_MAXOBJBYTES)
@@ -107,7 +108,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define BYTES_TO_GRANULES(n) ((n)>>4)
 #define GRANULES_TO_BYTES(n) ((n)<<4)
 #define GRANULES_TO_WORDS(n) ((n)<<1)
-#define EXTRA_BYTES MAK_all_interior_pointers
+
+#define BYTES_PER_WORD      ((word)(sizeof (word)))
 
 #define ONES ((word)(signed_word)(-1))
 
@@ -116,6 +118,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 #define divWORDSZ(n) ((n) >> LOGWL)     /* divide n by size of word */
 #  define modWORDSZ(n) ((n) & 0x3f)        /* n mod size of word            */
+
+# define HBLK_GRANULES (HBLKSIZE/GRANULE_BYTES)
 
 //mark
 #define MAP_LEN BYTES_TO_GRANULES(HBLKSIZE)
@@ -129,6 +133,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 //struct hblkhdr hb_marks
 #define MARK_BITS_SZ (MARK_BITS_PER_HBLK/CPP_WORDSZ + 1)
+
+#  define MARK_BIT_OFFSET(sz) BYTES_TO_GRANULES(sz)
 
 #define MAK_INTERIOR_POINTERS 1
 
@@ -212,6 +218,21 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define MAK_N_KINDS_INITIAL_VALUE 3
 
 #define MAXOBJKINDS 16
+
+# define EXTRA_BYTES MAK_all_interior_pointers
+# define MAX_EXTRA_BYTES 1
+# if MAX_EXTRA_BYTES == 0
+#  define SMALL_OBJ(bytes) EXPECT((bytes) <= (MAXOBJBYTES), TRUE)
+# else
+#  define SMALL_OBJ(bytes) \
+            (EXPECT((bytes) <= (MAXOBJBYTES - MAX_EXTRA_BYTES), TRUE) \
+             || (bytes) <= MAXOBJBYTES - EXTRA_BYTES)
+        /* This really just tests bytes <= MAXOBJBYTES - EXTRA_BYTES.   */
+        /* But we try to avoid looking up EXTRA_BYTES.                  */
+# endif
+
+# define ADD_SLOP(bytes) ((bytes) + EXTRA_BYTES)
+
 
 //headers
 #define LOG_BOTTOM_SZ 10

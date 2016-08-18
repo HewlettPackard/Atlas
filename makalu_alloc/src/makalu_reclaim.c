@@ -17,8 +17,6 @@ STATIC MAK_bool MAK_block_nearly_full(hdr *hhdr)
     return (hhdr -> hb_n_marks > BLOCK_NEARLY_FULL_THRESHOLD(hhdr -> hb_sz));
 }
 
-
-
 MAK_INNER void MAK_restart_block_freelists()
 {
 
@@ -136,4 +134,163 @@ MAK_INNER signed_word MAK_build_array_fl(struct hblk *h, size_t sz_in_words, MAK
     MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), sizeof (hhdr -> hb_n_marks),
                            aflush_tb, aflush_tb_sz);
     return idx;
+}
+
+
+STATIC signed_word MAK_reclaim_to_array_clear(struct hblk *hbp, hdr *hhdr, size_t sz,
+                              void** aflush_tb, word aflush_tb_sz,
+                              void** list)
+{
+
+    word bit_no = 0;
+    word *p, *q, *plim;
+    signed_word n_bytes_found = 0;
+    signed_word idx = 0;
+
+    //MAK_ASSERT(hhdr == MAK_find_header((ptr_t)hbp));
+    MAK_ASSERT(sz == hhdr -> hb_sz);
+    MAK_ASSERT((sz & (BYTES_PER_WORD-1)) == 0);
+    p = (word *)(hbp->hb_body);
+    plim = (word *)(hbp->hb_body + HBLKSIZE - sz);
+
+    /* go through all words in block */
+    while (p <= plim) {
+        if( mark_bit_from_hdr(hhdr, bit_no) ) {
+            p = (word *)((ptr_t)p + sz);
+        } else {
+            n_bytes_found += sz;
+          /* object is available - put on list */
+            list[idx] = p;
+            idx++;
+          /* Clear object, advance p to next object in the process */
+            q = (word *)((ptr_t)p + sz);
+            while (p < q) {
+              *p++ = 0;
+            }
+            set_mark_bit_from_hdr_unsafe(hhdr, bit_no);
+        }
+        bit_no += MARK_BIT_OFFSET(sz);
+    }  
+    hhdr -> hb_n_marks = HBLK_OBJS(sz);
+    hhdr -> page_reclaim_state = IN_FLOATING;    
+    if (n_bytes_found != 0){
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), 
+           sizeof(hhdr -> hb_n_marks), aflush_tb, aflush_tb_sz);
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_marks), 
+           sizeof(hhdr -> hb_marks), aflush_tb, aflush_tb_sz);
+    }
+    return idx;
+}
+ 
+/* The same thing, but don't clear objects: */
+/* returns the number of memory objects reclaimed/added to freelist */
+STATIC signed_word MAK_reclaim_to_array_uninit(struct hblk *hbp, hdr *hhdr, size_t sz,
+                               void** aflush_tb, word aflush_tb_sz,
+                               void** list)
+{
+
+    word bit_no = 0;
+    word *p, *plim;
+    signed_word n_bytes_found = 0;
+    signed_word idx = 0;
+
+
+    MAK_ASSERT(sz == hhdr -> hb_sz);
+    p = (word *)(hbp->hb_body);
+    plim = (word *)((ptr_t)hbp + HBLKSIZE - sz);
+
+    /* go through all words in block */
+    while (p <= plim) {
+       if( !mark_bit_from_hdr(hhdr, bit_no) ) {
+           n_bytes_found += sz;
+           /* object is available - put on list */
+           list[idx]= p;
+           idx++;
+           set_mark_bit_from_hdr_unsafe(hhdr, bit_no);
+       } 
+       p = (word *)((ptr_t)p + sz);
+       bit_no += MARK_BIT_OFFSET(sz);
+    }
+    hhdr -> hb_n_marks = HBLK_OBJS(sz);
+
+    hhdr -> page_reclaim_state = IN_FLOATING;
+
+    if (n_bytes_found != 0){
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), sizeof(hhdr -> hb_n_marks),
+                     aflush_tb, aflush_tb_sz);
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_marks), sizeof(hhdr -> hb_marks),
+                     aflush_tb, aflush_tb_sz);
+    }
+    return idx;
+}
+
+
+
+MAK_INNER signed_word MAK_reclaim_to_array_generic(struct hblk * hbp,
+                                  hdr *hhdr,
+                                  size_t sz,
+                                  MAK_bool init,
+                                  hdr_cache_entry* hc,
+                                  word hc_sz,
+                                  void** aflush_tb,
+                                  word aflush_tb_sz,
+                                  void** list)
+{
+    signed_word result = 0;
+    MAK_ASSERT(MAK_find_header((ptr_t)hbp) == hhdr);
+    if (init) {
+      result = MAK_reclaim_to_array_clear(hbp, hhdr, sz,
+                            aflush_tb, aflush_tb_sz,
+                            list);
+    } else {
+      MAK_ASSERT((hhdr)->hb_descr == 0 /* Pointer-free block */);
+      result = MAK_reclaim_to_array_uninit(hbp, hhdr, sz,
+                            aflush_tb, aflush_tb_sz,
+                            list);
+    }
+    return result;
+}
+
+
+
+STATIC void MAK_reclaim_small_nonempty_block(struct hblk *hbp, hdr* hhdr)
+{
+    size_t sz = hhdr -> hb_sz;
+    struct obj_kind * ok = &MAK_obj_kinds[hhdr -> hb_obj_kind];
+    fl_hdr* flh = &(ok -> ok_freelist[BYTES_TO_GRANULES(sz)]);
+    flh -> count = MAK_reclaim_to_array_generic(hbp,
+                  hhdr,
+                  sz,
+                  ok -> ok_init,
+                  &(MAK_hdr_cache[0]),
+                  (word) HDR_CACHE_SIZE,
+                  &(MAK_fl_aflush_table[0]),
+                  (word) FL_AFLUSH_TABLE_SZ,
+                  flh -> fl);
+}
+
+MAK_INNER void MAK_continue_reclaim(size_t gran /* granules */, int kind)
+{
+    hdr * hhdr;
+    struct hblk * hbp;
+    struct obj_kind * ok = &(MAK_obj_kinds[kind]);
+    //first reclaim recent reclaim pages
+    struct hblk ** rlh = MAK_reclaim_list[kind];
+    if (rlh == 0) return;       /* No blocks of this kind.      */
+    //TODO: should we check here that the fl_count is indeed zero.
+    fl_hdr* flh = &(ok -> ok_freelist[gran]);
+    rlh += gran;
+    while ((hbp = *rlh) != 0) {
+
+        hhdr = MAK_get_hdr_and_update_hc(hbp -> hb_body, MAK_hdr_cache, HDR_CACHE_SIZE);
+        struct hblk* n_hb = hhdr -> hb_next;
+        *rlh = n_hb;
+        if (n_hb != NULL){
+            hdr* n_hhdr = HDR(n_hb);
+            n_hhdr -> hb_prev = NULL;
+        }
+        hhdr -> hb_next = NULL;
+        MAK_reclaim_small_nonempty_block(hbp, hhdr);
+        if (flh -> count > 0) return; 
+    }
 }
