@@ -30,6 +30,7 @@ MAK_EXTERN pthread_mutex_t MAK_global_ml;
 #define RESTORE_CANCEL(state) \
         { pthread_setcancelstate(cancel_state, ((void *)0)); }
 
+#define MAK_SEM_INIT_PSHARED 0
 
 MAK_INNER void MAK_lock_gran(word gran);
 MAK_INNER void MAK_unlock_gran(word gran);

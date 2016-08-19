@@ -295,7 +295,8 @@ MAK_INNER void MAK_continue_reclaim(size_t gran /* granules */, int kind)
     }
 }
 
-
+/* truncates freelist for a particular granule */
+/* assumes that the granule lock is held */
 MAK_INNER void MAK_truncate_freelist(fl_hdr* flh, word ngranules, int k,
                          word keep, word max,
                          hdr_cache_entry* hc, word hc_sz,
@@ -395,4 +396,182 @@ MAK_INNER void MAK_truncate_freelist(fl_hdr* flh, word ngranules, int k,
     flh -> start_idx = (start + (word) n_truncated) % max;
 }
 
+struct trun_tb_e {
+    word marks[MARK_BITS_SZ];
+    word mark_count;
+    word block;
+    hdr* hhdr;
+};
+
+
+STATIC void remove_trun_tb_entry(struct trun_tb_e* start, struct trun_tb_e*
+    end, word gran, int kind, word full_thres,
+    struct hblk** rlh, hdr_cache_entry* hc, word hc_sz,
+    void** aflush_tb, word aflush_tb_sz)
+{
+    hdr* hhdr;
+    struct hblk* h;
+    struct trun_tb_e* entry;
+    MAK_bool already_unlocked = FALSE;
+    MAK_LOCK_GRAN(gran);
+
+     for (entry = start; entry <= end; entry++)
+    {
+        if (EXPECT(entry -> block == 0, 0)) continue;
+        hhdr = entry -> hhdr;
+        h = hhdr -> hb_block;
+        hhdr -> hb_n_marks -= entry -> mark_count;
+        if (EXPECT(hhdr -> hb_n_marks == 0, 1))
+        {
+            if (EXPECT(hhdr -> page_reclaim_state == IN_RECLAIMLIST, 0))
+            {
+                struct hblk* n_hb = hhdr -> hb_next;
+                struct hblk* p_hb = hhdr -> hb_prev;
+                if (n_hb != NULL){
+                    hdr* n_hhdr =
+                     MAK_get_hdr_and_update_hc(n_hb -> hb_body,
+                         hc, hc_sz);
+                     n_hhdr -> hb_prev = p_hb;
+                     hhdr -> hb_next = NULL;
+                }
+                if (p_hb != NULL){
+                    hdr* p_hhdr =
+                     MAK_get_hdr_and_update_hc(p_hb -> hb_body,
+                         hc, hc_sz);
+                    p_hhdr -> hb_next = n_hb;
+                    hhdr -> hb_prev = NULL;
+                }
+
+                if (h == *rlh){
+                    *rlh = n_hb;
+                }
+            }
+            MAK_UNLOCK_GRAN(gran);
+            MAK_LOCK();
+            MAK_START_NVM_ATOMIC;
+            MAK_freehblk(h);
+            MAK_END_NVM_ATOMIC;
+            MAK_UNLOCK();
+            entry -> block = 0;
+
+            //we have some more to process 
+            //so we have to lock
+            if (entry != end){
+               MAK_LOCK_GRAN(gran);
+            }
+            else{
+                already_unlocked = TRUE;
+            }
+            continue;
+        }
+        int i;
+        for (i = 0; i < MARK_BITS_SZ; ++i) {
+            hhdr -> hb_marks[i] &= ~(entry -> marks[i]);
+        }
+        if (EXPECT(hhdr -> page_reclaim_state == IN_FLOATING
+           && hhdr -> hb_n_marks <= full_thres, 0))
+        {
+            hhdr -> page_reclaim_state = IN_RECLAIMLIST;
+            struct hblk* top_hb = *rlh;
+            hhdr -> hb_next = top_hb;
+            hhdr -> hb_prev = NULL;
+            if (top_hb != NULL){
+                hdr* top_hhdr = MAK_get_hdr_and_update_hc(
+                   top_hb -> hb_body, hc, hc_sz);
+                top_hhdr -> hb_prev = h;
+            }
+            *rlh = h;
+        }
+    }
+    if (!already_unlocked)
+    {
+        MAK_UNLOCK_GRAN(gran);
+    }
+
+    //now go through it and flush it    
+    for (entry = start; entry <= end; entry++)
+    {
+        if (entry -> block == 0) continue;
+        hhdr = entry -> hhdr;
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_marks), sizeof (hhdr -> hb_marks),
+           aflush_tb, aflush_tb_sz);
+        MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), sizeof (hhdr -> hb_n_marks),
+           aflush_tb, aflush_tb_sz);
+    }
+}
+
+
+
+/* called without holding the lock from thread local code */
+/* tries to do most work without holding the lock. */
+
+MAK_INNER void MAK_truncate_fast_fl(fl_hdr* flh, word ngranules, int k,
+                         word keep, word max,
+                         hdr_cache_entry* hc, word hc_sz,
+                         void** aflush_tb, word aflush_tb_sz)
+{
+    word trun_tb_sz = 16;
+    struct trun_tb_e trun_tb[16] = {0};
+
+
+    struct hblk** rlh = &(MAK_reclaim_list[k][ngranules]);
+    size_t sz = GRANULES_TO_BYTES(ngranules);
+
+    word full_threshold = (word) BLOCK_NEARLY_FULL_THRESHOLD(sz);
+
+    signed_word t_count = flh -> count;
+    signed_word k_count = keep < t_count ? (signed_word) keep : t_count;
+
+    if (k_count == t_count){
+        return;
+    }
+
+
+    word start = flh -> start_idx;
+    signed_word n_truncated = t_count - k_count;
+
+
+    hdr* hhdr;
+    struct hblk* h;
+    word bit_no;
+    void* p;
+    signed_word i;
+
+    void** flp = flh -> fl;
+    for (i = 0; i < n_truncated; i++){
+        p =  flp[ (start + (word) i) % max ];
+        word p_block = (word)(p) >> LOG_HBLKSIZE;
+        struct trun_tb_e* entry = trun_tb + (p_block & (((word) trun_tb_sz)-1));
+        /* not already in the truncate table */
+        if (EXPECT(entry -> block != p_block, 0))
+        {
+            /* is there an entry in its place already in the */
+            /* truncate table? */
+            if (EXPECT(entry -> block != 0, 0)){
+                remove_trun_tb_entry(entry, entry, ngranules, k,
+                    full_threshold, rlh, hc, hc_sz, aflush_tb, aflush_tb_sz);
+                BZERO(entry -> marks, sizeof(entry -> marks));
+                entry -> mark_count = 0;
+            }
+
+            entry -> block = p_block;
+            hhdr = MAK_get_hdr_and_update_hc(p, hc, hc_sz);
+            entry -> hhdr = hhdr;
+        }
+
+        hhdr = entry -> hhdr;
+        h = HBLKPTR(p);
+        bit_no = MARK_BIT_NO((ptr_t)p - (ptr_t) h, sz);
+
+        set_mark_bit_from_mark_bits(entry -> marks, bit_no);
+        entry -> mark_count++;
+    }
+    remove_trun_tb_entry(&trun_tb[0], &trun_tb[trun_tb_sz - 1],
+           ngranules, k, full_threshold, rlh, hc, hc_sz,
+           aflush_tb, aflush_tb_sz);
+
+    flh -> count = k_count;
+    flh -> start_idx = (start + (word) n_truncated) % max;
+
+}
 

@@ -32,6 +32,13 @@ MAK_INNER void MAK_help_marker(void);
            (*(addr) |= (bits)); \
        }
 
+# define set_mark_bit_from_mark_bits(marks, n) \
+       { \
+           word* addr = (marks)+divWORDSZ(n); \
+           word bits = (word) 1 << modWORDSZ(n); \
+           (*(addr) |= (bits)); \
+       }
+
 # define mark_bit_from_hdr(hhdr,n) \
               (((hhdr)->hb_marks[divWORDSZ(n)] >> modWORDSZ(n)) & (word)1)
 

@@ -23,4 +23,13 @@ MAK_API void MAK_CALL MAK_free(void * /*pointer */);
 
 MAK_API void MAK_CALL MAK_close(void);
 
+
+/* pthread redirects */
+# define MAK_PTHREAD_CREATE_CONST const
+MAK_API int MAK_pthread_create(pthread_t *,
+                             MAK_PTHREAD_CREATE_CONST pthread_attr_t *,
+                             void *(*)(void *), void * /* arg */);
+MAK_API int MAK_pthread_join(pthread_t, void ** /* retval */);
+
+
 #endif

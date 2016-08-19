@@ -24,7 +24,8 @@ typedef struct thread_local_freelists {
 } *MAK_tlfs;
 
 MAK_INNER void MAK_init_thread_local();
-MAK_INNER void MAK_set_my_thread_local(void);
+MAK_INNER MAK_tlfs MAK_set_my_thread_local(void);
+MAK_INNER void MAK_teardown_thread_local(MAK_tlfs p);
 
 #endif
 

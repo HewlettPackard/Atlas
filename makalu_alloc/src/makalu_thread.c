@@ -2,6 +2,10 @@
 #include "makalu_internal.h"
 #include "makalu_local_heap.h"
 
+#include <semaphore.h>
+#include <pthread.h>
+#include <errno.h>
+
 #ifdef MAK_THREADS
 
 MAK_INNER pthread_mutex_t MAK_global_ml = PTHREAD_MUTEX_INITIALIZER;
@@ -106,6 +110,87 @@ MAK_INNER void MAK_thr_init(void)
     MAK_set_my_thread_local();
 
 }
+
+struct start_info {
+    void *(*start_routine)(void *);
+    void *arg;
+    sem_t registered;           /* 1 ==> in our thread table, but       */
+                                /* parent hasn't yet noticed.           */
+};
+
+
+STATIC void MAK_thread_exit_proc(void *arg)
+{
+    NEED_CANCEL_STATE(int cancel_state;);
+    DISABLE_CANCEL(cancel_state);
+    MAK_teardown_thread_local((MAK_tlfs) arg);
+    RESTORE_CANCEL(cancel_state);
+    MAK_ACCUMULATE_FLUSH_COUNT();
+}
+
+STATIC void* MAK_start_routine(void* arg)
+{
+    void * result;
+    void* (*pstart)(void*);
+    struct start_info * si;
+    void* pstart_arg;
+
+
+    si = arg;
+    pstart = si -> start_routine;
+    pstart_arg = si -> arg;
+
+    sem_post(&(si -> registered));
+    /* Last action on si.   */
+
+    MAK_tlfs tlfs = MAK_set_my_thread_local();
+    
+    pthread_cleanup_push(MAK_thread_exit_proc, tlfs);
+
+    result = (*pstart)(pstart_arg);
+    
+    pthread_cleanup_pop(1);
+
+    return result; 
+}
+
+
+MAK_API int WRAP_FUNC(pthread_create)(pthread_t *new_thread,
+                     MAK_PTHREAD_CREATE_CONST pthread_attr_t *attr,
+                     void *(*start_routine)(void *), void *arg)
+{
+
+    int result;
+    struct start_info si;
+
+    if (!MAK_is_initialized) {
+        ABORT("Makalu not initialized properly before starting threads!\n");
+    }
+    
+    if (sem_init(&(si.registered), MAK_SEM_INIT_PSHARED, 0) != 0)
+        ABORT("sem_init failed");
+
+    si.start_routine = start_routine;
+    si.arg = arg;
+
+    result = REAL_FUNC(pthread_create)(new_thread, attr, MAK_start_routine, &si);
+
+    /* Wait until the child is done with the start info */
+    if (0 == result) {
+        NEED_CANCEL_STATE(int cancel_state;)
+        DISABLE_CANCEL(cancel_state);
+        while (0 != sem_wait(&(si.registered))){
+            if (EINTR != errno) ABORT("sem_wait failed");
+        }
+        RESTORE_CANCEL(cancel_state);
+    }
+    sem_destroy(&(si.registered));
+    return(result);
+}
+
+
+
+
 
 
             

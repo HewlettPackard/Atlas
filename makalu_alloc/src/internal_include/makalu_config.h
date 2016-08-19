@@ -33,7 +33,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define STARTING_ONLINE    12
 
 // multi-threaded support
-//#define MAK_THREADS 1
+#define MAK_THREADS 1
 #define START_THREAD_LOCAL_IMMEDIATE 1
 /* if this flag is commented out */
 /* we don't start local allocation until we have allocated */

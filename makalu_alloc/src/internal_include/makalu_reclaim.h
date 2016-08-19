@@ -23,4 +23,10 @@ MAK_INNER void MAK_truncate_freelist(fl_hdr* flh, word ngranules, int k,
                          hdr_cache_entry* hc, word hc_sz,
                          void** aflush_tb, word aflush_tb_sz);
 
+MAK_INNER void MAK_truncate_fast_fl(fl_hdr* flh, word ngranules, int k,
+                         word keep, word max,
+                         hdr_cache_entry* hc, word hc_sz,
+                         void** aflush_tb, word aflush_tb_sz);
+
+
 #endif

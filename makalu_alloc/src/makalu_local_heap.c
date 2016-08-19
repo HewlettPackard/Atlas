@@ -41,7 +41,15 @@ STATIC MAK_tlfs alloc_tlfs()
     return ret;
 }
 
-MAK_INNER void MAK_set_my_thread_local(void)
+STATIC void free_tlfs(MAK_tlfs tlfs)
+{
+    MAK_LOCK();
+    tlfs -> next = tlfs_fl;
+    tlfs_fl = tlfs;
+    MAK_UNLOCK();
+}
+
+MAK_INNER MAK_tlfs MAK_set_my_thread_local(void)
 {
     MAK_tlfs tlfs = alloc_tlfs();
     if (tlfs == 0)
@@ -75,8 +83,8 @@ MAK_INNER void MAK_set_my_thread_local(void)
 
     /* Set up the size 0 free lists.    */
     /* We now handle most of them like regular free lists, to ensure    */
-    /* That explicit deallocation works.  However, allocation of a      */
-    /* size 0 "gcj" object is always an error.                          */
+    /* That explicit deallocation works. */
+ 
     flh = &(tlfs -> ptrfree_freelists[0]);
     flh->fl = NULL;
     flh->count = (signed_word)(-(tlfs_optimal_count[1]));
@@ -85,7 +93,46 @@ MAK_INNER void MAK_set_my_thread_local(void)
     flh->count = (signed_word)(-(tlfs_optimal_count[1]));
     
 
-    my_tlfs =  tlfs;
+   my_tlfs =  tlfs;
+
+   return tlfs;
 }
 
-#endif
+
+STATIC void return_freelists(fl_hdr *fl,
+      hdr_cache_entry* hc, void** aflush_tb, int k)
+{
+    int i;
+    for (i = 1; i < TINY_FREELISTS; ++i) {
+        if (fl[i].count > 0) {
+            MAK_truncate_fast_fl(
+              &(fl[i]), (word) i, k,
+              0, tlfs_max_count[i],
+              hc, (word) LOCAL_HDR_CACHE_SZ,
+              aflush_tb, 
+              (word) LOCAL_AFLUSH_TABLE_SZ);
+        }
+    }
+    if (fl[0].count > 0) {
+        MAK_truncate_fast_fl(
+            &(fl[0]), (word) 1, k,
+            0, tlfs_max_count[1],
+            hc, (word) LOCAL_HDR_CACHE_SZ,
+            aflush_tb, 
+            (word) LOCAL_AFLUSH_TABLE_SZ);
+    }
+}
+
+MAK_INNER void MAK_teardown_thread_local(MAK_tlfs p)
+{
+    return_freelists(p -> ptrfree_freelists, p -> hc, p -> aflush_tb, PTRFREE);
+    return_freelists(p -> normal_freelists, p -> hc, p -> aflush_tb, NORMAL);
+    
+    MAK_FLUSH_ALL_ENTRY(p -> aflush_tb, LOCAL_AFLUSH_TABLE_SZ);
+    BZERO(p -> hc, sizeof(p -> hc));
+
+    my_tlfs = NULL;
+    free_tlfs(p);
+}
+
+#endif // MAK_THREADS

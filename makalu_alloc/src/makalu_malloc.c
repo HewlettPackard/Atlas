@@ -299,7 +299,6 @@ MAK_API void MAK_CALL MAK_free(void * p)
 
     if (p == 0) return;
         /* Required by ANSI.  It's not my fault ...     */
-    MAK_LOCK();
     void* r = MAK_hc_base_with_hdr(p, MAK_hdr_cache,
                      (unsigned int) HDR_CACHE_SIZE, &hhdr);
     if (r == 0) return;
@@ -313,6 +312,7 @@ MAK_API void MAK_CALL MAK_free(void * p)
             BZERO((word *)r, sz);
         }
         flh = &(ok -> ok_freelist[ngranules]);
+        MAK_GRAN_LOCK(ngranules);
         signed_word count = flh -> count;
         word max_count = MAK_fl_max_count[ngranules];
         word idx = (flh -> start_idx + count) % max_count;
@@ -325,7 +325,7 @@ MAK_API void MAK_CALL MAK_free(void * p)
               &(MAK_hdr_cache[0]), (word) HDR_CACHE_SIZE,
               &(MAK_fl_aflush_table[0]), (word) FL_AFLUSH_TABLE_SZ);
         }
-        MAK_UNLOCK();
+        MAK_GRAN_UNLOCK(ngranules);
     } else {
         MAK_START_NVM_ATOMIC;
         MAK_freehblk(hhdr -> hb_block);
