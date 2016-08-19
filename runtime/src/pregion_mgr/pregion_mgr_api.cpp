@@ -15,6 +15,7 @@
  
 
 #include "atlas_alloc.h"
+#include "atlas_alloc_cpp.hpp"
 #include "pregion_mgr.hpp"
 
 using namespace Atlas;
@@ -79,6 +80,11 @@ void nvm_free(void *ptr)
     PRegionMgr::getInstance().freeMem(ptr);
 }
 
+void nvm_delete(void *ptr)
+{
+    PRegionMgr::getInstance().deleteMem(ptr);
+}
+
 // TODO: The following should probably go away, they are really not
 // part of the API.
 int NVM_IsInOpenPR(void *addr, size_t sz)
@@ -102,5 +108,26 @@ int isCacheLineAligned(void *p)
     return PMallocUtil::is_cache_line_aligned(p);
 }
 
+int NVM_IsInRegion(void *ptr, size_t sz)
+{
+    return PRegionMgr::getInstance().isInOpenPRegion(ptr, sz);
+}
 
+PRegion *NVM_GetRegion(uint32_t rid)
+{
+    return PRegionMgr::getInstance().getPRegion(rid);
+}
 
+void* operator new(size_t sz, Atlas::PRegion *rgn) noexcept
+{
+    assert(rgn);
+    return nvm_alloc(sz, rgn->get_id());
+}
+
+void* operator new[](size_t sz, Atlas::PRegion *rgn) noexcept
+{
+    assert(rgn);
+    return nvm_alloc(sz, rgn->get_id());
+}
+
+        
