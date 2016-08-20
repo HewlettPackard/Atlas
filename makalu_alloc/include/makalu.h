@@ -11,7 +11,7 @@
 typedef unsigned long long MAK_word;
 typedef long long MAK_signed_word;
 
-
+/* start/restart */
 typedef int (MAK_CALLBACK *MAK_persistent_memalign)(void** memptr,
               size_t alignment, size_t size);
 
@@ -19,13 +19,15 @@ MAK_API void* MAK_CALL MAK_start(MAK_persistent_memalign funcptr);
 MAK_API void MAK_CALL MAK_restart(char* start_addr, MAK_persistent_memalign funcptr);
 MAK_API void MAK_CALL MAK_start_off(char* start_addr,
               MAK_persistent_memalign funcptr);
-MAK_API void* MAK_CALL MAK_malloc(size_t /*size in bytes */);
-MAK_API void MAK_CALL MAK_free(void * /*pointer */);
 
 MAK_API void MAK_CALL MAK_close(void);
 
+/* malloc/free */
 
-/* pthread redirects */
+MAK_API void* MAK_CALL MAK_malloc(size_t /*size in bytes */);
+MAK_API void MAK_CALL MAK_free(void * /*pointer */);
+
+/* pthread */
 # define MAK_PTHREAD_CREATE_CONST const
 #define MAK_PTHREAD_EXIT_ATTRIBUTE __attribute__((__noreturn__))
 
@@ -45,6 +47,14 @@ MAK_API void MAK_CALL MAK_free_imm(void *);
 /* 0: default, likely alloocates */
 MAK_API void MAK_CALL MAK_declare_never_allocate(int /*flag */);
 
+/* persistent root */
+
+MAK_API void** MAK_CALL MAK_persistent_root_addr(unsigned int id);
+MAK_API void* MAK_CALL MAK_persistent_root(unsigned int id);
+MAK_API void MAK_CALL MAK_set_persistent_root(unsigned int id, void* val);
+
+/* gc */
+MAK_API int MAK_CALL MAK_collect_off(void);
 
 
 

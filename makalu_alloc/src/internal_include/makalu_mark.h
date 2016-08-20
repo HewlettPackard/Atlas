@@ -9,6 +9,7 @@ MAK_INNER void MAK_initialize_offsets(void);
 MAK_INNER void MAK_register_displacement_inner(size_t offset);
 MAK_INNER void MAK_mark_init();
 MAK_INNER void MAK_clear_hdr_marks(hdr *hhdr);
+MAK_INNER void MAK_push_persistent_roots();
 
 #ifdef MAK_THREADS
 #   define OR_WORD(addr, bits) AO_or((volatile AO_t *)(addr), (AO_t)(bits))

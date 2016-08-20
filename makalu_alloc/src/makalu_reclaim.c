@@ -87,6 +87,53 @@ MAK_INNER void MAK_restart_block_freelists()
      }
 }
 
+/*
+ * Restore an unmarked large object or an entirely empty blocks of small objects
+ * to the heap block free list.
+ * Otherwise process the block for later reclaiming
+ * by MAK_reclaim_small_nonempty_block (lazy sweeping).
+ */
+MAK_INNER void MAK_defer_reclaim_block(struct hblk *hbp, word flag)
+{
+    hdr * hhdr = HDR(hbp);
+    size_t sz = hhdr -> hb_sz;  /* size of objects in current block     */
+
+    //TODO: cache the header in apply to all blocks and use header
+    //cache here.
+    if( sz > MAXOBJBYTES ) {  /* 1 big object */
+        if( !mark_bit_from_hdr(hhdr, 0) ) {
+            MAK_START_NVM_ATOMIC;
+            MAK_freehblk(hbp);
+            MAK_END_NVM_ATOMIC;
+        } else {
+            //flush mark bits and the number of marks
+            MAK_NVM_ASYNC_RANGE(&(hhdr -> hb_marks[0]), sizeof (hhdr -> hb_marks));
+            MAK_NVM_ASYNC_RANGE(&(hhdr -> hb_n_marks), sizeof(hhdr -> hb_n_marks));
+        }
+    } else {
+        MAK_bool empty = MAK_block_empty(hhdr);
+       #ifdef PARALLEL_MARK
+        /* Count can be low or one too high because we sometimes      */
+        /* have to ignore decrements.  Objects can also potentially   */
+        /* be repeatedly marked by each marker.                       */
+        /* Here we assume two markers, but this is extremely          */
+        /* unlikely to fail spuriously with more.  And if it does, it */
+        /* should be looked at.                                       */
+        MAK_ASSERT(hhdr -> hb_n_marks <= 2 * (HBLKSIZE/sz + 1) + 16);
+       #else
+        MAK_ASSERT(sz * hhdr -> hb_n_marks <= HBLKSIZE);
+       #endif
+        if (empty) {
+          MAK_START_NVM_ATOMIC;
+          MAK_freehblk(hbp);
+          MAK_END_NVM_ATOMIC;
+        } else {
+           //TODO: flush the mark bits and the number of marks
+           MAK_NVM_ASYNC_RANGE(&(hhdr -> hb_marks[0]), sizeof (hhdr -> hb_marks));
+           MAK_NVM_ASYNC_RANGE(&(hhdr -> hb_n_marks), sizeof(hhdr -> hb_n_marks));
+        }
+    }
+}
 
 MAK_INNER signed_word MAK_build_array_fl(struct hblk *h, size_t sz_in_words, MAK_bool clear,
                            hdr_cache_entry* hc, word hc_sz,
@@ -650,5 +697,10 @@ MAK_INNER void MAK_truncate_fast_fl(fl_hdr* flh, word ngranules, int k,
     flh -> count = k_count;
     flh -> start_idx = (start + (word) n_truncated) % max;
 
+}
+
+MAK_INNER MAK_bool MAK_block_empty(hdr *hhdr)
+{
+    return (hhdr -> hb_n_marks == 0);
 }
 

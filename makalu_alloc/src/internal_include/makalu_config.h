@@ -219,6 +219,8 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define NORMAL  1
 #define UNCOLLECTABLE 2
 
+#define IS_UNCOLLECTABLE(k) ((k) == UNCOLLECTABLE)
+
 #define MAK_N_KINDS_INITIAL_VALUE 3
 
 #define MAXOBJKINDS 16
