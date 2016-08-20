@@ -8,6 +8,7 @@ static word tlfs_optimal_count[TINY_FREELISTS] = {0};
 static word total_local_fl_size = 0;
 static MAK_tlfs tlfs_fl = NULL;
 static __thread MAK_tlfs my_tlfs = NULL;
+static __thread MAK_bool never_allocates = FALSE;
 
 
 MAK_INNER void MAK_init_thread_local()
@@ -133,6 +134,128 @@ MAK_INNER void MAK_teardown_thread_local(MAK_tlfs p)
 
     my_tlfs = NULL;
     free_tlfs(p);
+}
+
+MAK_API void MAK_CALL MAK_declare_never_allocate(int flag){
+    never_allocates = (flag != 0) ? TRUE : FALSE;
+}
+
+
+MAK_API void * MAK_CALL MAK_malloc(size_t bytes)
+{
+    size_t granules = ROUNDED_UP_GRANULES(bytes);
+    void *result;
+    fl_hdr *tiny_fl;
+
+    if (EXPECT(my_tlfs == NULL, 0))
+    {
+        return MAK_core_malloc(bytes);
+    }
+
+    if (!MAK_is_initialized)
+        ABORT("Makalu not properly initialized!\n");
+   
+    tiny_fl = (my_tlfs) -> normal_freelists;
+    MAK_FAST_MALLOC_GRANS(result, granules, tiny_fl,
+              (my_tlfs) -> hc, (my_tlfs) -> aflush_tb,
+              NORMAL, MAK_core_malloc(bytes), tlfs_max_count[granules]);
+
+    return result;
+}
+
+#ifdef FAS_SUPPORT
+
+MAK_INNER MAK_fas_free_callback  MAK_fas_defer_free_fn = 0;
+
+MAK_API void MAK_CALL MAK_set_defer_free_fn(MAK_fas_free_callback fn){
+    MAK_fas_defer_free_fn = fn;
+}
+
+
+MAK_API void MAK_CALL MAK_free(void *p){
+    MAK_fas_defer_free_fn(pthread_self(), p);
+}
+
+MAK_API void MAK_CALL MAK_free_imm(void *p){
+
+#else
+
+MAK_API void MAK_CALL MAK_free(void *p){
+
+#endif
+
+    int add_to_gfl = 0;
+    if (EXPECT(my_tlfs == NULL, 0))
+    {
+         add_to_gfl = 1;
+    }
+    if (!MAK_is_initialized)
+        ABORT("Makalu not properly initialized!\n");
+
+
+    hdr *hhdr;
+    size_t sz; /* In bytes */
+    size_t granules;   /* sz in granules */
+    fl_hdr *tiny_fl;
+    int knd;
+    struct obj_kind * ok;
+    
+    if (p == 0) return;
+    /* Required by ANSI.  It's not my fault ...     */
+    
+    void* r = MAK_hc_base_with_hdr(p, (my_tlfs) -> hc,
+                  (unsigned int) LOCAL_HDR_CACHE_SZ, &hhdr);
+    if (r == 0) return;
+
+    sz = hhdr -> hb_sz;
+    knd = hhdr -> hb_obj_kind;
+    granules = BYTES_TO_GRANULES(sz);
+    if (EXPECT(((granules) >= TINY_FREELISTS) || add_to_gfl, FALSE)) {
+        MAK_core_free(r, hhdr, knd, sz, granules);
+        return;
+    }
+
+    if (knd == NORMAL) {
+       tiny_fl = (my_tlfs) -> normal_freelists;
+    }
+    else if (knd == PTRFREE){
+       tiny_fl = (my_tlfs) -> ptrfree_freelists;
+    }
+    else {
+        MAK_core_free(r, hhdr, knd, sz, granules);
+        return;
+    }
+    fl_hdr *flh = tiny_fl + granules;
+    signed_word count = flh -> count;
+   #ifndef START_THREAD_LOCAL_IMMEDIATE
+    if (count < 0) {
+        flh -> count = count + 1;
+        MAK_core_free(r, hhdr, knd, sz, granules);
+        return;
+    }
+   #endif
+    void **flp;
+    flp = flh -> fl;
+    ok = &MAK_obj_kinds[knd];
+    if(ok -> ok_init){
+        BZERO((word *)p, sz);
+    }
+    word idx = (flh -> start_idx + count) % tlfs_max_count[granules];
+    flp[idx] = p;
+    count++;
+    flh -> count = count;
+
+    if (count >= tlfs_max_count[granules]){
+        word keep = (never_allocates == TRUE) ? 
+            0 : tlfs_optimal_count[granules];
+        MAK_truncate_fast_fl(
+           (fl_hdr*) flh, granules, knd,
+              keep, tlfs_max_count[granules],
+              (my_tlfs) -> hc, (word) 
+              LOCAL_HDR_CACHE_SZ,
+              (my_tlfs) -> aflush_tb, 
+              (word) LOCAL_AFLUSH_TABLE_SZ);
+    }
 }
 
 #endif // MAK_THREADS

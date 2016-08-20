@@ -28,5 +28,14 @@ MAK_INNER void MAK_truncate_fast_fl(fl_hdr* flh, word ngranules, int k,
                          hdr_cache_entry* hc, word hc_sz,
                          void** aflush_tb, word aflush_tb_sz);
 
+MAK_INNER signed_word MAK_build_fl_array_from_mark_bits_clear(struct hblk* hbp,
+       word* mark_bits,
+       size_t sz,
+       void** list);
+MAK_INNER signed_word MAK_build_fl_array_from_mark_bits_uninit(struct hblk* hbp,
+       word* mark_bits,
+       size_t sz,
+       void** list);
+
 
 #endif

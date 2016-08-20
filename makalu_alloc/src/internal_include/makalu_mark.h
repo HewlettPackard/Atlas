@@ -42,6 +42,9 @@ MAK_INNER void MAK_help_marker(void);
 # define mark_bit_from_hdr(hhdr,n) \
               (((hhdr)->hb_marks[divWORDSZ(n)] >> modWORDSZ(n)) & (word)1)
 
+#define  mark_bit_from_mark_bits(marks, n) \
+              ((marks[divWORDSZ(n)] >> modWORDSZ(n)) & (word)1)
+
 # define clear_and_flush_mark_bit_from_hdr(hhdr, n, aflush_tb, aflush_tb_sz) \
        { \
            word* addr = (hhdr)->hb_marks+divWORDSZ(n); \

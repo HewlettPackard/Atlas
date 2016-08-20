@@ -106,10 +106,12 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define WORDSZ ((word)CPP_WORDSZ)
 #define SIGNB  ((word)1 << (WORDSZ-1))
 #define GRANULE_BYTES 16
+#define RAW_BYTES_FROM_INDEX(i) ((i) * GRANULE_BYTES)
 #define BYTES_TO_GRANULES(n) ((n)>>4)
 #define GRANULES_TO_BYTES(n) ((n)<<4)
 #define GRANULES_TO_WORDS(n) ((n)<<1)
 #define WORDS_TO_BYTES(x)   ((x)<<3)
+#define BYTES_TO_WORDS(x)   ((x)>>3)
 
 #define BYTES_PER_WORD      ((word)(sizeof (word)))
 

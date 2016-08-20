@@ -287,7 +287,141 @@ MAK_INNER void MAK_core_free(void* p, hdr* hhdr, int knd,
     }
 }
 
+MAK_INNER void MAK_generic_malloc_many(size_t lb, int k, fl_hdr* flh,
+                                  hdr_cache_entry* hc,
+                                  word hc_sz,
+                                  void** aflush_tb,
+                                  word aflush_tb_sz)
+{
+
+    size_t lw;      /* Length in words.     */
+    size_t lg;      /* Length in granules.  */
+    struct obj_kind * ok = &(MAK_obj_kinds[k]);
+    MAK_ASSERT(lb != 0 && (lb & (GRANULE_BYTES-1)) == 0);
+
+    lw = BYTES_TO_WORDS(lb);
+    lg = BYTES_TO_GRANULES(lb);
+
+    /* try to reclaim pages first */
+    {
+        struct hblk ** rlh = MAK_reclaim_list[k];
+        struct hblk * hbp;
+        hdr * hhdr; 
+        rlh += lg;
+        MAK_LOCK_GRAN(lg);
+        while ((hbp = *rlh) != 0) {
+            hhdr = MAK_get_hdr_and_update_hc(hbp -> hb_body, hc, hc_sz);
+            struct hblk* n_hb = hhdr -> hb_next;
+            *rlh = n_hb;
+            if (n_hb != NULL){
+                hdr* n_hhdr = MAK_get_hdr_and_update_hc(n_hb -> hb_body,
+                           hc, hc_sz);
+                n_hhdr -> hb_prev = NULL;
+            }
+            hhdr -> hb_n_marks = HBLK_OBJS(hhdr -> hb_sz);
+            word marks[MARK_BITS_SZ];
+            word i;
+            for (i = 0; i < MARK_BITS_SZ; i++)
+            {
+                marks[i] = hhdr -> hb_marks[i];
+                hhdr -> hb_marks[i] = ONES;
+            }
+            hhdr -> page_reclaim_state = IN_FLOATING;
+            hhdr -> hb_next = NULL;
+            MAK_UNLOCK_GRAN(lg);
+             MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_marks), sizeof (hhdr -> hb_marks),
+                   aflush_tb, aflush_tb_sz);
+            MAK_NVM_ASYNC_RANGE_VIA(&(hhdr -> hb_n_marks), sizeof (hhdr -> hb_n_marks),
+                   aflush_tb, aflush_tb_sz);
+
+            flh -> count = (ok -> ok_init)
+              ?  MAK_build_fl_array_from_mark_bits_clear(hbp,
+                          marks, lb,
+                          flh -> fl)
+              :  MAK_build_fl_array_from_mark_bits_uninit(hbp,
+                          marks, lb,
+                          flh -> fl);
+
+            goto out;
+        }
+
+    }  //end of trying to reclaim page
+
+    // next we try to copy the global freelist into our local freelist    
+    {
+        fl_hdr* g_flh = &(MAK_obj_kinds[k].ok_freelist[lg]);
+        signed_word g_count = g_flh -> count;
+        if (g_count > 0)
+        {
+            void** gflp = g_flh -> fl;
+            word g_start_idx = g_flh -> start_idx;
+            void** flp = flh -> fl;
+            word max_objs = (word) HBLKSIZE / (word) lb;
+            word n_objs = (g_count > max_objs) ? max_objs : g_count;
+            word max_fl_count = MAK_fl_max_count[lg];
+            word i;
+            for (i = 0; i < n_objs; i++){
+                flp[i] = gflp[(g_start_idx + i) % max_fl_count];
+            }
+            g_flh -> count = g_count - n_objs;
+            flh -> count = n_objs;
+            MAK_UNLOCK_GRAN(lg);
+            goto out;
+        }
+    } //end of copying freelist
+
+    /* next try to allocate a new block for that granule*/
+    /* expand heap if necessary */
+
+    {
+        MAK_bool retry = TRUE;
+        MAK_LOCK();
+        while (TRUE){
+            struct hblk *h = MAK_allochblk(lb, k, 0);
+
+            if (h != 0){
+                MAK_UNLOCK();
+                flh -> count = MAK_build_array_fl(h, lw,
+                    (ok -> ok_init),
+                    hc, hc_sz,
+                    aflush_tb, aflush_tb_sz,
+                    flh -> fl);
+                    goto out;
+            }
+            if (retry){
+                retry = FALSE;
+                if (!MAK_try_expand_hp(1,
+                  FALSE /*ignore_off_page*/, retry)){
+                    break;
+                }
+            } else {
+                //we end up here if we successfully expanded the heap but could not 
+                //allocate a hblk, where did the memory go???
+                //this should never happen
+                ABORT("All memory lost right after expansion!\n");
+            }
+        }
+        MAK_UNLOCK();
+    }
+
+  #ifndef START_THREAD_LOCAL_IMMEDIATE 
+    void* op = MAK_generic_malloc(lb, k);
+    if (op != 0)
+    {
+        (flh -> fl)[0] = op;
+        flh -> count = 1;
+    }
+  #endif
+
+
+out:
+   ;
+}
+
+
+
 #else // ! defined MAK_THREADS
+
 MAK_API void MAK_CALL MAK_free(void * p)
 {
     hdr *hhdr;
@@ -336,5 +470,4 @@ MAK_API void MAK_CALL MAK_free(void * p)
 
 
 #endif // MAK_THREADS
-
 

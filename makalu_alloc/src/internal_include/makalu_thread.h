@@ -32,6 +32,11 @@ MAK_EXTERN pthread_mutex_t MAK_global_ml;
 
 #define MAK_SEM_INIT_PSHARED 0
 
+#define WRAP_FUNC(f) MAK_##f
+#define REAL_FUNC(f) f
+
+
+
 MAK_INNER void MAK_lock_gran(word gran);
 MAK_INNER void MAK_unlock_gran(word gran);
 
@@ -43,8 +48,6 @@ MAK_INNER void MAK_notify_all_marker(void);
 MAK_INNER void MAK_thr_init(void);
 MAK_INNER void MAK_start_mark_threads(void);
 
-#define WRAP_FUNC(f) GC_##f
-#define REAL_FUNC(f) f
 
 #else // ! defined MAK_THREADS
 

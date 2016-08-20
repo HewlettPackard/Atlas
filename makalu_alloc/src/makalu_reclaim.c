@@ -181,6 +181,7 @@ STATIC signed_word MAK_reclaim_to_array_clear(struct hblk *hbp, hdr *hhdr, size_
     }
     return idx;
 }
+
  
 /* The same thing, but don't clear objects: */
 /* returns the number of memory objects reclaimed/added to freelist */
@@ -223,6 +224,82 @@ STATIC signed_word MAK_reclaim_to_array_uninit(struct hblk *hbp, hdr *hhdr, size
     }
     return idx;
 }
+
+MAK_INNER signed_word MAK_build_fl_array_from_mark_bits_clear(struct hblk* hbp,
+       word* mark_bits,
+       size_t sz,
+       void** list)
+{
+    word bit_no = 0;
+    word *p, *q, *plim;
+    signed_word n_bytes_found = 0;
+    signed_word idx = 0;
+
+    p = (word *)(hbp->hb_body);
+    plim = (word *)(hbp->hb_body + HBLKSIZE - sz);
+
+    while (p <= plim) {
+        if( mark_bit_from_mark_bits(mark_bits, bit_no) ) {
+            p = (word *)((ptr_t)p + sz);
+        } else {
+            n_bytes_found += sz;
+          /* object is available - put on list */
+            list[idx] = p;
+            idx++;
+          /* Clear object, advance p to next object in the process */
+            q = (word *)((ptr_t)p + sz);
+#        ifdef USE_MARK_BYTES
+            MAK_ASSERT(!(sz & 1)
+               && !((word)p & (2 * sizeof(word) - 1)));
+            while (p < q) {
+              CLEAR_DOUBLE(p);
+              p += 2;
+            }
+#        else
+           #ifdef CLEAR_MALLOCED_MEMORY
+            while (p < q) {
+              *p++ = 0;
+            }
+           #else
+               p = q;
+           #endif
+#        endif
+        }
+        bit_no += MARK_BIT_OFFSET(sz);
+    }
+    return idx;
+}
+
+
+MAK_INNER signed_word MAK_build_fl_array_from_mark_bits_uninit(struct hblk* hbp,
+       word* mark_bits,
+       size_t sz,
+       void** list)
+{
+    word bit_no = 0;
+    word *p, *plim;
+    signed_word n_bytes_found = 0;
+    signed_word idx = 0;
+
+
+    MAK_ASSERT(sz == hhdr -> hb_sz);
+    p = (word *)(hbp->hb_body);
+    plim = (word *)((ptr_t)hbp + HBLKSIZE - sz);
+
+    /* go through all words in block */
+    while (p <= plim) {
+       if(!mark_bit_from_mark_bits(mark_bits, bit_no) ) {
+           n_bytes_found += sz;
+           /* object is available - put on list */
+           list[idx]= p;
+           idx++;
+       }
+       p = (word *)((ptr_t)p + sz);
+       bit_no += MARK_BIT_OFFSET(sz);
+    }
+    return idx;
+}
+
 
 
 

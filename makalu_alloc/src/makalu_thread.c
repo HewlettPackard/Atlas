@@ -188,7 +188,20 @@ MAK_API int WRAP_FUNC(pthread_create)(pthread_t *new_thread,
     return(result);
 }
 
+MAK_API int MAK_pthread_join(pthread_t thread, void **retval)
+{
+    return REAL_FUNC(pthread_join)(thread, retval);
+}
 
+MAK_API int WRAP_FUNC(pthread_cancel)(pthread_t thread)
+{
+    return REAL_FUNC(pthread_cancel)(thread);
+}
+
+MAK_API MAK_PTHREAD_EXIT_ATTRIBUTE void WRAP_FUNC(pthread_exit)(void *retval)
+{
+    REAL_FUNC(pthread_exit)(retval);
+}
 
 
 
