@@ -37,12 +37,9 @@ MAK_API int MAK_pthread_detach(pthread_t);
 MAK_API int MAK_pthread_cancel(pthread_t);
 MAK_API void MAK_pthread_exit(void *) MAK_PTHREAD_EXIT_ATTRIBUTE;
 
-#ifdef FAS_SUPPORT
-  #include <sys/types.h>
-  typedef void (MAK_CALLBACK * MAK_fas_free_callback)(pthread_t, void*);
-    MAK_API void MAK_CALL MAK_set_defer_free_fn(MAK_fas_free_callback);
-    MAK_API void MAK_CALL MAK_free_imm(void *);
-#endif
+typedef void (MAK_CALLBACK * MAK_fas_free_callback)(pthread_t, void*);
+MAK_API void MAK_CALL MAK_set_defer_free_fn(MAK_fas_free_callback);
+MAK_API void MAK_CALL MAK_free_imm(void *);
 
 /* 1: indicates that the calling thread will likely never allocate */
 /* 0: default, likely alloocates */

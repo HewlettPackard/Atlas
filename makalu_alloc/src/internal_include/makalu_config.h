@@ -270,6 +270,11 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 
 //persistent
 
+
+/* provide deferred deallocation for */
+/* transaction based failure atomic sections */
+//#define FAS_SUPPORT 1
+
 /* number of heap blocks allocated for logging in persistent memory */
 #define N_PERSISTENT_LOG_HBLK 1
 
