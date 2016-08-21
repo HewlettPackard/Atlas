@@ -159,6 +159,8 @@ MAK_INNER hdr * MAK_header_cache_miss(ptr_t p, hdr_cache_entry *hce);
   } \
 }
 
+///////////////////////////////////////////////////////////////
+
 /* allocation time header cache */
 //TODO: unify the allocation time and gc time hdr cache
 extern hdr_cache_entry MAK_hdr_cache[HDR_CACHE_SIZE];

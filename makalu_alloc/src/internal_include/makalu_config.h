@@ -106,6 +106,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define WORDSZ ((word)CPP_WORDSZ)
 #define SIGNB  ((word)1 << (WORDSZ-1))
 #define GRANULE_BYTES 16
+#define GRANULE_WORDS 2
 #define RAW_BYTES_FROM_INDEX(i) ((i) * GRANULE_BYTES)
 #define BYTES_TO_GRANULES(n) ((n)>>4)
 #define GRANULES_TO_BYTES(n) ((n)<<4)
@@ -126,6 +127,9 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 # define HBLK_GRANULES (HBLKSIZE/GRANULE_BYTES)
 
 //mark
+//#define POINTER_MASK
+//#define POINTER_SHIFT
+
 #define MAP_LEN BYTES_TO_GRANULES(HBLKSIZE)
 
 #define MARK_BITS_PER_HBLK (HBLKSIZE/GRANULE_BYTES) 
@@ -185,6 +189,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
                         /* the object, since only those are guaranteed  */
                         /* to be cleared while the allocation lock is   */
                         /* held.                                        */
+#define MAK_INDIR_PER_OBJ_BIAS 0x10
 
 # define VALID_OFFSET_SZ HBLKSIZE
 #define MAK_N_MARKERS 6    /* Number of threads to be started */
@@ -197,7 +202,7 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 #define LOCAL_MARK_STACK_SIZE HBLKSIZE
         /* Under normal circumstances, this is big enough to guarantee  */
         /* We don't overflow half of it in a single call to             */
-        /* GC_mark_from.                                                */
+        /* MAK_mark_from.                                                */
 
 
 
@@ -217,11 +222,9 @@ typedef char * ptr_t;   /* A generic pointer to which we can add        */
 //obj kinds
 #define PTRFREE 0
 #define NORMAL  1
-#define UNCOLLECTABLE 2
 
-#define IS_UNCOLLECTABLE(k) ((k) == UNCOLLECTABLE)
 
-#define MAK_N_KINDS_INITIAL_VALUE 3
+#define MAK_N_KINDS_INITIAL_VALUE 2
 
 #define MAXOBJKINDS 16
 

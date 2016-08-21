@@ -34,12 +34,6 @@ struct _MAK_transient_metadata {
     #define MAK_aobjfreelist MAK_transient_md._aobjfreelist
     fl_hdr _aobjfreelist[MAXOBJGRANULES+1];
 
-    #define MAK_uobjfreelist MAK_transient_md._uobjfreelist
-                          /* Uncollectible but traced objs      */
-                          /* objects on this and auobjfreelist  */
-                          /* are always marked, except during   */
-                          /* garbage collections.  */
-    fl_hdr _uobjfreelist[MAXOBJGRANULES+1];
 
     #define MAK_reclaim_list MAK_transient_md._reclaim_list
     struct hblk** _reclaim_list[MAXOBJKINDS];

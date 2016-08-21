@@ -92,11 +92,6 @@ STATIC void* MAK_CALL MAK_set_persistent_rgn(MAK_persistent_memalign memalign_fu
                 TRUE /* add length to descr */, TRUE /*DO_INITALIZED_MALLOC*/
                 , TRUE /* ok_seen */}; 
    
-    MAK_obj_kinds[UNCOLLECTABLE] = (struct obj_kind) { &MAK_uobjfreelist[0], /*0,*/
-                0 | MAK_DS_LENGTH, TRUE /* add length to descr */, TRUE /*DO_INITALIZED_MALLOC*/
-                , FALSE /* ok_seen */ }; 
-
-
     if (!MAK_alloc_reclaim_list(NORMAL))
        ABORT("Failed to allocate transient memory for reclaim list\n");
     if (!MAK_alloc_reclaim_list(PTRFREE))
@@ -189,7 +184,6 @@ STATIC void MAK_reinit_persistent(ptr_t start_addr)
 STATIC void MAK_fixup_transient_freelist(){
     MAK_obj_kinds[PTRFREE].ok_freelist = (fl_hdr*) &MAK_aobjfreelist[0];
     MAK_obj_kinds[NORMAL].ok_freelist =  (fl_hdr*) &MAK_objfreelist[0];
-    MAK_obj_kinds[UNCOLLECTABLE].ok_freelist = (fl_hdr*) &MAK_uobjfreelist[0];
 
     int n_added_kinds = (MAK_n_kinds - MAK_N_KINDS_INITIAL_VALUE);
     if (n_added_kinds <= 0) return;

@@ -64,6 +64,7 @@ MAK_INNER void MAK_abort(const char *msg);
 #define EXIT() (void)exit(1)
 
 #define BZERO(x,n)  memset(x, 0, (size_t)(n))
+#define BCOPY(x,y,n) memcpy(y, x, (size_t)(n))
 
 
 

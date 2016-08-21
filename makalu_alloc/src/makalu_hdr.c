@@ -282,10 +282,8 @@ MAK_INNER void MAK_remove_header(struct hblk *h)
     //we don't log because whoever called this to be removed has already logged the appropriate fields in the header
     //e.g. MAK_newfreehblk calls MAK_remove_from_fl before it calls this function which makes sure that hb_prev, hb_next, and hb_sz is logged
     MAK_NO_LOG_STORE_NVM(hhdr->hb_sz, 0);
-  #ifdef FIXED_SIZE_GLOBAL_FL
     //The below is necessary for header cache to work properly
     MAK_STORE_NVM_ADDR(&(hhdr -> hb_block), 0);
-  #endif
     MAK_STORE_NVM_ASYNC(hhdr -> hb_next, (struct hblk*) MAK_hdr_free_list);
     //will be made visible before exit
     MAK_hdr_free_list = hhdr;

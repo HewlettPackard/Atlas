@@ -112,7 +112,7 @@ MAK_INNER void MAK_defer_reclaim_block(struct hblk *hbp, word flag)
         }
     } else {
         MAK_bool empty = MAK_block_empty(hhdr);
-       #ifdef PARALLEL_MARK
+       #ifdef MAK_THREADS
         /* Count can be low or one too high because we sometimes      */
         /* have to ignore decrements.  Objects can also potentially   */
         /* be repeatedly marked by each marker.                       */
