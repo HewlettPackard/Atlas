@@ -23,8 +23,6 @@ ensure the consistency of the data stored in persistent heap
 across failures and restarts. We only recommend this for experts
 in persistent programming.
 
-##Makalu Execution Phases##
-
 Makalu has two distinct phases in which it operates. In an **online phase**,
 a user can allocate and deallocate 
 persistent memory after proper initialization. After an ungraceful shutdown, 
