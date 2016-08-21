@@ -38,10 +38,13 @@ void __map_persistent_region(){
     assert(addr != MAP_FAILED);
 
     *((intptr_t*)addr) = (intptr_t) addr;
+    CLFLUSH(addr);
     base_addr = (char*) addr;
     //adress to remap to, the root pointer to gc metadata, 
     //and the curr pointer at the end of the day
-    curr_addr = (char*) ((size_t)addr + 3 * sizeof(intptr_t));                    
+    curr_addr = (char*) ((size_t)addr + 3 * sizeof(intptr_t));
+    *(((intptr_t*) base_addr) + 1) = (intptr_t) curr_addr;
+    CLFLUSH( (((intptr_t*) base_addr) + 1)); 
     printf("Addr: %p\n", addr);
     printf("Base_addr: %p\n", base_addr);
     printf("Current_addr: %p\n", curr_addr);
@@ -86,7 +89,10 @@ void __remap_persistent_region()
 void __close_persistent_region()
 {
     *(((intptr_t*) base_addr) + 1) = (intptr_t) curr_addr;
+    CLFLUSH( (((intptr_t*) base_addr) + 1)); 
+
     printf("At the end current addr: %p\n", curr_addr);
+
     unsigned long space_used = ((unsigned long) curr_addr 
          - (unsigned long) base_addr);
     unsigned long remaining_space = 
@@ -110,6 +116,7 @@ void __close_transient_region()
 void __store_heap_start(void* root)
 {
      *(((intptr_t*) base_addr) + 2) = (intptr_t) root;
+    CLFLUSH( (((intptr_t*) base_addr) + 2)); 
 }
 
 void* __fetch_heap_start()
@@ -134,10 +141,12 @@ int __nvm_region_allocator(void** memptr, size_t alignment, size_t size)
     res = curr_addr;
     next = curr_addr + size;
     if (next > base_addr + FILESIZE){
-       printf("\n----Ran out of space in mmaped file-----\n");
+       printf("\n----Region Manager: out of space in mmaped file-----\n");
        return 1;
     }
     curr_addr = next;
+    *(((intptr_t*) base_addr) + 1) = (intptr_t) curr_addr;
+    CLFLUSH( (((intptr_t*) base_addr) + 1)); 
     *memptr = res;
  
     return 0;

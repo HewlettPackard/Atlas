@@ -13,6 +13,17 @@
 
 #define FILESIZE 5*1024*1024*1024ULL + 24
 #define HEAPFILE "/dev/shm/gc_heap.dat"
+
+#define CLFLUSH(addr) \
+   { \
+       __asm__ __volatile__ ("mfence" ::: "memory"); \
+       __asm__ __volatile__ (   \
+       "clflush %0 \n" : "+m" (*(char*)(addr))  \
+       ); \
+       __asm__ __volatile__ ("mfence" ::: "memory"); \
+}
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

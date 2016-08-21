@@ -370,6 +370,8 @@ MAK_INNER void MAK_generic_malloc_many(size_t lb, int k, fl_hdr* flh,
         }
     } //end of copying freelist
 
+    MAK_UNLOCK_GRAN(lg);
+
     /* next try to allocate a new block for that granule*/
     /* expand heap if necessary */
 
