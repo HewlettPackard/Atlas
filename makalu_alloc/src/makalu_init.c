@@ -268,4 +268,16 @@ MAK_API void MAK_CALL MAK_start_off(char* start_addr,
     MAK_is_initialized = TRUE;
 }
 
-
+/* takes down the main thread local heap */
+/* synchronizes all persistent metadata */
+/* for clean restart in next execution cycle */
+MAK_API void MAK_CALL MAK_close(void){
+   #ifdef MAK_THREADS
+    if (MAK_run_mode != RESTARTING_OFFLINE)
+        MAK_teardown_main_thread_local();
+   #endif
+    MAK_sync_gc_metadata();
+    MAK_sync_alloc_metadata();
+    MAK_is_initialized = FALSE;
+    MAK_ACCUMULATE_FLUSH_COUNT();
+}

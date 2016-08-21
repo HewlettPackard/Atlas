@@ -136,6 +136,14 @@ MAK_INNER void MAK_teardown_thread_local(MAK_tlfs p)
     free_tlfs(p);
 }
 
+/* Must be called from the main thread  */
+/* for correct behavior */
+/* Relies on main's thread local variable */
+MAK_INNER void MAK_teardown_main_thread_local(void)
+{
+    MAK_teardown_thread_local(my_tlfs);
+}
+
 MAK_API void MAK_CALL MAK_declare_never_allocate(int flag){
     never_allocates = (flag != 0) ? TRUE : FALSE;
 }

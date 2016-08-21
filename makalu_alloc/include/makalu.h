@@ -8,6 +8,11 @@
 #include <stddef.h>
 #include <pthread.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef unsigned long long MAK_word;
 typedef long long MAK_signed_word;
 
@@ -55,6 +60,14 @@ MAK_API void MAK_CALL MAK_set_persistent_root(unsigned int id, void* val);
 
 /* gc */
 MAK_API int MAK_CALL MAK_collect_off(void);
+
+/* shutdown */
+MAK_API void MAK_CALL MAK_close(void);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 

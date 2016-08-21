@@ -102,10 +102,17 @@ int main(){
 
     __map_transient_region();
     void* ret = MAK_start(&__nvm_region_allocator);
-    int i;
-    for (i=0; i < 10; i++) {
-        void* p = MAK_malloc(sizeof(int));
-        printf("Allocated address: %p\n", p);
+    int n, i;
+    n = 10;
+    void* p[n];
+    for (i=0; i < n; i++) {
+        p[i] = MAK_malloc(sizeof(int));
+        printf("Allocated address: %p\n", p[i]);
     }
+     for (i=0; i < n; i++) {
+        MAK_free(p[i]);
+        printf("Freed address: %p\n", p[i]);
+    }
+
     return 0;
 }
