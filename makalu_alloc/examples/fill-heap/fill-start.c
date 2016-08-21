@@ -8,6 +8,13 @@
 #include "region_manager.h"
 #include "makalu.h"
 
+
+/* Fill-start fills up the persistent heap upto       */
+/* approx 1/2 the user argument (in MB) then crashes. */
+/* Expects fill-recover and fill-restart to be used   */
+/* to recover and restart respectively */
+
+
 #define NUM_PERSISTENT_ROOTS (4096 / sizeof(void*))
 
 #define NUM_CHILD 8
@@ -47,20 +54,19 @@ int main(int argc, char *argv[])
 
     __map_persistent_region();
     void* hstart = MAK_start(&__nvm_region_allocator);
+    printf("Heap start address: %p\n", hstart);
     __store_heap_start(hstart);
 
     //random number initialization
-   if (argc < 3) {
-        printf("Usage start_online_xx [#Mibytes][#crash_at_Mibytes]\n");
+   if (argc < 2) {
+        printf("Usage: fill-start [#total_MB]\n");
         return 0;
     }
     unsigned long mibytes_to_allocate = atol(argv[1]);
-    unsigned long mibytes_before_abort = atol(argv[2]);
 
     unsigned long num_items = (mibytes_to_allocate * 1024 * 1024) 
                               / (sizeof (Node));
-    unsigned long items_before_abort = (mibytes_before_abort * 1024 * 1024)
-                                      / (sizeof (Node));
+    unsigned long items_before_abort = num_items / 2;
 
     printf("Executing for %ld items, crashing at %ld items\n", 
            num_items, items_before_abort);

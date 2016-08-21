@@ -220,12 +220,15 @@ MAK_API void MAK_CALL MAK_restart(char* start_addr,
 
 
     MAK_restart_persistent_scratch_alloc();
-    MAK_restart_block_freelists();
-
+    
     int kind;
     for (kind = 0; kind < MAK_n_kinds; kind++) {
         if (MAK_obj_kinds[kind].ok_seen && !MAK_alloc_reclaim_list(kind)) goto out;
     }
+
+
+
+    MAK_restart_block_freelists();
 
     MAK_fixup_transient_freelist();
 
