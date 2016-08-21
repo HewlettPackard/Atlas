@@ -25,10 +25,10 @@ in persistent programming.
 
 ##Makalu Execution Phases##
 
-Makalu has two distinct phases in which it operates. In an _online phase_,
+Makalu has two distinct phases in which it operates. In an ** _online phase_ **,
 a user can allocate and deallocate 
 persistent memory after proper initialization. After an ungraceful shutdown, 
-Makalu is expected to start in _offline phase_ for recovery and offline 
+Makalu is expected to start in ** _offline phase_ ** for recovery and offline 
 garbage collection. 
 
 Online Start/Restart
