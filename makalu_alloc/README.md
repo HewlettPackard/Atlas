@@ -1,6 +1,6 @@
 # Makalu : NVRAM Memory Allocator
 
-Makalu is a failure-resilient memory allocator 
+Makalu is a failure-resilient memory allocator
 that can be used for the allocation of byte-addressable 
 non-volatile memory (NVRAM). Makalu is designed to restart 
 across execution cycles using durable metadata 
@@ -18,3 +18,8 @@ use-case scenario, the NVMPL ensures the consistency of the
 user data stored in heap, while Makalu ensures the consistency
 of the heap structure and the absence of failure-induced memory
 leaks.
+
+##Makalu API##
+
+
+
