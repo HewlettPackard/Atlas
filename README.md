@@ -123,7 +123,7 @@ with as few changes as possible.
 
 ## Organization
 
-- The APIs for this model are in `runtime/include`. [API doc here](http://hewlettpackard.github.io/Atlas/runtime/doc/include_2atlas__api_8h.html).
+- The APIs for this model are in `runtime/include`. [API doc here](http://hewlettpackard.github.io/Atlas/runtime/doc/atlas__api_8h.html).
 - Instructions on how to build the compiler-plugin are in
 `compiler-plugin/README.md`.
 - Instructions on how to build the runtime are in `runtime/README.md`.
