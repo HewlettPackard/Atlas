@@ -289,6 +289,7 @@ void CSMgr::destroyLS(LogStructure *lsp)
 
         traceHelper(del_lsp);
 
+        // TODO freeMem should call destructor. Use NVM_Destroy
         if (!CSMgr::getInstance().isInRecovery())
             PRegionMgr::getInstance().freeMem(del_lsp, true /* do not log */);
     }

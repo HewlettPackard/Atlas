@@ -22,6 +22,7 @@
 #include "pmalloc.hpp"
 #include "pmalloc_util.hpp"
 #include "internal_api.h"
+#include "atlas_alloc.h"
 
 namespace Atlas {
 
@@ -116,6 +117,9 @@ void *PArena::allocMem(
                   curr_alloc_addr_c + sizeof(size_t))) = false; 
 
             // The above metadata updates are to the same cache line
+            assert(!isOnDifferentCacheLine(
+                       curr_alloc_addr_c, curr_alloc_addr_c + sizeof(size_t)));
+
             NVM_FLUSH(curr_alloc_addr_c);
 
             insertToFreeList(PMallocUtil::get_bin_number(
@@ -140,6 +144,9 @@ void *PArena::allocMem(
               curr_alloc_addr_c + sizeof(size_t))) = true;
 
         // The above metadata updates are to the same cache line
+        assert(!isOnDifferentCacheLine(
+                   curr_alloc_addr_c, curr_alloc_addr_c + sizeof(size_t)));
+
         NVM_FLUSH(curr_alloc_addr_c);
 
         // If we fail somewhere above, the above memory will be
@@ -223,6 +230,9 @@ void *PArena::allocFromFreeList(
                 *(reinterpret_cast<size_t*>(mem + sizeof(size_t))) = true;
 
                 // The above metadata updates are to the same cache line
+                assert(!isOnDifferentCacheLine(
+                           mem, mem + sizeof(size_t)));
+
                 NVM_FLUSH(mem);
                 
                 // If we fail here, the above allocated memory may be leaked
@@ -300,6 +310,9 @@ void *PArena::allocFromUpdatedFreeList(
             *(reinterpret_cast<size_t*>(mem + sizeof(size_t))) = true;
 
             // The above metadata updates are to the same cache line
+            assert(!isOnDifferentCacheLine(
+                       mem, mem + sizeof(size_t)));
+
             NVM_FLUSH(mem);
 
             // If we fail here, the above allocated memory may be leaked
@@ -343,6 +356,10 @@ void *PArena::allocRawMem(size_t sz)
           static_cast<char*>(CurrAllocAddr_) + sizeof(size_t))) = true;
 
     // The above metadata updates are to the same cache line
+    assert(!isOnDifferentCacheLine(
+               CurrAllocAddr_,
+               static_cast<char*>(CurrAllocAddr_) + sizeof(size_t)));
+
     NVM_FLUSH(CurrAllocAddr_);
     
     // If a crash happens here, the memory appears allocated but it is not
@@ -413,6 +430,9 @@ void *PArena::carveExtraMem(
           static_cast<char*>(carved_mem) + sizeof(size_t))) = false;
     
     // The above metadata updates are to the same cache line
+    assert(!isOnDifferentCacheLine(
+               carved_mem, static_cast<char*>(carved_mem) + sizeof(size_t)));
+
     NVM_FLUSH(carved_mem);
     
     return carved_mem;

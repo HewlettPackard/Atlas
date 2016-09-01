@@ -561,9 +561,11 @@ int PRegionMgr::mapFile(
             perror("write");
             assert(result != -1 && "To-be-mapped file cannot be written!");
         }
-#ifdef _NVDIMM_PROLIANT
-        fsync_paranoid(name);
-#endif
+//#ifdef _NVDIMM_PROLIANT
+        int allocate_status = posix_fallocate(fd, 0, kPRegionSize_);
+        
+//        fsync_paranoid(name);
+//#endif
         close(fd);
     }
 #ifdef _NVDIMM_PROLIANT

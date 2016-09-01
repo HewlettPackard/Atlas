@@ -76,10 +76,16 @@ public:
             // TODO: This should not be logged for the helper
             // thread. This looks like a bogus comment. The helper
             // thread does not call setRoot. Check back later.
+
+            // More problems: Though the following may be ok, it
+            // is better to mfence after the following flush. NVM_STR2
+            // may not call flush (for table-based scheme) until later
+            // and does not call mfence until later.
             NVM_STR2(*(static_cast<intptr_t*>(
                            PMallocUtil::mem2ptr(BaseAddr_))),
                      reinterpret_cast<intptr_t>(new_root),
                      sizeof(intptr_t)*8);
+            full_fence();
         }
             
     void *getRoot() const

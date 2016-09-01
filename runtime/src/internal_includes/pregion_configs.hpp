@@ -25,7 +25,7 @@ const uint32_t kDCacheLineSize_ = 64;
 const uint32_t kMaxlen_ = kDCacheLineSize_;
     
 const uint64_t kByte_ = 1024;
-const uint64_t kPRegionSize_ = 4 * kByte_ * kByte_ * kByte_; /* 4GB */
+const uint64_t kPRegionSize_ = 1 * kByte_ * kByte_ * kByte_; /* 4GB */
 const uint32_t kMaxNumPRegions_ = 100;
 const uint32_t kNumArenas_ = 64;
 const uint32_t kArenaSize_ = kPRegionSize_ / kNumArenas_;
