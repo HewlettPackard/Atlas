@@ -52,10 +52,30 @@ void PRegionMgr::freeMem(void *ptr, bool should_log) const
 #endif
     // Correct size unknown at this point since it may be in transient mem
     region_id_t rgn_id = getOpenPRegionId(ptr, 1 /* dummy */);
-    if (rgn_id == kInvalidPRegion_) {
+    if (rgn_id == kInvalidPRegion_) { // transient memory
         free(ptr);
         return;
     }
+    freeMemImpl(rgn_id, ptr, should_log);
+}
+
+///
+/// Entry point for deleting a persistent location
+///    
+void PRegionMgr::deleteMem(void *ptr, bool should_log) const
+{
+#ifdef _FORCE_FAIL
+    fail_program();
+#endif
+
+    // ptr must be in a persistent region
+    region_id_t rgn_id = getOpenPRegionId(ptr, 1 /* dummy */);
+    freeMemImpl(rgn_id, ptr, should_log);
+}
+
+void PRegionMgr::freeMemImpl(
+region_id_t rgn_id, void *ptr, bool should_log) const
+{
     // Now that we can find out the correct size, assert that all the
     // bytes of the memory location indeed belong to this region
     assert((getOpenPRegionId(
@@ -68,7 +88,7 @@ void PRegionMgr::freeMem(void *ptr, bool should_log) const
            "Pointer to be freed belongs to a deleted or unmapped region!");
     preg->freeMem(ptr, should_log);
 }
-
+    
 ///
 /// Given a persistent region name and corresponding attributes,
 /// return its id, creating it if necessary
@@ -541,9 +561,11 @@ int PRegionMgr::mapFile(
             perror("write");
             assert(result != -1 && "To-be-mapped file cannot be written!");
         }
-#ifdef _NVDIMM_PROLIANT
-        fsync_paranoid(name);
-#endif
+//#ifdef _NVDIMM_PROLIANT
+        int allocate_status = posix_fallocate(fd, 0, kPRegionSize_);
+        
+//        fsync_paranoid(name);
+//#endif
         close(fd);
     }
 #ifdef _NVDIMM_PROLIANT

@@ -12,29 +12,36 @@
  * General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>.
  */
- 
 
-#ifndef PREGION_CONFIGS_HPP
-#define PREGION_CONFIGS_HPP
+#include "atlas_alloc.h"
+#include "atlas_alloc_cpp.hpp"
+#include "atlas_api.h"
 
-namespace Atlas {
+struct A
+{
+    A() {}
+    ~A() {}
+};
 
-typedef uint32_t region_id_t;
+int main()
+{
+    NVM_Initialize();
+    uint32_t a_rgn_id = NVM_FindOrCreateRegion("A", O_RDWR, NULL);
 
-const uint32_t kDCacheLineSize_ = 64;
-const uint32_t kMaxlen_ = kDCacheLineSize_;
+    A *nvm_obj = new (NVM_GetRegion(a_rgn_id)) A;
+    A *transient_obj = new A;
+
+    A *nvm_arr = new (NVM_GetRegion(a_rgn_id)) A[20];
+    A *transient_arr = new A[10];
     
-const uint64_t kByte_ = 1024;
-const uint64_t kPRegionSize_ = 1 * kByte_ * kByte_ * kByte_; /* 4GB */
-const uint32_t kMaxNumPRegions_ = 100;
-const uint32_t kNumArenas_ = 64;
-const uint32_t kArenaSize_ = kPRegionSize_ / kNumArenas_;
-const uint32_t kMaxFreeCategory_ = 128;
-const uint32_t kInvalidPRegion_ = kMaxNumPRegions_;
-const uint32_t kMaxBits_ = 48;
-const uint64_t kPRegionsBase_ = 
-    (((uint64_t)1 << (kMaxBits_ - 1)) - (kPRegionSize_ * kMaxNumPRegions_))/2;
+    NVM_Destroy(nvm_obj);
+    NVM_Destroy(transient_obj); // equivalent to delete transient_obj
 
-} // namespace Atlas
+    NVM_Destroy_Array(nvm_arr);
+    NVM_Destroy_Array(transient_arr); // equivalent to delete [] transient_arr
 
-#endif
+    NVM_CloseRegion(a_rgn_id);
+    NVM_Finalize();
+    
+}
+

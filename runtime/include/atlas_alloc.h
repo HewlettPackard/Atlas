@@ -114,6 +114,14 @@ void *NVM_GetRegionRoot(uint32_t rid);
 void NVM_SetRegionRoot(uint32_t rid, void *root);
 
 ///
+/// @brief Determines if a memory location is within a region
+/// @param ptr Queried address
+/// @param sz Size of the location in bytes
+/// @return 1 if within the region, otherwise 0    
+///
+int NVM_IsInRegion(void *ptr, size_t sz);
+    
+///
 /// @brief Determines if the addresses are on different cache lines
 ///
 /// @param p1 First address

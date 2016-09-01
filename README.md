@@ -27,13 +27,16 @@ reusable data that can be exploited to achieve a faster restart or a
 restart from an intermediate program point is a candidate for this
 paradigm.
 
-The programming model with implementation details can be found in the
-[OOPSLA 2014 paper on
-Atlas](http://www.labs.hpe.com/people/dhruva_chakrabarti/atlas_oopsla2014.pdf).
-The current implementation supports
-POSIX threads. Implementation for C/C++11 threads should be similar.
+A persistent memory allocator is provided for identifying data that
+should be preserved regardless of machine shutdowns or failures. By
+conforming to certain programming idioms and APIs, programmers can
+automatically obtain failure-resilience of persistent data. The 
+programming model with implementation details can be found in the
+[OOPSLA 2014 paper on Atlas](http://www.labs.hpe.com/people/dhruva_chakrabarti/atlas_oopsla2014.pdf).
 
-The implementation currently uses Linux tmpfs to simulate persistent
+The current implementation supports
+POSIX threads but the implementation for C/C++11 threads should be similar.
+Linux tmpfs is currently used to simulate persistent
 memory. Hence, persistent data in this implementation survives process
 crashes but not OS shutdowns/panics and power failures. However, the
 APIs and the implementation are ready for all of the above
@@ -120,7 +123,7 @@ with as few changes as possible.
 
 ## Organization
 
-- The APIs for this model are in `runtime/include`. [API doc here](http://hewlettpackard.github.io/Atlas/runtime/doc/include_2atlas__api_8h.html).
+- The APIs for this model are in `runtime/include`. [API doc here](http://hewlettpackard.github.io/Atlas/runtime/doc/atlas__api_8h.html).
 - Instructions on how to build the compiler-plugin are in
 `compiler-plugin/README.md`.
 - Instructions on how to build the runtime are in `runtime/README.md`.

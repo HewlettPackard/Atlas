@@ -76,7 +76,9 @@ public:
     void *callocMem(size_t nmemb, size_t sz, region_id_t) const;
     void *reallocMem(void*, size_t, region_id_t) const;
     void  freeMem(void *ptr, bool should_log = true) const;
-
+    void  deleteMem(void *ptr, bool should_log = true) const;
+    void freeMemImpl(region_id_t rgn_id, void *ptr, bool should_log) const;
+    
     void *allocMemWithoutLogging(size_t sz, region_id_t rid) const;
     void *allocMemCacheLineAligned(
         size_t sz, region_id_t rid, bool should_log) const;

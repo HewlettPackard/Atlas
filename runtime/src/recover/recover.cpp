@@ -147,6 +147,7 @@ void R_Finalize(const char *s)
 
 LogStructure *GetLogStructureHeader()
 {
+    // use atomics
     LogStructure **lsh_p =
         (LogStructure**)NVM_GetRegionRoot(
             Atlas::LogMgr::getInstance().getRegionId());

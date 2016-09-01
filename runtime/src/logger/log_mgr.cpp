@@ -85,6 +85,8 @@ void LogMgr::init()
         PRegionMgr::getInstance().allocMemWithoutLogging(
             sizeof(std::atomic<LogStructure*>), RegionId_));
     assert(LogStructureHeaderPtr_);
+    new (LogStructureHeaderPtr_) std::atomic<LogStructure*>;
+    
     (*LogStructureHeaderPtr_).store(0, std::memory_order_release);
     NVM_FLUSH(LogStructureHeaderPtr_);
 
