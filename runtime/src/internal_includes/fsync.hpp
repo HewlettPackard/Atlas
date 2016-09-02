@@ -59,17 +59,14 @@ static int fsync_paranoid(const char *name) {
     return 0;
 }
 
-static int fsync_parent(const char *name) 
+static int fsync_dir(const char *name) 
 {
-    char rp[1+PATH_MAX], *file = (char*) malloc(sizeof(char)*(strlen(name)+1));
+    char *file = (char*) malloc(sizeof(char)*(strlen(name)+1));
     strcpy(file, name);
-    FP(stderr, "fsync parent '%s'\n", file);
-    if (NULL == realpath(file, rp)) BAIL("realpath failed");
-    trim_rightmost_path_component(rp);
-    assert(*rp && "Parent directory is null");
-    FP(stderr, "    fsync-ing '%s'\n", rp);
+    trim_rightmost_path_component(file);
+    FP(stderr, "    fsync-ing '%s'\n", file);
     int fd;
-    if (-1 == (fd = open(rp, O_RDONLY)))       BAIL("open failed");
+    if (-1 == (fd = open(file, O_RDONLY)))       BAIL("open failed");
     if (-1 == fsync(fd))                       BAIL("fsync failed");
     if (-1 == close(fd))                       BAIL("close failed");
     free(file);

@@ -297,7 +297,9 @@ void PRegionMgr::deletePRegion(const char *name)
     char *s = NVM_GetFullyQualifiedRegionName(name);
     unlink(s);
 #ifdef _NVDIMM_PROLIANT
-    fsync_parent(s);
+    char *parent = strdup(s);
+    fsync_dir(parent);
+    free(parent);
 #endif    
     free(s);
 
@@ -342,7 +344,9 @@ void PRegionMgr::deleteForcefullyPRegion(PRegion *preg)
     char *s = NVM_GetFullyQualifiedRegionName(preg->get_name());
     unlink(s);
 #ifdef _NVDIMM_PROLIANT
-    fsync_parent(s);
+    char *parent = strdup(s);
+    fsync_dir(parent);
+    free(parent);
 #endif    
     free(s);
 }
