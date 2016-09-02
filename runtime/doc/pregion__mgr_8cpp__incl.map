@@ -1,7 +1,7 @@
 <map id="src/pregion_mgr/pregion_mgr.cpp" name="src/pregion_mgr/pregion_mgr.cpp">
-<area shape="rect" id="node15" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="928,169,1045,196"/>
-<area shape="rect" id="node27" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1598,95,1690,121"/>
-<area shape="rect" id="node36" href="$util_8hpp.html" title="util.hpp" alt="" coords="2245,244,2309,271"/>
+<area shape="rect" id="node15" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="926,169,1045,196"/>
+<area shape="rect" id="node27" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1597,95,1691,121"/>
+<area shape="rect" id="node36" href="$util_8hpp.html" title="util.hpp" alt="" coords="2248,244,2312,271"/>
 <area shape="rect" id="node39" href="$fail_8hpp.html" title="fail.hpp" alt="" coords="163,244,227,271"/>
 <area shape="rect" id="node18" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="1144,393,1283,420"/>
 <area shape="rect" id="node19" href="$pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="1057,244,1199,271"/>
@@ -10,11 +10,11 @@
 <area shape="rect" id="node24" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="488,319,587,345"/>
 <area shape="rect" id="node25" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="955,319,1047,345"/>
 <area shape="rect" id="node26" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="611,319,727,345"/>
-<area shape="rect" id="node29" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="2047,319,2161,345"/>
-<area shape="rect" id="node30" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="1947,244,2069,271"/>
-<area shape="rect" id="node31" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="1931,169,2069,196"/>
+<area shape="rect" id="node29" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="2046,319,2159,345"/>
+<area shape="rect" id="node30" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="1945,244,2068,271"/>
+<area shape="rect" id="node31" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="1933,169,2072,196"/>
 <area shape="rect" id="node32" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="1354,169,1521,196"/>
-<area shape="rect" id="node33" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1728,169,1856,196"/>
+<area shape="rect" id="node33" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1729,169,1858,196"/>
 <area shape="rect" id="node34" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="1545,169,1653,196"/>
 <area shape="rect" id="node35" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="1374,319,1450,345"/>
 </map>

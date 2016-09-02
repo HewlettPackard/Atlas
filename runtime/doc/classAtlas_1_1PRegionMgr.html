@@ -132,6 +132,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7f529e2f0ab4296d3a27de23bda98cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae47fd31603b23a63818be281f1a19973"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtlas_1_1PRegionMgr.html#ae47fd31603b23a63818be281f1a19973">freeMem</a> (void *ptr, bool should_log=true) const </td></tr>
 <tr class="separator:ae47fd31603b23a63818be281f1a19973"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0804202673dbc48797cd9da51d18c9e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtlas_1_1PRegionMgr.html#a0804202673dbc48797cd9da51d18c9e6">deleteMem</a> (void *ptr, bool should_log=true) const </td></tr>
+<tr class="separator:a0804202673dbc48797cd9da51d18c9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31630cf54226998f0de04b9fb9be25b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtlas_1_1PRegionMgr.html#ad31630cf54226998f0de04b9fb9be25b">freeMemImpl</a> (<a class="el" href="namespaceAtlas.html#ab456827ead7100e86f8a36e0da37b313">region_id_t</a> <a class="el" href="focdelete_8c.html#acb9eec80d2525247fec2a9fd59d1a8ff">rgn_id</a>, void *ptr, bool should_log) const </td></tr>
+<tr class="separator:ad31630cf54226998f0de04b9fb9be25b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a403f4a78682e435a5157956348eeeac6"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtlas_1_1PRegionMgr.html#a403f4a78682e435a5157956348eeeac6">allocMemWithoutLogging</a> (size_t sz, <a class="el" href="namespaceAtlas.html#ab456827ead7100e86f8a36e0da37b313">region_id_t</a> rid) const </td></tr>
 <tr class="separator:a403f4a78682e435a5157956348eeeac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03dcd52654d6ae5f4a00862d3a220ade"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtlas_1_1PRegionMgr.html#a03dcd52654d6ae5f4a00862d3a220ade">allocMemCacheLineAligned</a> (size_t sz, <a class="el" href="namespaceAtlas.html#ab456827ead7100e86f8a36e0da37b313">region_id_t</a> rid, bool should_log) const </td></tr>
@@ -466,6 +470,33 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0804202673dbc48797cd9da51d18c9e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Atlas::PRegionMgr::deleteMem </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>should_log</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Entry point for deleting a persistent location </p>
+
+</div>
+</div>
 <a class="anchor" id="a15fba6147c9199e5fdd224067c850d98"></a>
 <div class="memitem">
 <div class="memproto">
@@ -615,6 +646,38 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Entry point for freeing a persistent location </p>
+
+</div>
+</div>
+<a class="anchor" id="ad31630cf54226998f0de04b9fb9be25b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Atlas::PRegionMgr::freeMemImpl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceAtlas.html#ab456827ead7100e86f8a36e0da37b313">region_id_t</a>&#160;</td>
+          <td class="paramname"><em>rgn_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>should_log</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

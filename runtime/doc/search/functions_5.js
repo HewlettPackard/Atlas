@@ -16,5 +16,6 @@ var searchData=
   ['flushnode',['flushNode',['../sll__ll_8cpp.html#aae42a57b02cb0c1ae62419b1146d0acd',1,'flushNode(Node *node):&#160;sll_ll.cpp'],['../sll__mt__ll_8cpp.html#aae42a57b02cb0c1ae62419b1146d0acd',1,'flushNode(Node *node):&#160;sll_mt_ll.cpp']]],
   ['flushrecoverylogpointer',['flushRecoveryLogPointer',['../classAtlas_1_1LogMgr.html#add9809ade4c9d929bf6a50a8fa698fc0',1,'Atlas::LogMgr']]],
   ['freemem',['freeMem',['../classAtlas_1_1PArena.html#a033f3ed4ecb2d349dde56d2e66aab9ac',1,'Atlas::PArena::freeMem()'],['../classAtlas_1_1PRegion.html#af246e03f71bffbb4eb4740cc189fc762',1,'Atlas::PRegion::freeMem()'],['../classAtlas_1_1PRegionMgr.html#ae47fd31603b23a63818be281f1a19973',1,'Atlas::PRegionMgr::freeMem()']]],
+  ['freememimpl',['freeMemImpl',['../classAtlas_1_1PRegionMgr.html#ad31630cf54226998f0de04b9fb9be25b',1,'Atlas::PRegionMgr']]],
   ['fsync_5fparanoid',['fsync_paranoid',['../fsync_8hpp.html#a86c72a044a6b9d101a5d6cb21eed680d',1,'fsync.hpp']]]
 ];

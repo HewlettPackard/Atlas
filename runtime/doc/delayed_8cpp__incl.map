@@ -1,13 +1,13 @@
 <map id="src/cache_flush/delayed.cpp" name="src/cache_flush/delayed.cpp">
-<area shape="rect" id="node2" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1100,80,1192,107"/>
+<area shape="rect" id="node2" href="$log__mgr_8hpp.html" title="log_mgr.hpp" alt="" coords="1099,80,1193,107"/>
 <area shape="rect" id="node8" href="$atlas__api_8h.html" title="atlas_api.h" alt="" coords="218,379,303,405"/>
 <area shape="rect" id="node10" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="327,379,466,405"/>
-<area shape="rect" id="node11" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="733,155,850,181"/>
+<area shape="rect" id="node11" href="$pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="732,155,851,181"/>
 <area shape="rect" id="node23" href="$log__configs_8hpp.html" title="log_configs.hpp" alt="" coords="1159,304,1272,331"/>
 <area shape="rect" id="node24" href="$log__structure_8hpp.html" title="log_structure.hpp" alt="" coords="1158,229,1281,256"/>
 <area shape="rect" id="node25" href="$happens__before_8hpp.html" title="happens_before.hpp" alt="" coords="1209,155,1347,181"/>
 <area shape="rect" id="node26" href="$cache__flush__configs_8hpp.html" title="cache_flush_configs.hpp" alt="" coords="1504,155,1671,181"/>
-<area shape="rect" id="node27" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1607,229,1735,256"/>
+<area shape="rect" id="node27" href="$circular__buffer_8hpp.html" title="circular_buffer.hpp" alt="" coords="1605,229,1735,256"/>
 <area shape="rect" id="node28" href="$log__elision_8hpp.html" title="log_elision.hpp" alt="" coords="1372,155,1480,181"/>
 <area shape="rect" id="node29" href="$stats_8hpp.html" title="stats.hpp" alt="" coords="956,304,1032,331"/>
 <area shape="rect" id="node30" href="$util_8hpp.html" title="util.hpp" alt="" coords="1759,229,1823,256"/>

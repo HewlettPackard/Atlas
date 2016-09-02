@@ -111,6 +111,7 @@ $(document).ready(function(){initNavTree('pregion__mgr__api_8cpp.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="atlas__alloc_8h_source.html">atlas_alloc.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="atlas__alloc__cpp_8hpp_source.html">atlas_alloc_cpp.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="pregion__mgr_8hpp_source.html">pregion_mgr.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for pregion_mgr_api.cpp:</div>
@@ -118,14 +119,15 @@ Include dependency graph for pregion_mgr_api.cpp:</div>
 <div class="center"><img src="pregion__mgr__api_8cpp__incl.png" border="0" usemap="#src_2pregion__mgr_2pregion__mgr__api_8cpp" alt=""/></div>
 <map name="src_2pregion__mgr_2pregion__mgr__api_8cpp" id="src_2pregion__mgr_2pregion__mgr__api_8cpp">
 <area shape="rect" id="node2" href="atlas__alloc_8h.html" title="atlas_alloc.h" alt="" coords="5,319,100,345"/>
-<area shape="rect" id="node6" href="pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="698,95,815,121"/>
-<area shape="rect" id="node13" href="pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="786,319,925,345"/>
-<area shape="rect" id="node14" href="pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="685,169,828,196"/>
-<area shape="rect" id="node16" href="pregion_8hpp.html" title="pregion.hpp" alt="" coords="379,169,468,196"/>
-<area shape="rect" id="node18" href="atlas__api_8h.html" title="atlas_api.h" alt="" coords="409,319,494,345"/>
-<area shape="rect" id="node19" href="internal__api_8h.html" title="internal_api.h" alt="" coords="242,244,341,271"/>
-<area shape="rect" id="node20" href="pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="557,244,649,271"/>
-<area shape="rect" id="node22" href="pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="365,244,481,271"/>
+<area shape="rect" id="node6" href="atlas__alloc__cpp_8hpp.html" title="atlas_alloc_cpp.hpp" alt="" coords="840,95,977,121"/>
+<area shape="rect" id="node7" href="pregion__mgr_8hpp.html" title="pregion_mgr.hpp" alt="" coords="697,95,816,121"/>
+<area shape="rect" id="node14" href="pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="786,319,925,345"/>
+<area shape="rect" id="node15" href="pregion__mgr__util_8hpp.html" title="pregion_mgr_util.hpp" alt="" coords="685,169,828,196"/>
+<area shape="rect" id="node17" href="pregion_8hpp.html" title="pregion.hpp" alt="" coords="379,169,468,196"/>
+<area shape="rect" id="node19" href="atlas__api_8h.html" title="atlas_api.h" alt="" coords="409,319,494,345"/>
+<area shape="rect" id="node20" href="internal__api_8h.html" title="internal_api.h" alt="" coords="242,244,341,271"/>
+<area shape="rect" id="node21" href="pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="557,244,649,271"/>
+<area shape="rect" id="node23" href="pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="365,244,481,271"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -164,6 +166,8 @@ Functions</h2></td></tr>
 <tr class="memitem:aa38accce7e02425b94bdd21fcc9459f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#aa38accce7e02425b94bdd21fcc9459f9">nvm_free</a> (void *ptr)</td></tr>
 <tr class="memdesc:aa38accce7e02425b94bdd21fcc9459f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocation interface for persistent data.  <a href="#aa38accce7e02425b94bdd21fcc9459f9">More...</a><br /></td></tr>
 <tr class="separator:aa38accce7e02425b94bdd21fcc9459f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28aa123fdfcddf1d450ecba95d5a1c5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#a28aa123fdfcddf1d450ecba95d5a1c5d">nvm_delete</a> (void *ptr)</td></tr>
+<tr class="separator:a28aa123fdfcddf1d450ecba95d5a1c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64c4640294c93a9c3e205bf2ca575a91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#a64c4640294c93a9c3e205bf2ca575a91">NVM_IsInOpenPR</a> (void *addr, size_t sz)</td></tr>
 <tr class="separator:a64c4640294c93a9c3e205bf2ca575a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff92ce8cbc07ee4c3dfb3b536a8d2b55"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#aff92ce8cbc07ee4c3dfb3b536a8d2b55">isOnDifferentCacheLine</a> (void *p1, void *p2)</td></tr>
@@ -172,6 +176,18 @@ Functions</h2></td></tr>
 <tr class="memitem:ade061701d823b2f58bc3bf3ceaae04fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#ade061701d823b2f58bc3bf3ceaae04fa">isCacheLineAligned</a> (void *p)</td></tr>
 <tr class="memdesc:ade061701d823b2f58bc3bf3ceaae04fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a memory location is aligned to a cache line.  <a href="#ade061701d823b2f58bc3bf3ceaae04fa">More...</a><br /></td></tr>
 <tr class="separator:ade061701d823b2f58bc3bf3ceaae04fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed6724e1078ed70514f1f7e458814bc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#aed6724e1078ed70514f1f7e458814bc6">NVM_IsInRegion</a> (void *ptr, size_t sz)</td></tr>
+<tr class="memdesc:aed6724e1078ed70514f1f7e458814bc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a memory location is within a region.  <a href="#aed6724e1078ed70514f1f7e458814bc6">More...</a><br /></td></tr>
+<tr class="separator:aed6724e1078ed70514f1f7e458814bc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d6bd8599345af8c09610cb9efbcb8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classAtlas_1_1PRegion.html">PRegion</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#ac1d6bd8599345af8c09610cb9efbcb8f">NVM_GetRegion</a> (uint32_t rid)</td></tr>
+<tr class="memdesc:ac1d6bd8599345af8c09610cb9efbcb8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a handle to a persistent region.  <a href="#ac1d6bd8599345af8c09610cb9efbcb8f">More...</a><br /></td></tr>
+<tr class="separator:ac1d6bd8599345af8c09610cb9efbcb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049435b44f803e4ad20ec957bccfa5f5"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#a049435b44f803e4ad20ec957bccfa5f5">operator new</a> (size_t sz, <a class="el" href="classAtlas_1_1PRegion.html">Atlas::PRegion</a> *rgn) noexcept</td></tr>
+<tr class="memdesc:a049435b44f803e4ad20ec957bccfa5f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Object allocation for C++.  <a href="#a049435b44f803e4ad20ec957bccfa5f5">More...</a><br /></td></tr>
+<tr class="separator:a049435b44f803e4ad20ec957bccfa5f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b9c42585515f88d749ebb4f87681c5d"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pregion__mgr__api_8cpp.html#a7b9c42585515f88d749ebb4f87681c5d">operator new[]</a> (size_t sz, <a class="el" href="classAtlas_1_1PRegion.html">Atlas::PRegion</a> *rgn) noexcept</td></tr>
+<tr class="memdesc:a7b9c42585515f88d749ebb4f87681c5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array form allocation for C++, type must have explicit destructor.  <a href="#a7b9c42585515f88d749ebb4f87681c5d">More...</a><br /></td></tr>
+<tr class="separator:a7b9c42585515f88d749ebb4f87681c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ade061701d823b2f58bc3bf3ceaae04fa"></a>
@@ -377,6 +393,22 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a28aa123fdfcddf1d450ecba95d5a1c5d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nvm_delete </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a8046db8a20fa43ba3dabe6c40842024c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -508,6 +540,32 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac1d6bd8599345af8c09610cb9efbcb8f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classAtlas_1_1PRegion.html">PRegion</a>* NVM_GetRegion </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>rid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get a handle to a persistent region. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rid</td><td>Region identifier </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to the corresponding persistent region</dd></dl>
+<p>Currently, this interface is to be used by a client only for the placement new operations </p>
+
+</div>
+</div>
 <a class="anchor" id="a4ce292e947bc31b2da5140266451059a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -558,6 +616,42 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Is the following address with associated size within an open persistent region? </p>
+
+</div>
+</div>
+<a class="anchor" id="aed6724e1078ed70514f1f7e458814bc6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NVM_IsInRegion </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determines if a memory location is within a region. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>Queried address </td></tr>
+    <tr><td class="paramname">sz</td><td>Size of the location in bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if within the region, otherwise 0 </dd></dl>
 
 </div>
 </div>
@@ -636,6 +730,96 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a049435b44f803e4ad20ec957bccfa5f5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* operator new </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>sz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classAtlas_1_1PRegion.html">Atlas::PRegion</a> *&#160;</td>
+          <td class="paramname"><em>rgn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Object allocation for C++. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sz</td><td>Allocation size </td></tr>
+    <tr><td class="paramname">rgn</td><td>Pointer to the region to serve the allocation from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to memory allocated</dd></dl>
+<p>This interface overloads the C++ placement new operator. The corresponding delete operation is NVM_Destroy. </p>
+
+</div>
+</div>
+<a class="anchor" id="a7b9c42585515f88d749ebb4f87681c5d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* operator new[] </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>sz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classAtlas_1_1PRegion.html">Atlas::PRegion</a> *&#160;</td>
+          <td class="paramname"><em>rgn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Array form allocation for C++, type must have explicit destructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sz</td><td>Allocation size </td></tr>
+    <tr><td class="paramname">rgn</td><td>Pointer to the region to serve the allocation from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to memory allocated</dd></dl>
+<p>This interface overloads the array form C++ placement new operator. The type of the array elements must have an explicit destructor. The corresponding delete operation is NVM_Destroy_Array. </p>
 
 </div>
 </div>

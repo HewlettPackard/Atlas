@@ -6,12 +6,17 @@ var pregion__mgr__api_8cpp =
     [ "nvm_calloc", "pregion__mgr__api_8cpp.html#a385ab280ca5acf9422d9ca0dfb281883", null ],
     [ "NVM_CloseRegion", "pregion__mgr__api_8cpp.html#ab2a7d54a9cac9e274ad3c49b452a187c", null ],
     [ "NVM_CreateRegion", "pregion__mgr__api_8cpp.html#ac4e86fc1cc4b8141b990627df6eeaf68", null ],
+    [ "nvm_delete", "pregion__mgr__api_8cpp.html#a28aa123fdfcddf1d450ecba95d5a1c5d", null ],
     [ "NVM_DeleteRegion", "pregion__mgr__api_8cpp.html#a8046db8a20fa43ba3dabe6c40842024c", null ],
     [ "NVM_FindOrCreateRegion", "pregion__mgr__api_8cpp.html#aefba19b4d9636e1ef78ae8e85b54883c", null ],
     [ "NVM_FindRegion", "pregion__mgr__api_8cpp.html#a5f92aa79e4f6583db69ce7314fbacdd3", null ],
     [ "nvm_free", "pregion__mgr__api_8cpp.html#aa38accce7e02425b94bdd21fcc9459f9", null ],
+    [ "NVM_GetRegion", "pregion__mgr__api_8cpp.html#ac1d6bd8599345af8c09610cb9efbcb8f", null ],
     [ "NVM_GetRegionRoot", "pregion__mgr__api_8cpp.html#a4ce292e947bc31b2da5140266451059a", null ],
     [ "NVM_IsInOpenPR", "pregion__mgr__api_8cpp.html#a64c4640294c93a9c3e205bf2ca575a91", null ],
+    [ "NVM_IsInRegion", "pregion__mgr__api_8cpp.html#aed6724e1078ed70514f1f7e458814bc6", null ],
     [ "nvm_realloc", "pregion__mgr__api_8cpp.html#ae9fa3df11470580d1afde4e51322c362", null ],
-    [ "NVM_SetRegionRoot", "pregion__mgr__api_8cpp.html#a26d2b2d7249490fc2dd3f0ce5c6ab390", null ]
+    [ "NVM_SetRegionRoot", "pregion__mgr__api_8cpp.html#a26d2b2d7249490fc2dd3f0ce5c6ab390", null ],
+    [ "operator new", "pregion__mgr__api_8cpp.html#a049435b44f803e4ad20ec957bccfa5f5", null ],
+    [ "operator new[]", "pregion__mgr__api_8cpp.html#a7b9c42585515f88d749ebb4f87681c5d", null ]
 ];

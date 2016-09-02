@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "Atlas", "namespaceAtlas.html", "namespaceAtlas" ],
+    [ "A", "structA.html", "structA" ],
     [ "AlarmClockInfo", "structAlarmClockInfo.html", "structAlarmClockInfo" ],
     [ "CmpAddrSizePair", "classCmpAddrSizePair.html", "classCmpAddrSizePair" ],
     [ "CmpUInt64", "classCmpUInt64.html", "classCmpUInt64" ],

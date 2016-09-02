@@ -11,6 +11,7 @@ var atlas__alloc_8h =
     [ "NVM_FindRegion", "atlas__alloc_8h.html#a5f92aa79e4f6583db69ce7314fbacdd3", null ],
     [ "nvm_free", "atlas__alloc_8h.html#aa38accce7e02425b94bdd21fcc9459f9", null ],
     [ "NVM_GetRegionRoot", "atlas__alloc_8h.html#a4ce292e947bc31b2da5140266451059a", null ],
+    [ "NVM_IsInRegion", "atlas__alloc_8h.html#aed6724e1078ed70514f1f7e458814bc6", null ],
     [ "nvm_realloc", "atlas__alloc_8h.html#ae9fa3df11470580d1afde4e51322c362", null ],
     [ "NVM_SetRegionRoot", "atlas__alloc_8h.html#afc283e59c4faa236e38845560076b627", null ]
 ];

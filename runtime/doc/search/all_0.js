@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['a',['A',['../structA.html',1,'A'],['../structA.html#a4142862ec27f2f3d8deb026d51a5c5a0',1,'A::A()']]],
   ['ac_5flock',['AC_LOCK',['../alarm__clock_8c.html#a8225f1583ca7535a97f61b3db1ae82bd',1,'AC_LOCK():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a8225f1583ca7535a97f61b3db1ae82bd',1,'AC_LOCK():&#160;alarm_clock_nvm.c']]],
   ['ac_5ftable_5fentry',['AC_TABLE_ENTRY',['../alarm__clock_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca',1,'AC_TABLE_ENTRY():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a5f0fca11f7a12dfb1b65670eda9350ca',1,'AC_TABLE_ENTRY():&#160;alarm_clock_nvm.c']]],
   ['ac_5ftable_5fmask',['AC_TABLE_MASK',['../alarm__clock_8c.html#a91ac18e70d80636729f60f9eaf4a0958',1,'AC_TABLE_MASK():&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a91ac18e70d80636729f60f9eaf4a0958',1,'AC_TABLE_MASK():&#160;alarm_clock_nvm.c']]],
@@ -9,7 +10,7 @@ var searchData=
   ['acquirestatslock',['acquireStatsLock',['../classAtlas_1_1LogMgr.html#a4664955168914d218337a086d79bb5b8',1,'Atlas::LogMgr']]],
   ['add',['add',['../region__test_8h.html#a018ed792aba977ea0d72ace767eb4f67',1,'region_test.h']]],
   ['add_5fcal',['add_cal',['../cow__array__list_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list.c'],['../cow__array__list__nvm_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list_nvm.c'],['../instrumented_2cow__array__list__nvm_8c.html#ac33f14f19ab1339b2f44daedcc024bb9',1,'add_cal(COW_AL *cal, int num):&#160;cow_array_list_nvm.c']]],
-  ['add_5fexecutable',['add_executable',['../src_2recover_2CMakeLists_8txt.html#a7aceb1a94f375e9cd981aa55ebc7322d',1,'add_executable(${t}&quot;${t}.cpp&quot;) target_link_libraries($:&#160;CMakeLists.txt'],['../tests_2consistency_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt'],['../tests_2region_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt']]],
+  ['add_5fexecutable',['add_executable',['../src_2recover_2CMakeLists_8txt.html#a7aceb1a94f375e9cd981aa55ebc7322d',1,'add_executable(${t}&quot;${t}.cpp&quot;) target_link_libraries($:&#160;CMakeLists.txt'],['../tests_2consistency_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt'],['../tests_2pmalloc_2CMakeLists_8txt.html#a3119c6f927d04da5ff3e00eb55d70aa1',1,'add_executable(${t}&quot;${t}.cpp&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt'],['../tests_2region_2CMakeLists_8txt.html#a66c97166503c9080995f8d845f414bec',1,'add_executable(${t}&quot;${t}.c&quot;) target_link_libraries(&quot;$:&#160;CMakeLists.txt']]],
   ['add_5for_5fupdate_5falarm',['add_or_update_alarm',['../alarm__clock_8c.html#a465bc1dee0d3dc8a106500af1fbc1542',1,'add_or_update_alarm(uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, const char *name):&#160;alarm_clock.c'],['../alarm__clock__nvm_8c.html#a6a6729faf130ad12404b899a4994cf55',1,'add_or_update_alarm(uint8_t hour, uint8_t min, uint8_t mode, uint8_t repeat_factor, char *name):&#160;alarm_clock_nvm.c']]],
   ['addentrytodeletedmap',['addEntryToDeletedMap',['../classAtlas_1_1Helper.html#ac153e3d2123e5a4228bc6096cff31fb2',1,'Atlas::Helper']]],
   ['addr',['Addr',['../structAtlas_1_1LogEntry.html#a1bcc5d9e4675495143d0a9808369a787',1,'Atlas::LogEntry']]],
@@ -39,5 +40,6 @@ var searchData=
   ['asyncmemopdataflush',['asyncMemOpDataFlush',['../classAtlas_1_1LogMgr.html#a05f9ae1d5cb0a8120f5d70dbde757e36',1,'Atlas::LogMgr']]],
   ['atlas',['Atlas',['../namespaceAtlas.html',1,'']]],
   ['atlas_5falloc_2eh',['atlas_alloc.h',['../atlas__alloc_8h.html',1,'']]],
+  ['atlas_5falloc_5fcpp_2ehpp',['atlas_alloc_cpp.hpp',['../atlas__alloc__cpp_8hpp.html',1,'']]],
   ['atlas_5fapi_2eh',['atlas_api.h',['../atlas__api_8h.html',1,'']]]
 ];

@@ -29,6 +29,7 @@ var searchData=
   ['fp',['FP',['../fsync_8hpp.html#a9c8092e004521f69fc5ef37db9061114',1,'fsync.hpp']]],
   ['freelist',['FreeList',['../namespaceAtlas.html#a7bd550d61b7477ada2529f8f9ae000d9',1,'Atlas']]],
   ['freemem',['freeMem',['../classAtlas_1_1PArena.html#a033f3ed4ecb2d349dde56d2e66aab9ac',1,'Atlas::PArena::freeMem()'],['../classAtlas_1_1PRegion.html#af246e03f71bffbb4eb4740cc189fc762',1,'Atlas::PRegion::freeMem()'],['../classAtlas_1_1PRegionMgr.html#ae47fd31603b23a63818be281f1a19973',1,'Atlas::PRegionMgr::freeMem()']]],
+  ['freememimpl',['freeMemImpl',['../classAtlas_1_1PRegionMgr.html#ad31630cf54226998f0de04b9fb9be25b',1,'Atlas::PRegionMgr']]],
   ['fsync_2ehpp',['fsync.hpp',['../fsync_8hpp.html',1,'']]],
   ['fsync_5fparanoid',['fsync_paranoid',['../fsync_8hpp.html#a86c72a044a6b9d101a5d6cb21eed680d',1,'fsync.hpp']]]
 ];

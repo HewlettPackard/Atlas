@@ -10,6 +10,7 @@ var searchData=
   ['deleteforcefullyallpregions',['deleteForcefullyAllPRegions',['../classAtlas_1_1PRegionMgr.html#a5633d903c29701cd9896c27d78b5b026',1,'Atlas::PRegionMgr']]],
   ['deleteforcefullypregion',['deleteForcefullyPRegion',['../classAtlas_1_1PRegionMgr.html#aa7af0b646de5cef3e6b3619addeddca8',1,'Atlas::PRegionMgr']]],
   ['deleteinstance',['deleteInstance',['../classAtlas_1_1CSMgr.html#ab6f883033664759fe8ea7c42433f7757',1,'Atlas::CSMgr::deleteInstance()'],['../classAtlas_1_1Helper.html#ad67263a5c20b7ab60c6cfc9219a91a1e',1,'Atlas::Helper::deleteInstance()'],['../classAtlas_1_1LogMgr.html#a8b1fb6c05fa53d57e4d74154606bd43d',1,'Atlas::LogMgr::deleteInstance()'],['../classAtlas_1_1PRegionMgr.html#a210cf4ae165f94514f5c9f2d6526dd65',1,'Atlas::PRegionMgr::deleteInstance()'],['../classAtlas_1_1Stats.html#a6ef578a16ff1db7690f911606288a986',1,'Atlas::Stats::deleteInstance()']]],
+  ['deletemem',['deleteMem',['../classAtlas_1_1PRegionMgr.html#a0804202673dbc48797cd9da51d18c9e6',1,'Atlas::PRegionMgr']]],
   ['deleteownerinfo',['deleteOwnerInfo',['../classAtlas_1_1LogMgr.html#a2afdc562167c9aa305f1adaa0cf85f1b',1,'Atlas::LogMgr']]],
   ['deletepregion',['deletePRegion',['../classAtlas_1_1PRegionMgr.html#a15fba6147c9199e5fdd224067c850d98',1,'Atlas::PRegionMgr']]],
   ['deliter',['DelIter',['../classAtlas_1_1Helper.html#acf118975fc3520057d6042dea359b821',1,'Atlas::Helper']]],

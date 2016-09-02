@@ -1,7 +1,8 @@
 <map id="src/pmalloc/pmalloc.cpp" name="src/pmalloc/pmalloc.cpp">
-<area shape="rect" id="node6" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="189,80,281,107"/>
-<area shape="rect" id="node14" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="384,80,500,107"/>
-<area shape="rect" id="node15" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="525,80,623,107"/>
-<area shape="rect" id="node10" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="379,155,518,181"/>
-<area shape="rect" id="node11" href="$atlas__api_8h.html" title="atlas_api.h" alt="" coords="542,155,627,181"/>
+<area shape="rect" id="node6" href="$pmalloc_8hpp.html" title="pmalloc.hpp" alt="" coords="227,80,319,107"/>
+<area shape="rect" id="node14" href="$pmalloc__util_8hpp.html" title="pmalloc_util.hpp" alt="" coords="472,80,588,107"/>
+<area shape="rect" id="node15" href="$internal__api_8h.html" title="internal_api.h" alt="" coords="613,80,711,107"/>
+<area shape="rect" id="node16" href="$atlas__alloc_8h.html" title="atlas_alloc.h" alt="" coords="720,155,815,181"/>
+<area shape="rect" id="node10" href="$pregion__configs_8hpp.html" title="pregion_configs.hpp" alt="" coords="557,155,695,181"/>
+<area shape="rect" id="node11" href="$atlas__api_8h.html" title="atlas_api.h" alt="" coords="179,155,265,181"/>
 </map>
