@@ -53,7 +53,7 @@ extern "C" {
 // Read timestamp (x86)
 static inline uint64_t atlas_rdtsc() {
     uint32_t lo, hi;
-    asm volatile ("rdtsc" : "=a" (lo), "=d" (hi));
+    __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
     return lo | ((uint64_t)hi << 32);
 }
 

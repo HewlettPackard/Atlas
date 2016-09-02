@@ -46,7 +46,7 @@ set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} README.md)
 
 set (ATLAS_INTERNAL_INCLUDES "src/internal_includes")
 set (ATLAS_INCLUDE_DIR "include")
-set (ATLAS_INCLUDE_FILES atlas_alloc.h atlas_api.h)
+set (ATLAS_INCLUDE_FILES atlas_alloc.h atlas_api.h atlas_alloc_cpp.hpp)
 prepend_paths (ATLAS_INCLUDE_FILES ${ATLAS_INCLUDE_DIR} ${ATLAS_INCLUDE_FILES})
 set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} ${ATLAS_INCLUDE_FILES})
 
@@ -72,6 +72,11 @@ set (ATLAS_REGION_DIR "${ATLAS_TESTS_DIR}/region")
 set (ATLAS_REGION_TESTS test_region)
 prepend_paths (ATLAS_REGION_TESTS ${ATLAS_REGION_DIR} ${ATLAS_REGION_TESTS})
 set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} ${ATLAS_REGION_TESTS})
+
+set (ATLAS_PMALLOC_DIR "${ATLAS_TESTS_DIR}/pmalloc")
+set (ATLAS_PMALLOC_TESTS test_pmalloc)
+prepend_paths (ATLAS_PMALLOC_TESTS ${ATLAS_PMALLOC_DIR} ${ATLAS_PMALLOC_TESTS})
+set (ATLAS_COPY_FILES ${ATLAS_COPY_FILES} ${ATLAS_PMALLOC_TESTS})
 
 #default to debug build if no build type specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -242,8 +247,12 @@ if (CONSISTENCY_FAIL)
     set (CONSISTENCY_FAIL_FLAG "-DCONSISTENCY_FAIL")
 endif ()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -std=c11 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Wextra -pedantic -Wno-unused-parameter -Winline ${ATLAS_SPECIFIC_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -Wextra -pedantic -Winline ${ATLAS_SPECIFIC_FLAGS}")
 
 #copy necessary files from the src dir to the build dir
 foreach (t ${ATLAS_COPY_FILES})

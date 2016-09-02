@@ -12,10 +12,17 @@
 # General Public License along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 #
-# tests CMakeLists.txt
+# pmalloc CMakeLists
 
-add_subdirectory (region)
-add_subdirectory (data_structures)
-add_subdirectory (consistency)
-add_subdirectory (pmalloc)
+set (EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/tests/pmalloc)
 
+set (ATLAS_PMALLOC_TGTS new_delete)
+
+foreach (t ${ATLAS_PMALLOC_TGTS})
+    add_executable (${t} "${t}.cpp")
+    target_link_libraries ("${t}" atlas pthread rt)
+endforeach ()
+
+foreach (t ${ATLAS_PMALLOC_TGTS})
+    set_target_properties(${t} PROPERTIES COMPILE_FLAGS "${NVM_INSTR_FLAGS}")
+endforeach ()

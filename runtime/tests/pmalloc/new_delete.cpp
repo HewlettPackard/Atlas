@@ -13,18 +13,35 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "region_test.h"
-#include <stdio.h>
+#include "atlas_alloc.h"
+#include "atlas_alloc_cpp.hpp"
+#include "atlas_api.h"
 
-uint32_t rgn_id;
+struct A
+{
+    A() {}
+    ~A() {}
+};
 
-int main() {
-    // WORK and ITERATIONS are macros defined in compilation
+int main()
+{
     NVM_Initialize();
-    rgn_id = NVM_FindRegion("finddelete", O_RDWR);
-    test(rgn_id);
-    NVM_DeleteRegion("finddelete");
-    NVM_Finalize();
+    uint32_t a_rgn_id = NVM_FindOrCreateRegion("A", O_RDWR, NULL);
 
-    return 0;
+    A *nvm_obj = new (NVM_GetRegion(a_rgn_id)) A;
+    A *transient_obj = new A;
+
+    A *nvm_arr = new (NVM_GetRegion(a_rgn_id)) A[20];
+    A *transient_arr = new A[10];
+    
+    NVM_Destroy(nvm_obj);
+    NVM_Destroy(transient_obj); // equivalent to delete transient_obj
+
+    NVM_Destroy_Array(nvm_arr);
+    NVM_Destroy_Array(transient_arr); // equivalent to delete [] transient_arr
+
+    NVM_CloseRegion(a_rgn_id);
+    NVM_Finalize();
+    
 }
+

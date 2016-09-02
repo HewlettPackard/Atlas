@@ -120,7 +120,6 @@ static StringRef StrNCatName("strncat");
 
 bool NvmInstrumenter::runOnFunction(Function &F)
 {
-    errs() << "Atlas instrumentation done on " << F.getName() << "\n";
 
     SmallVector<Instruction*, 8> Stores;
     SmallVector<Instruction*, 8> Acquires;
@@ -180,6 +179,8 @@ bool NvmInstrumenter::runOnFunction(Function &F)
     }
     Res |= performNvmInstrumentation(
         F, Stores, Acquires, Releases, MemCpys, MemMoves, MemSets, StrCpys, StrCats);
+    if ( Stores.size() || Acquires.size() || Releases.size() || MemCpys.size() || MemMoves.size() || MemSets.size() || StrCpys.size() || StrCats.size())
+        errs() << "Atlas instrumentation done on " << F.getName() << "\n";
     return Res;
 }
 
@@ -390,7 +391,6 @@ bool NvmInstrumenter::performNvmInstrumentation(
     if (StrCpys.size() || StrCats.size()) initializeStrLenFuncEntry(*F.getParent());
     if (StrCpys.size()) initializeStrCpyFuncEntry(*F.getParent());
     if (StrCats.size()) initializeStrCatFuncEntry(*F.getParent());
-
     if (getenv("USE_TABLE_FLUSH")) {
         if (Stores.size()) initializeAsyncDataFlushEntry(*F.getParent());
         if (MemCpys.size() || MemMoves.size() || MemSets.size() || StrCpys.size() || StrCats.size())

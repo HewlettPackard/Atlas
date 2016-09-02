@@ -120,7 +120,7 @@ with as few changes as possible.
 
 ## Organization
 
-- The APIs for this model are in `runtime/include`.
+- The APIs for this model are in `runtime/include`. [API doc here](http://hewlettpackard.github.io/Atlas/runtime/doc/include_2atlas__api_8h.html).
 - Instructions on how to build the compiler-plugin are in
 `compiler-plugin/README.md`.
 - Instructions on how to build the runtime are in `runtime/README.md`.
@@ -145,9 +145,13 @@ with as few changes as possible.
 
 For Ubuntu 16.04, these dependencies can be installed with:
 
-    sudo apt-get install llvm clang cmake libboost-all-dev
+    sudo apt-get install llvm clang cmake libboost-graph-dev
 
 * ruby (for certain test scripts), see **Installing Ruby** at [gorails](https://gorails.com/setup/ubuntu/16.04) for instructions.
+
+## Discuss
+Questions, feedback, comments are welcome on our public [mailing list](https://groups.google.com/forum/#!forum/atlas-discuss). Subscribe by using the Google Groups web interface or by sending an email with subject “subscribe” to atlas-discuss+subscribe [AT] googlegroups.com.
+
 
 ## Reference
 

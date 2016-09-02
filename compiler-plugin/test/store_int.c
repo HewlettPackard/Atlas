@@ -13,18 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "region_test.h"
-#include <stdio.h>
-
-uint32_t rgn_id;
-
-int main() {
-    // WORK and ITERATIONS are macros defined in compilation
-    NVM_Initialize();
-    rgn_id = NVM_FindRegion("finddelete", O_RDWR);
-    test(rgn_id);
-    NVM_DeleteRegion("finddelete");
-    NVM_Finalize();
-
-    return 0;
+void foo(int *mloc)
+{
+    *mloc = 1000;
 }
