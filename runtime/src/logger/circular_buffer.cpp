@@ -28,7 +28,7 @@ LogEntry *LogMgr::allocLogEntry()
     return (LogEntry *) malloc(sizeof(LogEntry));
 #elif defined(_LOG_WITH_NVM_ALLOC)
     return (LogEntry *) Atlas::PRegionMgr::getInstance().allocMemWithoutLogging(
-        sizeof(LogEntry), );
+        sizeof(LogEntry), RegionId_);
 #else
     LogEntry *le = getNewSlot<LogEntry>(RegionId_, &TL_CbLog_, &CbLogList_);
     assertOneCacheLine(le);

@@ -296,6 +296,9 @@ void PRegionMgr::deletePRegion(const char *name)
 
     char *s = NVM_GetFullyQualifiedRegionName(name);
     unlink(s);
+#ifdef _NVDIMM_PROLIANT
+    fsync_parent(s);
+#endif    
     free(s);
 
     releaseFLock();
@@ -338,6 +341,9 @@ void PRegionMgr::deleteForcefullyPRegion(PRegion *preg)
     preg->set_is_deleted(true);
     char *s = NVM_GetFullyQualifiedRegionName(preg->get_name());
     unlink(s);
+#ifdef _NVDIMM_PROLIANT
+    fsync_parent(s);
+#endif    
     free(s);
 }
 
@@ -543,39 +549,21 @@ int PRegionMgr::mapFile(
 #ifdef _FORCE_FAIL
     fail_program();
 #endif
-    int fd = open(name, does_exist ? flags : flags | O_CREAT | O_TRUNC,
-                  flags == O_RDONLY  ? S_IRUSR : (S_IRUSR | S_IWUSR));
+    int fd = open(
+        name, does_exist ? flags : flags |
+#ifdef _NVDIMM_PROLIANT
+        O_DIRECT |
+#endif        
+        O_CREAT,
+        flags == O_RDONLY  ? S_IRUSR : (S_IRUSR | S_IWUSR));
     if (fd == -1) {
         perror("open");
-        assert(fd != -1 && "To-be-mapped file not found!");
+        assert(fd != -1 && "Error opening to-be-mapped file!");
     }
 
     if (!does_exist) {
-        off_t offt = lseek(fd, kPRegionSize_-1, SEEK_SET);
-        if (offt == -1) {
-            perror("lseek");
-            assert(offt != -1 && "To-be-mapped file lseek error!");
-        }
-        ssize_t result = write(fd, "", 1);
-        if (result == -1) {
-            perror("write");
-            assert(result != -1 && "To-be-mapped file cannot be written!");
-        }
-//#ifdef _NVDIMM_PROLIANT
-        int allocate_status = posix_fallocate(fd, 0, kPRegionSize_);
-        
-//        fsync_paranoid(name);
-//#endif
-        close(fd);
-    }
-#ifdef _NVDIMM_PROLIANT
-    fd = open(name, flags | O_DIRECT);
-#else
-    fd = open(name, flags);
-#endif
-    if (fd == -1) {
-        perror("open");
-        assert(fd != -1 && "To-be-mapped file not found!");
+        int status = ftruncate(fd, kPRegionSize_);
+        assert(!status);
     }
 
     void *addr = mmap(base_addr, kPRegionSize_,
@@ -587,6 +575,22 @@ int PRegionMgr::mapFile(
     }
     assert(addr == base_addr && "mmap returned address is not as requested!");
 
+#ifdef _NVDIMM_PROLIANT
+    if (!does_exist) {
+        // Try to pre-allocate storage space
+        int allocate_status = posix_fallocate(fd, 0, kPRegionSize_);
+        assert(!allocate_status);
+
+        // At least on some kernels, posix_fallocate does not appear to
+        // be sufficient. Do a memset to force pre-allocation to make sure
+        // all filesystem metadata changes are made.
+        memset(addr, 0, kPRegionSize_);
+
+        // Force filesystem metadata changes to backing store
+        fsync_paranoid(name);
+    }
+#endif
+    
     return fd;
 }
 

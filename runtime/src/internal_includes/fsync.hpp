@@ -40,8 +40,8 @@ static void trim_rightmost_path_component(char *p) {
     *++s = '\0';
 }
 
-int fsync_paranoid(const char *name) {
-    char rp[1+PATH_MAX], *file = (char *) malloc(sizeof(char)*strlen(name)+1);
+static int fsync_paranoid(const char *name) {
+    char rp[1+PATH_MAX], *file = (char *) malloc(sizeof(char)*(strlen(name)+1));
     strcpy(file, name);
     FP(stderr, "fsync to root '%s'\n", file);
     if (NULL == realpath(file, rp))              BAIL("realpath failed");
@@ -55,6 +55,23 @@ int fsync_paranoid(const char *name) {
             trim_rightmost_path_component(rp);
         } while (*rp);
     FP(stderr, "         done\n");
+    free(file);
+    return 0;
+}
+
+static int fsync_parent(const char *name) 
+{
+    char rp[1+PATH_MAX], *file = (char*) malloc(sizeof(char)*(strlen(name)+1));
+    strcpy(file, name);
+    FP(stderr, "fsync parent '%s'\n", file);
+    if (NULL == realpath(file, rp)) BAIL("realpath failed");
+    trim_rightmost_path_component(rp);
+    assert(*rp && "Parent directory is null");
+    FP(stderr, "    fsync-ing '%s'\n", rp);
+    int fd;
+    if (-1 == (fd = open(rp, O_RDONLY)))       BAIL("open failed");
+    if (-1 == fsync(fd))                       BAIL("fsync failed");
+    if (-1 == close(fd))                       BAIL("close failed");
     free(file);
     return 0;
 }
