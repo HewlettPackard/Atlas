@@ -1,3 +1,18 @@
+/*
+ * (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details. You should have received a copy of the GNU Lesser
+ * General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -934,12 +949,6 @@ void *helper()
     global_flush_ptr = new SetOfInts;
 #endif
     
-// TODO Have the helper thread work in _small_ chunks. Given that an
-// iteration of the helper thread can be quite expensive, we want to
-// make sure that the helper thread can be joined as soon as the user
-// thread is done. An alternative is for the user thread to send a signal
-// to the helper thread.
-
     int iter_num = 0;
     bool is_parent_done = false;
     LogVersions log_v;
@@ -959,23 +968,7 @@ void *helper()
 
         LogStructure * lsp = 0;
 
-        // TODO May need a more elaborate producer-consumer implementation
-        // but the current solution appears to be reasonable. A motivation
-        // of the current solution is to avoid locking within the critical
-        // path of the user threads (locking happens only within
-        // NVM_Finalize but not within the regular execution paths). But
-        // this also means that there may be some lost signals
-        // allowing the helper thread to sleep when there is in fact
-        // some work to do. But the helper thread will eventually be
-        // woken up and the signal sent out in the finalization step
-        // will never be lost.
-
         pthread_mutex_lock(&helper_lock);
-        // We don't want to check this condition within a loop since we
-        // need to do some work. If a spurious wakeup happens and that
-        // should be rare, the helper thread may go through a round of
-        // analysis that may or may not result in wasted work. But that
-        // should not be a problem in the general case.
         if (!ALAR(all_done)) pthread_cond_wait(&helper_cond, &helper_lock);
         pthread_mutex_unlock(&helper_lock);
 
@@ -986,51 +979,6 @@ void *helper()
         // Can't assert since a spurious wakeup may have happened
         if (!lsp) continue;
 
-        // Generate a graph on the fly. This can be done in the user threads
-        // but that would slow down the application. Instead, let the helper
-        // thread build the graph. For that, the helper thread will have to
-        // traverse the undo log entries. Denote every TCS by a node with a
-        // nodeid. The log structure headers should probably also contain
-        // a thread id that can be used as a primary id of the nodes. Note
-        // that a mechanism is reqd for identifying the nodes that belong to
-        // a given thread. The latter is required so that we know how to
-        // re-attach the headers after pruning the log entries.
-
-        // Start from log structure header. Walk through the TCSes that are
-        // present for a given thread. For every TCS, create a TCS-node. Every
-        // TCS-node has two ids, a primary and a secondary one. The primary id
-        // is the one assigned by the graph builder. The secondary id is the
-        // logical thread id a given node belongs to. The primary id is unique
-        // across all TCS-nodes while the secondary id is not. The nodes are
-        // built only for complete TCSes, so no new outgoing edge is possible.
-        // But a new incoming edge is possible. But the question is whether we
-        // care about such a new incoming edge? It appears that we don't, since
-        // such an incoming edge will be from a TCS that is not currently under
-        // consideration by the helper thread. While traversing the undo logs,
-        // if an outgoing edge is encountered, check whether there is node-info
-        // for the target undo log. If yes, create a new edge if there isn't
-        // already one for this pair of TCS-nodes. If no, place the source
-        // undo log in a pending-list. Only release-type entry logs can have
-        // an incoming edge. So if a release-type entry log is encountered,
-        // add a mapping from lock_addr -> (primary id, secondary id) in
-        // the node-info data structure.
-
-        // Nothing in the individual LogStructure entries should be changed
-        // by any thread other than the helper (once they have been created).
-        // New entries may be added by other threads but they are at the head,
-        // so they won't be seen until the next round.
-
-        // For all complete TCSes, build a graph. As the helper thread gathers
-        // TCSes, more complete TCSes may be added to the log structure. Some
-        // of these new ones may be ignored but this is ok since these new
-        // TCSes are added after the ones considered in this phase. So edges
-        // may exist from the new TCSes to the considered TCSes but that will
-        // neither lead to corruption nor lead to incorrect consistency
-        // detection. This is under the assumption that versioning is
-        // performed for the log structure as outlined in the design document.
-
-        // BTW, this is a graph with happens-after edges. Happens-after needs
-        // to be defined.
         DirectedGraph dg;
         PendingList pl;
         NodeInfoMap nim;
@@ -1038,13 +986,6 @@ void *helper()
         Log2Bool rel_map;
         OcsMap ocs_map;
         
-        // TODO: it is unclear whether we need the stable bit
-
-        // TODO: we need to start from the oldest version around. This is
-        // because even if a TCS is marked deleted but has not been destroyed,
-        // there may be a reference to it, so we need to traverse those
-        // deleted TCSes as well. We need to do this extra work because
-        // without it, we do not know if a target is deleted or just absent.
 #ifdef _PROFILE_HT
         start_graph_build = atlas_rdtsc();
 #endif
@@ -1094,20 +1035,10 @@ void *helper()
                 prev_nid = nid;
                 do
                 {
-                    // TODO Currently, we are adding an edge here even if
-                    // the pointer is to a log entry in the same thread.
-                    // This should be changed in order to make the graph
-                    // smaller and simpler.
-
-
                     if (isAcquire(current_le) && current_le->ValueOrPtr_)
                     {
                         LogEntry *rel_le =
                             (LogEntry*)(current_le->ValueOrPtr_);
-                        // Note: the following call deletes the found entry
-                        // ValueOrPtr_ is currently not of atomic type. This
-                        // is still ok as long as there is a single helper
-                        // thread. Change it to atomic for parallel helper.
                         if (isDeletedByHelperThread(rel_le, current_le->Size_))
                             current_le->ValueOrPtr_ = 0;
                     }
@@ -1131,9 +1062,7 @@ void *helper()
                     {
                         AddToNodeInfoMap(
                             &nim, current_le, nid, sid, NT_avail);
-                        // TODO. Note that rel_map is cumulative and
-                        // hence may get really large. It needs to be
-                        // pruned at some point of time.
+
                         TrackLog(current_le, &rel_map);
                     }
                     if (current_le == current_ocs->Last_) break;
@@ -1163,8 +1092,6 @@ void *helper()
 #ifdef _PROFILE_HT
         start_graph_resolve = atlas_rdtsc();
 #endif        
-        // Now that all relevant TCSes have been processed, visit the pending
-        // list and add all possible edges
         ResolvePendingList(&pl, nim, &dg, log_v);
 
         UtilTrace4(helper_trace_file,
@@ -1178,12 +1105,8 @@ void *helper()
             break;
         }
         
-        // This denotes the vector of log entries that need modification
-        // when a version removal occurs
         LogEntryVec le_vec;
         
-        // TODO the collection of to_be_nullified acquires needs to happen
-        // here. Currently, it is too late.
         RemoveUnresolvedNodes(&dg, pl, &le_vec, &acq_map, &rel_map);
 
         if (ALAR(all_done))
@@ -1228,10 +1151,6 @@ void *helper()
 
     }while (!ALAR(all_done));
 
-    // We want to return as quickly as possible (even if that means that
-    // some memory is leaked) because the odds are that we are
-    // exiting and so it does not matter.
-//    DestroyOcses(&ocs_vec); // in case we broke out of the loop above
     Finalize_helper();
 
 #ifdef _PROFILE_HT
@@ -1245,13 +1164,6 @@ void *helper()
     fprintf(stderr, "[HELPER] Total log destroy cycles    = %ld\n",
             total_log_destroy_cycles);
 #endif    
-    // TODO
-    // Since the user threads are done, we should remove all the undo logs.
-    // The log structure header should be atomically changed so as to be
-    // marked for garbage collection. For this, we need a proper garbage
-    // collection story.
-    // TODO: Do we really need the above? At this point, we delete the
-    // logs persistent region.
 #ifdef NVM_STATS    
     fprintf(stderr, "[HELPER] Iteration count is %d\n", iter_num);
     fprintf(stderr, "[HELPER] ");
