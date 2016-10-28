@@ -32,7 +32,7 @@ should be preserved regardless of machine shutdowns or failures. By
 conforming to certain programming idioms and APIs, programmers can
 automatically obtain failure-resilience of persistent data. The 
 programming model with implementation details can be found in the
-[OOPSLA 2014 paper on Atlas](http://www.labs.hpe.com/people/dhruva_chakrabarti/atlas_oopsla2014.pdf).
+[OOPSLA 2014 paper on Atlas](http://dl.acm.org/citation.cfm?id=2660224).
 
 The current implementation supports
 POSIX threads but the implementation for C/C++11 threads should be similar.
@@ -159,7 +159,7 @@ Questions, feedback, comments are welcome on our public [mailing list](https://g
 ## Reference
 
 Dhruva R. Chakrabarti, Hans-J. Boehm, and Kumud Bhandari. 2014.
-[Atlas: leveraging locks for non-volatile memory consistency](http://www.labs.hpe.com/people/dhruva_chakrabarti/atlas_oopsla2014.pdf).
+[Atlas: leveraging locks for non-volatile memory consistency](http://dl.acm.org/citation.cfm?id=2660224).
 In _Proceedings of the 2014 ACM International Conference on Object Oriented
 Programming Systems Languages & Applications_ (OOPSLA '14). ACM, New
 York, NY, USA, 433-452.
