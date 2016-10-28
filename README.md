@@ -11,14 +11,13 @@
 [//]: # ( General Public License along with this program. If not, see          )
 [//]: # ( <http://www.gnu.org/licenses/>.                                      )
 
-
-# Atlas: Programming for Persistent Memory
-[![Build Status](https://travis-ci.org/HewlettPackard/Atlas.svg?branch=master)](https://travis-ci.org/HewlettPackard/Atlas)
-
-NOTE: This is an experimental branch for INGOT, a system for making assertions
+##NOTE:
+This is an experimental branch for INGOT, a system for making assertions
 about application-specific invariants, using the Atlas log. This implementation
 (runtime/src/ingot/*) is designed for integration with the Redis key-value
 store.
+
+# Atlas: Programming for Persistent Memory
 
 Data in persistent memory survives certain tolerated events such as
 process termination, OS reboots/crashes, and power
