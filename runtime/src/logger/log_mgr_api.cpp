@@ -19,6 +19,7 @@
 #include "log_mgr.hpp"
 
 #include "atlas_alloc.h"
+#include "atlas_log.h"
 
 // TODO: trylock is not handled. It is unclear how to handle it in the
 // general case.
@@ -79,6 +80,12 @@ void nvm_end_durable()
 {
     if (!Atlas::LogMgr::hasInstance()) return;
     Atlas::LogMgr::getInstance().logEndDurable();
+}
+
+void nvm_get_log(AtlasLogEntry** start, AtlasLogEntry** end)
+{
+    if(start) *start = reinterpret_cast<AtlasLogEntry*>(Atlas::LogMgr::getInstance().getFirstLogEntry());
+    if(end) *end = reinterpret_cast<AtlasLogEntry*>(Atlas::LogMgr::getInstance().getLastLogEntry());
 }
 
 // TODO: bit store support

@@ -26,6 +26,7 @@ thread_local uint32_t LogMgr::TL_LogCount_{0};
 thread_local CbLog<LogEntry> *LogMgr::TL_CbLog_{nullptr};
 thread_local uint64_t LogMgr::TL_GenNum_{0};
 thread_local LogEntry *LogMgr::TL_LastLogEntry_{nullptr};
+thread_local LogEntry *LogMgr::TL_FirstLogEntry_{nullptr};
 thread_local intptr_t LogMgr::TL_NumHeldLocks_{0};
 thread_local MapOfLockInfo *LogMgr::TL_UndoLocks_{nullptr};
 thread_local bool LogMgr::TL_IsFirstNonCSStmt_{true};
@@ -213,6 +214,7 @@ void LogMgr::logEndDurable()
 #ifdef _FORCE_FAIL
     fail_program();
 #endif
+
     LogEntry *le = createSectionLogEntry(NULL, LE_end_durable);
     assert(le);
     
@@ -221,6 +223,7 @@ void LogMgr::logEndDurable()
 
     publishLogEntry(le);
     TL_LastLogEntry_ = le;
+    TL_FirstLogEntry_ = nullptr;
 
     if (!TL_NumHeldLocks_) markEndFase(nullptr);
     signalHelper();

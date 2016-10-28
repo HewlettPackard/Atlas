@@ -114,6 +114,12 @@ void *NVM_GetRegionRoot(uint32_t rid);
 void NVM_SetRegionRoot(uint32_t rid, void *root);
 
 ///
+/// @brief Get the base address of an existing persistent region
+/// @param rid Region id
+/// @return The base address of the region
+void *NVM_GetRegionBaseAddr(uint32_t rid);
+
+///
 /// @brief Determines if a memory location is within a region
 /// @param ptr Queried address
 /// @param sz Size of the location in bytes

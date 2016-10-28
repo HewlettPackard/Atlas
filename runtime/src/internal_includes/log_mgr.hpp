@@ -82,6 +82,11 @@ public:
         return Instance_->IsInitialized_;
     }
 
+    // First LE in current transaction
+    LogEntry* getFirstLogEntry();
+    // Last LE in current transaction
+    LogEntry* getLastLogEntry();
+
     void setRegionId(region_id_t id) { RegionId_ = id; }
     region_id_t getRegionId() const { return RegionId_; }
 
@@ -246,6 +251,9 @@ private:
     // Log tracker pointing to the last log entry of this thread
     thread_local static LogEntry *TL_LastLogEntry_;
 
+    // Pointing to the first log entry *of this transaction*
+    thread_local static LogEntry *TL_FirstLogEntry_;
+
     // Count of locks held. A non-zero value indicates that execution is
     // within a Failure Atomic SEction (FASE). POSIX says that if an
     // unlock is attempted on an already-released lock, undefined
@@ -399,6 +407,16 @@ private:
 
 };
 
+inline LogEntry* LogMgr::getFirstLogEntry()
+{
+    return TL_FirstLogEntry_;
+}
+
+inline LogEntry* LogMgr::getLastLogEntry()
+{
+    return TL_LastLogEntry_;
+}
+
 inline void LogMgr::logAcquire(void *lock_address)
 {
     LogEntry *le = createSectionLogEntry(lock_address, LE_acquire);
@@ -427,6 +445,8 @@ inline void LogMgr::logBeginDurable()
 {
     LogEntry *le = createSectionLogEntry(NULL, LE_begin_durable);
     assert(le);
+    assert(!TL_FirstLogEntry_);
+    TL_FirstLogEntry_ = le;
 
     finishAcquire(NULL, le);
 }

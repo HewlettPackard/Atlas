@@ -71,6 +71,7 @@ void nvm_end_durable();
 ///
 int NVM_IsInOpenPR(void *addr, size_t sz /* in bytes */);
 
+uint32_t NVM_GetRegionForAddr(void * addr);
 ///
 /// Persistent sync of a range of addresses
 ///
@@ -169,7 +170,7 @@ static __inline void nvm_clflush(const void *p)
 
 // Used in conjunction with clflush.
 static __inline void full_fence() {
-    __asm__ __volatile__ ("mfence" ::: "memory");
+    __asm__ __volatile__ ("sfence" ::: "memory");
   }
 
 #endif

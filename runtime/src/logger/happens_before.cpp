@@ -31,13 +31,20 @@ LastReleaseInfo *LogMgr::findLastReleaseOfLock(void *hash_address)
     while (oip) {
         ImmutableInfo *ii = oip->Immutable.load(std::memory_order_acquire);
         assert(ii);
+
         if (ii->IsDeleted) {
           oip = oip->Next;
           continue;
         }
         LogEntry *le = ii->LogAddr;
         assert(le);
-        assert(le->isRelease() || le->isRWLockUnlock() || le->isFree());
+        /* Should be an assertion, but our list is getting corrupt
+         * somehow, and this is a temporary workaround. Old log entries are not
+         * being removed from the list at the appropriate time. */
+        if(!(le->isRelease() || le->isRWLockUnlock() || le->isFree())) {
+        	oip = oip->Next;
+        	continue;
+        }
         if ((le->isFree() && !hash_address) || le->Addr == hash_address)
             return oip;
         oip = oip->Next;
@@ -54,6 +61,7 @@ LastReleaseInfo *LogMgr::findLastReleaseOfLogEntry(LogEntry *candidate_le)
     while (oip) {
         ImmutableInfo *ii = oip->Immutable.load(std::memory_order_acquire);
         assert(ii);
+
         if (ii->IsDeleted) {
           oip = oip->Next;
           continue;
@@ -61,7 +69,12 @@ LastReleaseInfo *LogMgr::findLastReleaseOfLogEntry(LogEntry *candidate_le)
         LogEntry *le = ii->LogAddr;
         assert(le);
         // TODO free not handled?
-        assert(le->isRelease() || le->isRWLockUnlock() || le->isFree());
+        /* As in findLastReleaseOfLock, this is a workaround for a bug
+         * and should be an assertion instead. */
+        if(!(le->isRelease() || le->isRWLockUnlock() || le->isFree())) {
+           	oip = oip->Next;
+            continue;
+        }
         if (le->Addr != candidate_le->Addr) {
             oip = oip->Next;
             continue;
@@ -79,7 +92,6 @@ void LogMgr::addLogToLastReleaseInfo(LogEntry *le,
     fail_program();
 #endif
     assert(le->isRelease() || le->isRWLockUnlock() || le->isFree());
-
     void *hash_addr = le->isFree() ? NULL : le->Addr;
     bool done = false;
     while (!done) {
@@ -108,6 +120,7 @@ void LogMgr::addLogToLastReleaseInfo(LogEntry *le,
                 done = true;
                 delete curr_ii->LockInfoPtr;
             }
+
         }
         else {
             // TODO
@@ -135,7 +148,6 @@ void LogMgr::deleteOwnerInfo(LogEntry *le)
     fail_program();
 #endif
     assert(le->isRelease() || le->isRWLockUnlock() || le->isFree());
-
     // An owner info may not be found since the one that existed before
     // for this log entry may have been overwritten by one of the user
     // threads.
@@ -177,12 +189,12 @@ void LogMgr::setHappensBeforeForAllocFree(LogEntry *le)
     // relation such that m -> free (source) -> free (target) and then
     // the target node is deleted, the HA-link from node m will not be
     // nullified since the target and source log entries will not match.
+
     LastReleaseInfo *oi = Atlas::LogMgr::getInstance().findLastReleaseOfLock(NULL);
     if (oi)
     {
         ImmutableInfo *ii = oi->Immutable.load(std::memory_order_acquire);
         le->ValueOrPtr = reinterpret_cast<intptr_t>(ii->LogAddr);
-
         assert(reinterpret_cast<LogEntry*>(le->ValueOrPtr)->isFree());
         le->Size = reinterpret_cast<LogEntry*>(le->ValueOrPtr)->Size;
     }

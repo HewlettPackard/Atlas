@@ -86,7 +86,7 @@ LogEntry *LogMgr::createSectionLogEntry(void *lock_address, LogType le_type)
 
     LogEntry *le = allocLogEntry();
     assert(le);
-
+    
 #if defined(_USE_MOVNT)
     logNonTemporal(le, lock_address, 0, le_type);
 #else

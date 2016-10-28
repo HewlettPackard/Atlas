@@ -57,6 +57,18 @@ void NVM_SetRegionRoot(uint32_t rid, void *new_root)
     PRegionMgr::getInstance().setPRegionRoot(rid, new_root);
 }
 
+void *NVM_GetRegionBaseAddr(uint32_t rid)
+{
+	PRegion * reg = PRegionMgr::getInstance().getPRegion(rid);
+	if(!reg) return 0;
+	return reg->get_base_addr();
+}
+
+uint32_t NVM_GetRegionForAddr(void * addr) {
+    region_id_t rid = PRegionMgr::getInstance().getOpenPRegionId(addr,1);
+    return rid;
+}
+
 void *nvm_alloc(size_t sz, uint32_t rid)
 {
     bool does_need_cache_line_alignment = false;
