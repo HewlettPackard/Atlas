@@ -1,0 +1,949 @@
+diff --git a/deps/jemalloc/include/jemalloc/jemalloc_defs.h.in b/deps/jemalloc/include/jemalloc/jemalloc_defs.h.in
+index ab13c37..1887703 100644
+--- a/deps/jemalloc/include/jemalloc/jemalloc_defs.h.in
++++ b/deps/jemalloc/include/jemalloc/jemalloc_defs.h.in
+@@ -2,7 +2,7 @@
+ #undef JEMALLOC_HAVE_ATTR
+ 
+ /* Defined if alloc_size attribute is supported. */
+-#undef JEMALLOC_HAVE_ATTR_ALLOC_SIZE
++//#undef JEMALLOC_HAVE_ATTR_ALLOC_SIZE
+ 
+ /* Defined if format(gnu_printf, ...) attribute is supported. */
+ #undef JEMALLOC_HAVE_ATTR_FORMAT_GNU_PRINTF
+diff --git a/src/Makefile b/src/Makefile
+index 325402e..f5becb8 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -14,7 +14,7 @@
+ 
+ release_hdr := $(shell sh -c './mkreleasehdr.sh')
+ uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+-OPTIMIZATION?=-O2
++OPTIMIZATION=-O3
+ DEPENDENCY_TARGETS=hiredis linenoise lua
+ NODEPS:=clean distclean
+ 
+@@ -53,11 +53,12 @@ endif
+ 
+ # Override default settings if possible
+ -include .make-settings
+-
++MALLOC=jemalloc
++DEBUG=-g -ggdb
++OPT=-O3
+ FINAL_CFLAGS=$(STD) $(WARN) $(OPT) $(DEBUG) $(CFLAGS) $(REDIS_CFLAGS)
+ FINAL_LDFLAGS=$(LDFLAGS) $(REDIS_LDFLAGS) $(DEBUG)
+ FINAL_LIBS=-lm
+-DEBUG=-g -ggdb
+ 
+ ifeq ($(uname_S),SunOS)
+ 	# SunOS
+@@ -93,6 +94,14 @@ endif
+ # Include paths to dependencies
+ FINAL_CFLAGS+= -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src
+ 
++#ifeq ($(USE_ATLAS),yes)
++	FINAL_CFLAGS+= -I../../Atlas/runtime/include/
++	FINAL_CFLAGS+= -I../../judy-1.0.5/src/
++	FINAL_LDFLAGS+= -L../../Atlas/runtime/build/lib/
++	FINAL_LIBS+= -l:libJudy.a -latlas
++	ATLAS_CFLAGS= -Xclang -load -Xclang ../../Atlas/compiler-plugin/plugin_build/NvmInstrumenter.so
++#endif
++
+ ifeq ($(MALLOC),tcmalloc)
+ 	FINAL_CFLAGS+= -DUSE_TCMALLOC
+ 	FINAL_LIBS+= -ltcmalloc
+@@ -109,6 +118,8 @@ ifeq ($(MALLOC),jemalloc)
+ 	FINAL_LIBS+= ../deps/jemalloc/lib/libjemalloc.a
+ endif
+ 
++FINAL_LIBS+=-lstdc++
++
+ REDIS_CC=$(QUIET_CC)$(CC) $(FINAL_CFLAGS)
+ REDIS_LD=$(QUIET_LINK)$(CC) $(FINAL_LDFLAGS)
+ REDIS_INSTALL=$(QUIET_INSTALL)$(INSTALL)
+@@ -128,7 +139,7 @@ endif
+ 
+ REDIS_SERVER_NAME=redis-server
+ REDIS_SENTINEL_NAME=redis-sentinel
+-REDIS_SERVER_OBJ=adlist.o quicklist.o ae.o anet.o dict.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o crc16.o endianconv.o slowlog.o scripting.o bio.o rio.o rand.o memtest.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o
++REDIS_SERVER_OBJ=adlist.o quicklist.o ae.o anet.o dict.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o crc16.o endianconv.o slowlog.o scripting.o bio.o rio.o rand.o memtest.o crc64.o bitops.o sentinel.o notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o redis-check-rdb.o geo.o lazyfree.o module.o evict.o expire.o geohash.o geohash_helper.o persist.o invariant.o annotate.o
+ REDIS_CLI_NAME=redis-cli
+ REDIS_CLI_OBJ=anet.o adlist.o redis-cli.o zmalloc.o release.o anet.o ae.o crc64.o
+ REDIS_BENCHMARK_NAME=redis-benchmark
+@@ -179,6 +190,7 @@ ifneq ($(strip $(PREV_FINAL_LDFLAGS)), $(strip $(FINAL_LDFLAGS)))
+ .make-prerequisites: persist-settings
+ endif
+ 
++$(REDIS_SERVER_OBJ): FINAL_CFLAGS+= $(ATLAS_CFLAGS)
+ # redis-server
+ $(REDIS_SERVER_NAME): $(REDIS_SERVER_OBJ)
+ 	$(REDIS_LD) -o $@ $^ ../deps/hiredis/libhiredis.a ../deps/lua/src/liblua.a $(FINAL_LIBS)
+diff --git a/src/db.c b/src/db.c
+index d33c810..6e73dd1 100644
+--- a/src/db.c
++++ b/src/db.c
+@@ -30,6 +30,7 @@
+ #include "server.h"
+ #include "cluster.h"
+ #include "atomicvar.h"
++#include "persist.h"
+ 
+ #include <signal.h>
+ #include <ctype.h>
+@@ -158,7 +159,10 @@ robj *lookupKeyWriteOrReply(client *c, robj *key, robj *reply) {
+  *
+  * The program is aborted if the key already exists. */
+ void dbAdd(redisDb *db, robj *key, robj *val) {
+-    sds copy = sdsdup(key->ptr);
++    sds copy = sdsnewlenPM(key->ptr,
++                           sdslen(key->ptr),
++                           persistent_region(db->dict));
++    
+     int retval = dictAdd(db->dict, copy, val);
+ 
+     serverAssertWithInfo(NULL,key,retval == DICT_OK);
+diff --git a/src/dict.c b/src/dict.c
+index 887a0f6..4414678 100644
+--- a/src/dict.c
++++ b/src/dict.c
+@@ -46,6 +46,7 @@
+ #include "dict.h"
+ #include "zmalloc.h"
+ #include "redisassert.h"
++#include "persist.h"
+ 
+ /* Using dictEnableResize() / dictDisableResize() we make possible to
+  * enable/disable resizing of the hash table as needed. This is very important
+@@ -63,7 +64,7 @@ static unsigned int dict_force_resize_ratio = 5;
+ static int _dictExpandIfNeeded(dict *ht);
+ static unsigned long _dictNextPower(unsigned long size);
+ static int _dictKeyIndex(dict *ht, const void *key);
+-static int _dictInit(dict *ht, dictType *type, void *privDataPtr);
++static int _dictInit(dict *ht, dictType *type, void *privDataPtr, int persist);
+ 
+ /* -------------------------- hash functions -------------------------------- */
+ 
+@@ -170,13 +171,24 @@ dict *dictCreate(dictType *type,
+ {
+     dict *d = zmalloc(sizeof(*d));
+ 
+-    _dictInit(d,type,privDataPtr);
++    _dictInit(d,type,privDataPtr, 0);
++    return d;
++}
++
++/* Create a new persistent hash table */
++dict *dictCreatePM(dictType *type,
++        void *privDataPtr,
++		int regionID)
++{
++    dict *d = persistent_alloc(sizeof(*d), PT_dict, regionID);
++
++    _dictInit(d,type,privDataPtr, 1);
+     return d;
+ }
+ 
+ /* Initialize the hash table */
+ int _dictInit(dict *d, dictType *type,
+-        void *privDataPtr)
++        void *privDataPtr, int persist)
+ {
+     _dictReset(&d->ht[0]);
+     _dictReset(&d->ht[1]);
+@@ -184,6 +196,7 @@ int _dictInit(dict *d, dictType *type,
+     d->privdata = privDataPtr;
+     d->rehashidx = -1;
+     d->iterators = 0;
++    d->persist = persist;
+     return DICT_OK;
+ }
+ 
+@@ -217,18 +230,36 @@ int dictExpand(dict *d, unsigned long size)
+     /* Allocate the new hash table and initialize all pointers to NULL */
+     n.size = realsize;
+     n.sizemask = realsize-1;
+-    n.table = zcalloc(realsize*sizeof(dictEntry*));
++
++    if(d->persist) {
++        n.table = persistent_alloc(realsize*sizeof(dictEntry*),
++                                   PT_dictEntryPtr | PT_ARRAY,
++                                   persistent_region(d));
++        
++        memset(n.table, 0, realsize*sizeof(dictEntry*));
++    } else {
++    	n.table = zcalloc(realsize*sizeof(dictEntry*));
++    }
++
+     n.used = 0;
+ 
+     /* Is this the first initialization? If so it's not really a rehashing
+      * we just set the first hash table so that it can accept keys. */
+     if (d->ht[0].table == NULL) {
+         d->ht[0] = n;
++        if(d->persist) {
++            persistent_parent(n.table, &d->ht[0].table);
++        }
++        
+         return DICT_OK;
+     }
+ 
+     /* Prepare a second hash table for incremental rehashing */
+     d->ht[1] = n;
++    if(d->persist) {
++        persistent_parent(n.table, &d->ht[1].table);
++    }
++    
+     d->rehashidx = 0;
+     return DICT_OK;
+ }
+@@ -276,8 +307,14 @@ int dictRehash(dict *d, int n) {
+ 
+     /* Check if we already rehashed the whole table... */
+     if (d->ht[0].used == 0) {
+-        zfree(d->ht[0].table);
+-        d->ht[0] = d->ht[1];
++    	if(d->persist) {
++    	    persistent_free(d->ht[0].table);
++    	    d->ht[0] = d->ht[1];
++    	    persistent_parent(&d->ht[0].table, d->ht[1].table);
++    	} else {
++            zfree(d->ht[0].table);
++            d->ht[0] = d->ht[1];
++    	}
+         _dictReset(&d->ht[1]);
+         d->rehashidx = -1;
+         return 0;
+@@ -361,7 +398,14 @@ dictEntry *dictAddRaw(dict *d, void *key)
+      * system it is more likely that recently added entries are accessed
+      * more frequently. */
+     ht = dictIsRehashing(d) ? &d->ht[1] : &d->ht[0];
+-    entry = zmalloc(sizeof(*entry));
++
++    if(d->persist) {
++        entry = persistent_alloc(sizeof(*entry),
++                                 PT_dictEntry,
++                                 persistent_region(d));
++    } else {
++        entry = zmalloc(sizeof(*entry));
++    }
+     entry->next = ht->table[index];
+     ht->table[index] = entry;
+     ht->used++;
+@@ -434,7 +478,11 @@ static int dictGenericDelete(dict *d, const void *key, int nofree)
+                     dictFreeKey(d, he);
+                     dictFreeVal(d, he);
+                 }
+-                zfree(he);
++                if(d->persist) {
++                    persistent_free(he);
++                } else {
++                    zfree(he);
++                }
+                 d->ht[table].used--;
+                 return DICT_OK;
+             }
+@@ -469,13 +517,21 @@ int _dictClear(dict *d, dictht *ht, void(callback)(void *)) {
+             nextHe = he->next;
+             dictFreeKey(d, he);
+             dictFreeVal(d, he);
+-            zfree(he);
++            if(d->persist) {
++                persistent_free(he);
++            } else {
++                zfree(he);
++            }
+             ht->used--;
+             he = nextHe;
+         }
+     }
+     /* Free the table and the allocated cache structure */
+-    zfree(ht->table);
++    if(d->persist) {
++        persistent_free(ht->table);
++    } else {
++        zfree(ht->table);
++    }
+     /* Re-initialize the table */
+     _dictReset(ht);
+     return DICT_OK; /* never fails */
+@@ -486,7 +542,11 @@ void dictRelease(dict *d)
+ {
+     _dictClear(d,&d->ht[0],NULL);
+     _dictClear(d,&d->ht[1],NULL);
+-    zfree(d);
++    if(d->persist) {
++        persistent_free(d);
++    } else {
++        zfree(d);
++    }
+ }
+ 
+ dictEntry *dictFind(dict *d, const void *key)
+diff --git a/src/dict.h b/src/dict.h
+index 967a238..a89ba86 100644
+--- a/src/dict.h
++++ b/src/dict.h
+@@ -79,6 +79,7 @@ typedef struct dict {
+     dictht ht[2];
+     long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+     unsigned long iterators; /* number of iterators currently running */
++    int persist;
+ } dict;
+ 
+ /* If safe is set to 1 this is a safe iterator, that means, you can call
+@@ -107,7 +108,7 @@ typedef void (dictScanFunction)(void *privdata, const dictEntry *de);
+ #define dictSetVal(d, entry, _val_) do { \
+     if ((d)->type->valDup) \
+         entry->v.val = (d)->type->valDup((d)->privdata, _val_); \
+-    else \
++    else                  \
+         entry->v.val = (_val_); \
+ } while(0)
+ 
+@@ -148,6 +149,7 @@ typedef void (dictScanFunction)(void *privdata, const dictEntry *de);
+ 
+ /* API */
+ dict *dictCreate(dictType *type, void *privDataPtr);
++dict *dictCreatePM(dictType *type, void *privDataPtr, int regionID);
+ int dictExpand(dict *d, unsigned long size);
+ int dictAdd(dict *d, void *key, void *val);
+ dictEntry *dictAddRaw(dict *d, void *key);
+diff --git a/src/object.c b/src/object.c
+index a7c1e4c..42c7f41 100644
+--- a/src/object.c
++++ b/src/object.c
+@@ -31,13 +31,20 @@
+ #include "server.h"
+ #include <math.h>
+ #include <ctype.h>
++#include "persist.h"
+ 
+ #ifdef __CYGWIN__
+ #define strtold(a,b) ((long double)strtod((a),(b)))
+ #endif
+ 
+-robj *createObject(int type, void *ptr) {
+-    robj *o = zmalloc(sizeof(*o));
++robj *createObject_(int type, void *ptr, int persistRegion) {
++    robj *o;
++
++    if(persistRegion) {
++        o = persistent_alloc(sizeof(*o), PT_robj, persistRegion);
++    } else { 
++        o = zmalloc(sizeof(*o));
++    }
+     o->type = type;
+     o->encoding = OBJ_ENCODING_RAW;
+     o->ptr = ptr;
+@@ -53,6 +60,13 @@ robj *createObject(int type, void *ptr) {
+     return o;
+ }
+ 
++robj *createObject(int type, void *ptr) { 
++    return createObject_(type, ptr, 0);
++}
++
++robj *createObjectPM(int type, void *ptr, int region) {
++    return createObject_(type, ptr, region);
++}
+ /* Set a special refcount in the object to make it "shared":
+  * incrRefCount and decrRefCount() will test for this special refcount
+  * and will not touch the object. This way it is free to access shared
+@@ -318,7 +332,11 @@ void decrRefCount(robj *o) {
+         case OBJ_MODULE: freeModuleObject(o); break;
+         default: serverPanic("Unknown object type"); break;
+         }
+-        zfree(o);
++        if(same_region(o,NULL)) {
++            zfree(o);
++        } else {
++            persistent_free(o);
++        }
+     } else {
+         if (o->refcount <= 0) serverPanic("decrRefCount against refcount <= 0");
+         if (o->refcount != OBJ_SHARED_REFCOUNT) o->refcount--;
+diff --git a/src/redis-benchmark.c b/src/redis-benchmark.c
+index 50905c8..f62d801 100644
+--- a/src/redis-benchmark.c
++++ b/src/redis-benchmark.c
+@@ -81,7 +81,7 @@ static struct config {
+     char *auth;
+ } config;
+ 
+-typedef struct _client {
++typedef struct _bench_client {
+     redisContext *context;
+     sds obuf;
+     char **randptr;         /* Pointers to :rand: strings inside the command buf */
+@@ -95,11 +95,11 @@ typedef struct _client {
+                                such as auth and select are prefixed to the pipeline of
+                                benchmark commands and discarded after the first send. */
+     int prefixlen;          /* Size in bytes of the pending prefix commands */
+-} *client;
++} *bench_client;
+ 
+ /* Prototypes */
+ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask);
+-static void createMissingClients(client c);
++static void createMissingClients(bench_client c);
+ 
+ /* Implementation */
+ static long long ustime(void) {
+@@ -122,7 +122,7 @@ static long long mstime(void) {
+     return mst;
+ }
+ 
+-static void freeClient(client c) {
++static void freeClient(bench_client c) {
+     listNode *ln;
+     aeDeleteFileEvent(config.el,c->context->fd,AE_WRITABLE);
+     aeDeleteFileEvent(config.el,c->context->fd,AE_READABLE);
+@@ -146,7 +146,7 @@ static void freeAllClients(void) {
+     }
+ }
+ 
+-static void resetClient(client c) {
++static void resetClient(bench_client c) {
+     aeDeleteFileEvent(config.el,c->context->fd,AE_WRITABLE);
+     aeDeleteFileEvent(config.el,c->context->fd,AE_READABLE);
+     aeCreateFileEvent(config.el,c->context->fd,AE_WRITABLE,writeHandler,c);
+@@ -154,7 +154,7 @@ static void resetClient(client c) {
+     c->pending = config.pipeline;
+ }
+ 
+-static void randomizeClientKey(client c) {
++static void randomizeClientKey(bench_client c) {
+     size_t i;
+ 
+     for (i = 0; i < c->randlen; i++) {
+@@ -170,7 +170,7 @@ static void randomizeClientKey(client c) {
+     }
+ }
+ 
+-static void clientDone(client c) {
++static void clientDone(bench_client c) {
+     if (config.requests_finished == config.requests) {
+         freeClient(c);
+         aeStop(config.el);
+@@ -187,7 +187,7 @@ static void clientDone(client c) {
+ }
+ 
+ static void readHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+-    client c = privdata;
++    bench_client c = privdata;
+     void *reply = NULL;
+     UNUSED(el);
+     UNUSED(fd);
+@@ -256,7 +256,7 @@ static void readHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+ }
+ 
+ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+-    client c = privdata;
++    bench_client c = privdata;
+     UNUSED(el);
+     UNUSED(fd);
+     UNUSED(mask);
+@@ -295,7 +295,7 @@ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+ /* Create a benchmark client, configured to send the command passed as 'cmd' of
+  * 'len' bytes.
+  *
+- * The command is copied N times in the client output buffer (that is reused
++ * The command is copied N times in the bench_client output buffer (that is reused
+  * again and again to send the request to the server) accordingly to the configured
+  * pipeline size.
+  *
+@@ -303,9 +303,9 @@ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+  * database is selected, if needed. The initial SELECT will be discarded as soon
+  * as the first reply is received.
+  *
+- * To create a client from scratch, the 'from' pointer is set to NULL. If instead
+- * we want to create a client using another client as reference, the 'from' pointer
+- * points to the client to use as reference. In such a case the following
++ * To create a bench_client from scratch, the 'from' pointer is set to NULL. If instead
++ * we want to create a bench_client using another bench_client as reference, the 'from' pointer
++ * points to the bench_client to use as reference. In such a case the following
+  * information is take from the 'from' client:
+  *
+  * 1) The command line to use.
+@@ -313,9 +313,9 @@ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
+  *    for arguments randomization.
+  *
+  * Even when cloning another client, prefix commands are applied if needed.*/
+-static client createClient(char *cmd, size_t len, client from) {
++static bench_client createClient(char *cmd, size_t len, bench_client from) {
+     int j;
+-    client c = zmalloc(sizeof(struct _client));
++    bench_client c = zmalloc(sizeof(struct _bench_client));
+ 
+     if (config.hostsocket == NULL) {
+         c->context = redisConnectNonBlock(config.hostip,config.hostport);
+@@ -335,10 +335,10 @@ static client createClient(char *cmd, size_t len, client from) {
+ 
+     /* Build the request buffer:
+      * Queue N requests accordingly to the pipeline size, or simply clone
+-     * the example client buffer. */
++     * the example bench_client buffer. */
+     c->obuf = sdsempty();
+     /* Prefix the request buffer with AUTH and/or SELECT commands, if applicable.
+-     * These commands are discarded after the first response, so if the client is
++     * These commands are discarded after the first response, so if the bench_client is
+      * reused the commands will not be used again. */
+     c->prefix_pending = 0;
+     if (config.auth) {
+@@ -351,7 +351,7 @@ static client createClient(char *cmd, size_t len, client from) {
+ 
+     /* If a DB number different than zero is selected, prefix our request
+      * buffer with the SELECT command, that will be discarded the first
+-     * time the replies are received, so if the client is reused the
++     * time the replies are received, so if the bench_client is reused the
+      * SELECT command will not be used again. */
+     if (config.dbnum != 0) {
+         c->obuf = sdscatprintf(c->obuf,"*2\r\n$6\r\nSELECT\r\n$%d\r\n%s\r\n",
+@@ -410,7 +410,7 @@ static client createClient(char *cmd, size_t len, client from) {
+     return c;
+ }
+ 
+-static void createMissingClients(client c) {
++static void createMissingClients(bench_client c) {
+     int n = 0;
+ 
+     while(config.liveclients < config.numclients) {
+@@ -459,7 +459,7 @@ static void showLatencyReport(void) {
+ }
+ 
+ static void benchmark(char *title, char *cmd, int len) {
+-    client c;
++    bench_client c;
+ 
+     config.title = title;
+     config.requests_issued = 0;
+@@ -650,7 +650,7 @@ int main(int argc, const char **argv) {
+     char *data, *cmd;
+     int len;
+ 
+-    client c;
++    bench_client c;
+ 
+     srandom(time(NULL));
+     signal(SIGHUP, SIG_IGN);
+diff --git a/src/sds.c b/src/sds.c
+index 26e90a6..90da0ed 100644
+--- a/src/sds.c
++++ b/src/sds.c
+@@ -37,6 +37,7 @@
+ #include <assert.h>
+ #include "sds.h"
+ #include "sdsalloc.h"
++#include "persist.h"
+ 
+ static inline int sdsHdrSize(char type) {
+     switch(type&SDS_TYPE_MASK) {
+@@ -78,7 +79,7 @@ static inline char sdsReqType(size_t string_size) {
+  * You can print the string with printf() as there is an implicit \0 at the
+  * end of the string. However the string is binary safe and can contain
+  * \0 characters in the middle, as the length is stored in the sds header. */
+-sds sdsnewlen(const void *init, size_t initlen) {
++sds sdsnewlen_(const void *init, size_t initlen, int persistRegion) {
+     void *sh;
+     sds s;
+     char type = sdsReqType(initlen);
+@@ -88,7 +89,11 @@ sds sdsnewlen(const void *init, size_t initlen) {
+     int hdrlen = sdsHdrSize(type);
+     unsigned char *fp; /* flags pointer. */
+ 
+-    sh = s_malloc(hdrlen+initlen+1);
++    if(persistRegion) {
++    	sh = persistent_alloc(hdrlen+initlen+1, PT_sds+type, persistRegion);
++    } else {
++        sh = s_malloc(hdrlen+initlen+1);
++    }
+     if (!init)
+         memset(sh, 0, hdrlen+initlen+1);
+     if (sh == NULL) return NULL;
+@@ -134,6 +139,14 @@ sds sdsnewlen(const void *init, size_t initlen) {
+     return s;
+ }
+ 
++sds sdsnewlen(const void *init, size_t initlen) {
++	return sdsnewlen_(init, initlen, 0);
++}
++
++sds sdsnewlenPM(const void *init, size_t initlen, int region) {
++	return sdsnewlen_(init, initlen, region);
++}
++
+ /* Create an empty (zero length) sds string. Even in this case the string
+  * always has an implicit null term. */
+ sds sdsempty(void) {
+@@ -154,7 +167,11 @@ sds sdsdup(const sds s) {
+ /* Free an sds string. No operation is performed if 's' is NULL. */
+ void sdsfree(sds s) {
+     if (s == NULL) return;
+-    s_free((char*)s-sdsHdrSize(s[-1]));
++    if(same_region(s,NULL)) {
++        s_free((char*)s-sdsHdrSize(s[-1]));
++    } else {
++    	persistent_free((char*)s-sdsHdrSize(s[-1]));
++    }
+ }
+ 
+ /* Set the sds string length to the length as obtained with strlen(), so
+@@ -197,7 +214,7 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
+     size_t len, newlen;
+     char type, oldtype = s[-1] & SDS_TYPE_MASK;
+     int hdrlen;
+-
++    int p_rgn;
+     /* Return ASAP if there is enough space left. */
+     if (avail >= addlen) return s;
+ 
+@@ -217,17 +234,38 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
+     if (type == SDS_TYPE_5) type = SDS_TYPE_8;
+ 
+     hdrlen = sdsHdrSize(type);
++
++    /* Get this so we know whether to allocate persistently */
++    p_rgn = persistent_region(s);
++    
+     if (oldtype==type) {
+-        newsh = s_realloc(sh, hdrlen+newlen+1);
++        if(p_rgn != -1) {
++            newsh = persistent_realloc(sh, hdrlen+newlen+1);
++        } else {
++            newsh = s_realloc(sh, hdrlen+newlen+1);
++        }
++        
+         if (newsh == NULL) return NULL;
+         s = (char*)newsh+hdrlen;
+     } else {
+         /* Since the header size changes, need to move the string forward,
+          * and can't use realloc */
+-        newsh = s_malloc(hdrlen+newlen+1);
++
++        if(p_rgn != -1) {
++            newsh = persistent_alloc(hdrlen+newlen+1, PT_sds+type, p_rgn);
++        } else {
++            newsh = s_malloc(hdrlen+newlen+1);
++        }
++
+         if (newsh == NULL) return NULL;
+         memcpy((char*)newsh+hdrlen, s, len+1);
+-        s_free(sh);
++
++        if(p_rgn != -1) {
++            persistent_free(sh);
++        } else {
++            s_free(sh);
++        }
++        
+         s = (char*)newsh+hdrlen;
+         s[-1] = type;
+         sdssetlen(s, len);
+@@ -247,19 +285,40 @@ sds sdsRemoveFreeSpace(sds s) {
+     char type, oldtype = s[-1] & SDS_TYPE_MASK;
+     int hdrlen;
+     size_t len = sdslen(s);
++    int p_rgn;
++    
+     sh = (char*)s-sdsHdrSize(oldtype);
+ 
+     type = sdsReqType(len);
+     hdrlen = sdsHdrSize(type);
++    p_rgn = persistent_region(s);
++    
+     if (oldtype==type) {
+-        newsh = s_realloc(sh, hdrlen+len+1);
++        if(p_rgn != -1) {
++            newsh = persistent_realloc(sh, hdrlen+len+1);
++        } else {
++            newsh = s_realloc(sh, hdrlen+len+1);
++        }
++
+         if (newsh == NULL) return NULL;
+         s = (char*)newsh+hdrlen;
+     } else {
+-        newsh = s_malloc(hdrlen+len+1);
++
++        if(p_rgn != -1) {
++            newsh = persistent_alloc(hdrlen+len+1, PT_sds+type, p_rgn);
++        } else {
++            newsh = s_malloc(hdrlen+len+1);
++        }
++
+         if (newsh == NULL) return NULL;
+         memcpy((char*)newsh+hdrlen, s, len+1);
+-        s_free(sh);
++
++        if(p_rgn != -1) {
++            persistent_free(sh);
++        } else {
++            s_free(sh);
++        }
++    
+         s = (char*)newsh+hdrlen;
+         s[-1] = type;
+         sdssetlen(s, len);
+diff --git a/src/sds.h b/src/sds.h
+index 394f8b5..9077a5b 100644
+--- a/src/sds.h
++++ b/src/sds.h
+@@ -215,6 +215,7 @@ static inline void sdssetalloc(sds s, size_t newlen) {
+ }
+ 
+ sds sdsnewlen(const void *init, size_t initlen);
++sds sdsnewlenPM(const void *init, size_t initlen, int region);
+ sds sdsnew(const char *init);
+ sds sdsempty(void);
+ sds sdsdup(const sds s);
+diff --git a/src/server.c b/src/server.c
+index a775825..deb07cf 100644
+--- a/src/server.c
++++ b/src/server.c
+@@ -32,6 +32,7 @@
+ #include "slowlog.h"
+ #include "bio.h"
+ #include "latency.h"
++#include "persist.h"
+ 
+ #include <time.h>
+ #include <signal.h>
+@@ -54,6 +55,8 @@
+ #include <sys/utsname.h>
+ #include <locale.h>
+ #include <sys/socket.h>
++#include <atlas_api.h>
++#include <atlas_alloc.h>
+ 
+ /* Our shared "common" objects */
+ 
+@@ -1464,6 +1467,8 @@ void initServerConfig(void) {
+     server.assert_line = 0;
+     server.bug_report_start = 0;
+     server.watchdog_period = 0;
++
++    server.pm_region_name = "redisdb";
+ }
+ 
+ extern char **environ;
+@@ -1710,7 +1715,9 @@ void resetServerStats(void) {
+ 
+ void initServer(void) {
+     int j;
+-
++    /* Tracks whether our PM region is new */
++    int is_created;
++    
+     signal(SIGHUP, SIG_IGN);
+     signal(SIGPIPE, SIG_IGN);
+     setupSignalHandlers();
+@@ -1763,16 +1770,53 @@ void initServer(void) {
+         exit(1);
+     }
+ 
+-    /* Create the Redis databases, and initialize other internal state. */
++   
++    server.pmregion = NVM_FindOrCreateRegion(server.pm_region_name,
++                                             O_RDWR,
++                                             &is_created);
++    set_pr(server.pmregion);
++    
++    struct serverRoot * root;
++    if(is_created) {
++        nvm_begin_durable();
++        root = persistent_alloc(sizeof(*root)+2*server.dbnum*sizeof(dict*),
++                                PT_serverRoot,
++                                server.pmregion);
++        root->numDb = server.dbnum;
++        root->dicts = (dict**)(root+1);
++        NVM_SetRegionRoot(server.pmregion, root);
++    
++    } else {
++        root = NVM_GetRegionRoot(server.pmregion);
++    }
++     /* Create the Redis databases, and initialize other internal state. */
+     for (j = 0; j < server.dbnum; j++) {
+-        server.db[j].dict = dictCreate(&dbDictType,NULL);
+-        server.db[j].expires = dictCreate(&keyptrDictType,NULL);
++        if(is_created) {      
++            server.db[j].dict = dictCreatePM(&dbDictType,
++                                             NULL,
++                                             server.pmregion);
++            root->dicts[2*j] = server.db[j].dict;
++            server.db[j].expires = dictCreatePM(&keyptrDictType,
++                                                NULL,
++                                                server.pmregion);
++             root->dicts[2*j+1] = server.db[j].expires;
++        
++        } else {
++            /* Amazing this actually works, function pointer >.< */
++            server.db[j].dict = root->dicts[2*j];
++            server.db[j].expires = root->dicts[2*j+1];
++        }
+         server.db[j].blocking_keys = dictCreate(&keylistDictType,NULL);
+         server.db[j].ready_keys = dictCreate(&objectKeyPointerValueDictType,NULL);
+         server.db[j].watched_keys = dictCreate(&keylistDictType,NULL);
+         server.db[j].id = j;
+         server.db[j].avg_ttl = 0;
+     }
++
++    if(is_created) {
++        nvm_end_durable();
++    }
++    
+     evictionPoolAlloc(); /* Initialize the LRU keys pool. */
+     server.pubsub_channels = dictCreate(&keylistDictType,NULL);
+     server.pubsub_patterns = listCreate();
+@@ -2380,7 +2424,14 @@ int processCommand(client *c) {
+         queueMultiCommand(c);
+         addReply(c,shared.queued);
+     } else {
++
++    	/* Looks like a good place to start being failure-atomic */
++        nvm_begin_durable();
+         call(c,CMD_CALL_FULL);
++        process_committing_transaction();
++        nvm_end_durable();
++        /* end transaction */
++
+         c->woff = server.master_repl_offset;
+         if (listLength(server.ready_keys))
+             handleClientsBlockedOnLists();
+@@ -2410,7 +2461,7 @@ int prepareForShutdown(int flags) {
+     int nosave = flags & SHUTDOWN_NOSAVE;
+ 
+     serverLog(LL_WARNING,"User requested shutdown...");
+-
++    NVM_Finalize();
+     /* Kill all the Lua debugger forked sessions. */
+     ldbKillForkedSessions();
+ 
+@@ -3542,7 +3593,9 @@ int main(int argc, char **argv) {
+     zmalloc_set_oom_handler(redisOutOfMemoryHandler);
+     srand(time(NULL)^getpid());
+     gettimeofday(&tv,NULL);
+-    dictSetHashFunctionSeed(tv.tv_sec^tv.tv_usec^getpid());
++    NVM_Initialize();
++    dictSetHashFunctionSeed(1000);
++    //    dictSetHashFunctionSeed(tv.tv_sec^tv.tv_usec^getpid());
+     server.sentinel_mode = checkForSentinelMode(argc,argv);
+     initServerConfig();
+     moduleInitModulesSystem();
+diff --git a/src/server.h b/src/server.h
+index d410d5b..9c8d415 100644
+--- a/src/server.h
++++ b/src/server.h
+@@ -1068,6 +1068,14 @@ struct redisServer {
+     int watchdog_period;  /* Software watchdog period in ms. 0 = off */
+     /* System hardware info */
+     size_t system_memory_size;  /* Total memory in system as reported by OS */
++    /* Persistent memory info */
++    uint32_t pmregion;
++    const char *pm_region_name;
++};
++
++struct serverRoot {
++    int numDb;
++    dict ** dicts;
+ };
+ 
+ typedef struct pubsubPattern {
+@@ -1295,6 +1303,7 @@ void freeSetObject(robj *o);
+ void freeZsetObject(robj *o);
+ void freeHashObject(robj *o);
+ robj *createObject(int type, void *ptr);
++robj *createObjectPM(int type, void *ptr, int region);
+ robj *createStringObject(const char *ptr, size_t len);
+ robj *createRawStringObject(const char *ptr, size_t len);
+ robj *createEmbeddedStringObject(const char *ptr, size_t len);
+diff --git a/src/t_string.c b/src/t_string.c
+index 8c737c4..c2922d9 100644
+--- a/src/t_string.c
++++ b/src/t_string.c
+@@ -29,6 +29,7 @@
+ 
+ #include "server.h"
+ #include <math.h> /* isnan(), isinf() */
++#include "persist.h"
+ 
+ /*-----------------------------------------------------------------------------
+  * String Commands
+@@ -66,7 +67,9 @@ static int checkStringLength(client *c, long long size) {
+ 
+ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire, int unit, robj *ok_reply, robj *abort_reply) {
+     long long milliseconds = 0; /* initialized to avoid any harmness warning */
+-
++    robj * p_val;
++    sds p_str;
++    int persistRegion = persistent_region(c->db->dict);
+     if (expire) {
+         if (getLongLongFromObjectOrReply(c, expire, &milliseconds, NULL) != C_OK)
+             return;
+@@ -83,7 +86,13 @@ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire,
+         addReply(c, abort_reply ? abort_reply : shared.nullbulk);
+         return;
+     }
+-    setKey(c->db,key,val);
++    p_str = sdsnewlenPM(val->ptr, sdslen(val->ptr), persistRegion);
++    p_val = createObjectPM(OBJ_STRING, p_str, persistRegion);
++    
++    /* Because reference count gets bumped by setKey, 0 it here */
++    resetRefCount(p_val);
++    
++    setKey(c->db,key,p_val);
+     server.dirty++;
+     if (expire) setExpire(c->db,key,mstime()+milliseconds);
+     notifyKeyspaceEvent(NOTIFY_STRING,"set",key,c->db->id);
+@@ -185,7 +194,8 @@ void setrangeCommand(client *c) {
+     robj *o;
+     long offset;
+     sds value = c->argv[3]->ptr;
+-
++    int p_rgn;
++    
+     if (getLongFromObjectOrReply(c,c->argv[2],&offset,NULL) != C_OK)
+         return;
+ 
+@@ -206,7 +216,11 @@ void setrangeCommand(client *c) {
+         if (checkStringLength(c,offset+sdslen(value)) != C_OK)
+             return;
+ 
+-        o = createObject(OBJ_STRING,sdsnewlen(NULL, offset+sdslen(value)));
++        p_rgn = persistent_region(c->db->dict);
++        o = createObjectPM(OBJ_STRING,
++                           sdsnewlenPM(NULL, offset+sdslen(value), p_rgn),
++                           p_rgn);
++        
+         dbAdd(c->db,c->argv[1],o);
+     } else {
+         size_t olen;
+@@ -435,13 +449,25 @@ void incrbyfloatCommand(client *c) {
+ void appendCommand(client *c) {
+     size_t totlen;
+     robj *o, *append;
+-
++    sds p_str;
++    
+     o = lookupKeyWrite(c->db,c->argv[1]);
+     if (o == NULL) {
+         /* Create the key */
+         c->argv[2] = tryObjectEncoding(c->argv[2]);
+-        dbAdd(c->db,c->argv[1],c->argv[2]);
+-        incrRefCount(c->argv[2]);
++        int p_rgn = persistent_region(c->db->dict);
++        
++        p_str = sdsnewlenPM(c->argv[2]->ptr,
++                            sdslen(c->argv[2]->ptr),
++                            p_rgn);
++        
++        o = createObjectPM(OBJ_STRING, p_str, p_rgn);
++        
++        dbAdd(c->db,c->argv[1], o);
++        
++        /* No longer needed because we copied the object: 
++         * incrRefCount(c->argv[2]); */
++        
+         totlen = stringObjectLen(c->argv[2]);
+     } else {
+         /* Key exists, check type */
