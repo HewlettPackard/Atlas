@@ -1,3 +1,11 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   pthread_support.c
+ *   pthread_start.c
+ */
 
 #include "makalu_internal.h"
 #include "makalu_local_heap.h"

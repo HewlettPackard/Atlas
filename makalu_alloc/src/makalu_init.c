@@ -1,3 +1,11 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   misc.c
+ */
+
 #include "makalu_internal.h"
 
 MAK_INNER MAK_bool MAK_is_initialized = FALSE;

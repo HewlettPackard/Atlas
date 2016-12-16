@@ -1,3 +1,11 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   headers.c
+ */
+
 #include "makalu_internal.h"
 #include "stddef.h"
 

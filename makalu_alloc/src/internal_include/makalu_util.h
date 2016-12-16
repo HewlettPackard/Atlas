@@ -1,3 +1,12 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   gc_pmark.h
+ *   gc_priv.h
+ */
+
 #ifndef _MAKALU_UTIL_H
 #define _MAKALU_UTIL_H
 

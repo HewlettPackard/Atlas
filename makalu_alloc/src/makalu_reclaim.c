@@ -1,3 +1,11 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   reclaim.c
+ */
+
 #include "makalu_internal.h"
 
 MAK_INNER MAK_bool MAK_alloc_reclaim_list(unsigned k /*kind */)

@@ -1,3 +1,12 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   gc_inline.h
+ *   thread_local_alloc.h
+ */
+
 #ifndef _MAKALU_LOCAL_HEAP
 #define _MAKALU_LOCAL_HEAP
 

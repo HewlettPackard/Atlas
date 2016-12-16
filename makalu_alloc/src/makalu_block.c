@@ -1,3 +1,11 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   alloc.c
+ */
+
 #include "makalu_internal.h"
 
 STATIC word MAK_free_space_divisor = MAK_FREE_SPACE_DIVISOR;

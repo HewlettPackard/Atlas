@@ -1,3 +1,12 @@
+/*
+ * Source code is partially derived from Boehm-Demers-Weiser Garbage 
+ * Collector (BDWGC) version 7.2 (license is attached)
+ *
+ * File:
+ *   mark_rts.c
+ *   mark.c
+ */
+
 #include "makalu_internal.h"
 #include <stdint.h>
 
