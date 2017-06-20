@@ -341,11 +341,12 @@ void Recover(int tid)
             if (done_threads.find(tid) != done_threads.end()) break;
             MarkReplayed(le);
         }
-        else if (le->isStr() ||
-                 le->isMemset() || le->isMemcpy() || le->isMemmove() ||
-                 le->isStrcpy() || le->isStrcat())
-            Replay(le);
-
+        else if (le->isStr() || le->isMemop() || le->isStrop()){
+            if (!isAlreadyReplayed(le)){
+                Replay(le);
+                MarkReplayed(le);
+            }
+        }
         if (le == stop_node) {
             done_threads.insert(make_pair(tid, true));
             break;
@@ -356,14 +357,14 @@ void Recover(int tid)
 
 void MarkReplayed(LogEntry *le)
 {
-    assert(le->isAcquire() || le->isAlloc() || le->isFree());
+    assert(le->isAcquire() || le->isAlloc() || le->isFree() || le->isMemop() || le->isStrop() || le->isStr());
     assert(replayed_entries.find(le) == replayed_entries.end());
     replayed_entries[le] = true;
 }
 
 bool isAlreadyReplayed(LogEntry *le)
 {
-    assert(le->isAcquire() || le->isAlloc() || le->isFree());
+    assert(le->isAcquire() || le->isAlloc() || le->isFree() || le->isMemop() || le->isStrop() || le->isStr());
     return replayed_entries.find(le) != replayed_entries.end();
 }
 
